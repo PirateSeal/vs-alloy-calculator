@@ -239,11 +239,63 @@ No environment variables are currently required. To add them:
 
 ## 🚢 Deployment
 
-The app is a static site and can be deployed to any static hosting service:
+[![Deployment Status](https://img.shields.io/github/actions/workflow/status/yourusername/vs-alloy-calculator/deploy.yml?branch=main&label=deployment)](https://github.com/yourusername/vs-alloy-calculator/actions)
 
-### Quick Deploy Options
+This project uses automated AWS deployment with Terraform infrastructure and GitHub Actions CI/CD.
 
-**Vercel (Recommended)**
+### AWS Architecture
+
+The production deployment uses a modern, scalable AWS architecture:
+
+```
+GitHub → GitHub Actions → S3 Bucket → CloudFront CDN → Route53 DNS → Users
+                            ↓
+                      ACM Certificate (HTTPS)
+```
+
+**Infrastructure Components:**
+- **S3**: Static website hosting with encryption
+- **CloudFront**: Global CDN with HTTP/2 and HTTP/3 support
+- **Route53**: DNS management for custom domain
+- **ACM**: Free SSL/TLS certificates with auto-renewal
+- **IAM**: Secure service account for automated deployments
+
+**Key Features:**
+- ✅ Fully automated deployments on push to `main`
+- ✅ HTTPS with automatic certificate renewal
+- ✅ Global CDN for fast load times worldwide
+- ✅ Infrastructure as Code with Terraform
+- ✅ Cost-optimized (~$2-3/month)
+
+### Deployment Guide
+
+For detailed deployment instructions, see **[DEPLOYMENT.md](DEPLOYMENT.md)**
+
+**Quick Start:**
+
+1. **Deploy Infrastructure** (one-time setup)
+   ```bash
+   cd terraform
+   terraform init
+   terraform apply
+   ```
+
+2. **Configure GitHub Secrets** (one-time setup)
+   - Add AWS credentials from Terraform outputs
+   - See [DEPLOYMENT.md](DEPLOYMENT.md) for step-by-step instructions
+
+3. **Deploy Application** (automatic on every push)
+   ```bash
+   git push origin main
+   ```
+
+The application will be live at `https://vs-calculator.tcousin.com` within 5-10 minutes.
+
+### Alternative Deployment Options
+
+The app is a static site and can also be deployed to other hosting services:
+
+**Vercel**
 ```bash
 npm i -g vercel
 vercel deploy --prod
@@ -257,15 +309,14 @@ vercel deploy --prod
 1. Build: `npm run build:prod`
 2. Deploy `dist` contents to `gh-pages` branch
 
-**AWS S3**
-```bash
-npm run build:prod
-aws s3 sync dist/ s3://your-bucket-name --delete
-```
-
 **Any Static Host**
 - Build with `npm run build:prod`
 - Upload contents of `dist` folder to your web server
+
+### Infrastructure Documentation
+
+- **[terraform/README.md](terraform/README.md)** - Terraform infrastructure documentation
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide with troubleshooting
 
 ## 🤝 Contributing
 

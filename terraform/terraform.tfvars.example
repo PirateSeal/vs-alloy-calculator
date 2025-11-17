@@ -1,0 +1,13 @@
+# AWS Configuration
+aws_region = "eu-west-1"
+
+# Domain Configuration
+domain_name = "tcousin.com"
+subdomain   = "vs-calculator"
+
+# Project Configuration
+project_name = "vs-calculator"
+environment  = "production"
+
+# CloudFront Configuration
+cloudfront_price_class = "PriceClass_100"  # North America and Europe only
