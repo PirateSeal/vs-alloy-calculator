@@ -13,8 +13,40 @@ env:
   CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
 jobs:
-  deploy:
+  check-changes:
     runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check for relevant changes
+        id: check
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "should_deploy=true" >> $GITHUB_OUTPUT
+            echo "Tag push detected - will deploy"
+          else
+            git diff --name-only HEAD^ HEAD > changed_files.txt
+            cat changed_files.txt
+            if grep -qE '^(src/|public/|index\.html|package\.json|vite\.config|tsconfig|terraform/)' changed_files.txt; then
+              echo "should_deploy=true" >> $GITHUB_OUTPUT
+              echo "Source or Terraform changes detected - will deploy"
+            else
+              echo "should_deploy=false" >> $GITHUB_OUTPUT
+              echo "No source or Terraform changes - skipping deployment"
+            fi
+          fi
+
+  deploy:
+    needs: check-changes
+    if: needs.check-changes.outputs.should_deploy == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
