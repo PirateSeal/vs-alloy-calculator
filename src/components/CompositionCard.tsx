@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { METALS } from "@/data/alloys";
 import type { MetalAmount } from "@/lib/alloyLogic";
+import CountUp from "@/components/ui/count-up";
 
 interface CompositionCardProps {
   amounts: MetalAmount[];
@@ -18,7 +19,7 @@ export function CompositionCard({
     return (
       <Card className="bg-card">
         <CardHeader>
-          <CardTitle as="h2">Current Composition</CardTitle>
+          <CardTitle>Current Composition</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-8">
@@ -35,29 +36,30 @@ export function CompositionCard({
   return (
     <Card className="bg-card">
       <CardHeader>
-        <CardTitle as="h2">Current Composition</CardTitle>
+        <CardTitle>Current Composition</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Total summary */}
-        <div className="flex justify-between text-sm" role="status" aria-live="polite">
+        <div className="flex justify-between text-base" role="status" aria-live="polite">
           <span className="font-medium">Total:</span>
           <span>
-            {totalNuggets} nuggets ({totalUnits} units)
+            <CountUp to={totalNuggets} duration={0.2} /> nuggets (<CountUp to={totalUnits} duration={0.2} /> units)
           </span>
         </div>
 
         {/* Metal breakdown */}
-        <div className="space-y-2" role="list" aria-label="Metal composition breakdown">
+        <div className="space-y-3" role="list" aria-label="Metal composition breakdown">
           {amounts.map((amount) => {
             const metal = metalMap.get(amount.metalId);
             if (!metal) return null;
 
             return (
-              <div key={amount.metalId} className="flex items-center gap-3 text-sm" role="listitem">
-                {/* Color dot */}
-                <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: metal.color }}
+              <div key={amount.metalId} className="flex items-center gap-3 text-base" role="listitem">
+                {/* Nugget image */}
+                <img
+                  src={metal.nuggetImage}
+                  alt=""
+                  className="w-10 h-10 object-contain flex-shrink-0"
                   aria-hidden="true"
                 />
 
@@ -66,12 +68,12 @@ export function CompositionCard({
 
                 {/* Amounts */}
                 <span className="text-muted-foreground flex-1">
-                  {amount.nuggets} nuggets ({amount.units} units)
+                  <CountUp to={amount.nuggets} duration={0.2} /> nuggets (<CountUp to={amount.units} duration={0.2} /> units)
                 </span>
 
                 {/* Percentage */}
                 <span className="font-mono font-medium min-w-[60px] text-right">
-                  {amount.percent.toFixed(1)}%
+                  <CountUp to={Math.round(amount.percent)} duration={0.2} />%
                 </span>
               </div>
             );
@@ -81,7 +83,7 @@ export function CompositionCard({
         {/* Stacked bar chart */}
         <div className="mt-4">
           <div
-            className="flex h-8 rounded-md overflow-hidden border border-border"
+            className="flex h-10 rounded-md overflow-hidden border border-border"
             role="img"
             aria-label={`Composition bar chart: ${amounts.map(a => {
               const metal = metalMap.get(a.metalId);
@@ -95,7 +97,7 @@ export function CompositionCard({
               return (
                 <div
                   key={amount.metalId}
-                  className="flex items-center justify-center text-xs font-medium text-white transition-all hover:opacity-80"
+                  className="flex items-center justify-center text-sm font-medium text-white transition-all hover:opacity-80"
                   style={{
                     backgroundColor: metal.color,
                     width: `${amount.percent}%`,

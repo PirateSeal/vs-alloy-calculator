@@ -167,19 +167,15 @@
     - Show all metals when crucible is empty or multiple metals are selected
     - _Requirements: 12.1, 12.2, 12.3_
 
-- - [x] 13.3 Wire filtering into CruciblePanel
+  - [x] 13.3 Wire filtering into CruciblePanel
 
     - Update CruciblePanel to calculate availableMetals for each slot using getAvailableMetals
     - Pass filtered metal lists to each CrucibleSlotRow component
     - _Requirements: 12.1, 12.2, 12.3_
 
-- [ ] 14. Add complete preset coverage for all 9 alloys
+- [x] 14. Add complete preset coverage for all 9 alloys
 
   - [x] 14.1 Implement preset generation logic
-
-
-
-
 
     - Create `createPresetForAlloy` function in alloyLogic.ts
     - Calculate midpoint percentages for each alloy component
@@ -187,42 +183,52 @@
     - Distribute metals across slots with proper rounding
     - _Requirements: 11.2, 11.3, 11.4_
 
-  - [x] 14.2 Update CruciblePanel with all preset buttons
+  - [x] 14.2 Update ResultCard with preset selector
 
-
-
-
-
-
-
-
-
-    - Add preset buttons for all 9 alloys: Tin Bronze, Bismuth Bronze, Black Bronze, Brass, Molybdochalkos, Lead Solder, Silver Solder, Cupronickel, Electrum
-    - Use grid layout to organize preset buttons compactly
+    - Add preset dropdown in ResultCard for all 9 alloys: Tin Bronze, Bismuth Bronze, Black Bronze, Brass, Molybdochalkos, Lead Solder, Silver Solder, Cupronickel, Electrum
+    - Add ingot amount slider to scale preset from 1 to maximum possible ingots
     - Generate preset crucible states using createPresetForAlloy function
     - _Requirements: 11.1, 11.2_
 
-- [ ] 15. Implement dynamic alloy ratio adjustment
+- [x] 15. Implement dynamic alloy ratio adjustment
 
-  - [ ] 15.1 Add ratio adjustment logic
+  - [x] 15.1 Add ratio adjustment logic
 
     - Implement `adjustCrucibleForAlloy` function in alloyLogic.ts
-    - Calculate new total based on changed slot's percentage in target recipe
+    - Calculate new total based on changed slot's percentage in recipe
     - Distribute remaining nuggets proportionally across other slots
-    - Apply 0-128 nugget constraints per slot
-    - Implement `detectCurrentAlloy` function to identify loaded preset
+    - Clamp each slot to 0-128 range
     - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
-  - [ ] 15.2 Add preset tracking state to CruciblePanel
+  - [x] 15.2 Add preset tracking state to App
 
-    - Add state to track currently loaded preset/alloy (currentAlloy)
-    - Set currentAlloy when preset button is clicked
-    - Clear currentAlloy when user manually changes metal types
-    - _Requirements: 13.1_
+    - Add selectedRecipe state to track currently loaded preset/alloy
+    - Add ratioLocked state to control whether ratio adjustment is enabled
+    - Pass state and handlers to child components
+    - _Requirements: 13.1, 13.2, 13.5_
 
-  - [ ] 15.3 Wire ratio adjustment into slot changes
-    - Add onNuggetChange handler to CrucibleSlotRow
-    - When nugget amount changes and currentAlloy is set, call adjustCrucibleForAlloy
+  - [x] 15.3 Wire ratio adjustment into CruciblePanel
+
+    - When nugget amount changes and ratioLocked is true, call adjustCrucibleForAlloy
     - Update crucible state with adjusted values
     - Allow invalid states when constraints cannot be satisfied
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5_
+
+- [x] 16. Add nugget adjustment suggestions
+
+  - [x] 16.1 Implement adjustment calculation logic
+
+    - Implement `calculateNuggetAdjustments` function in alloyLogic.ts
+    - Calculate target nuggets for each metal to achieve valid alloy
+    - Return adjustments showing add/remove actions needed
+    - Implement `getAdjustmentSummary` to create human-readable summary
+    - _Requirements: 3.3, 3.4, 8.3, 8.4_
+
+  - [x] 16.2 Update ResultCard with adjustment UI
+
+    - Display adjustment summary in close match state
+    - Show per-metal adjustment details in table
+    - Display hints about Lock Ratio feature when enabled
+    - Add "Adjust to Valid" button to automatically apply adjustments
+    - Implement `applyNuggetAdjustments` to apply adjustments to crucible
+    - _Requirements: 3.3, 3.4, 8.3, 8.4_
