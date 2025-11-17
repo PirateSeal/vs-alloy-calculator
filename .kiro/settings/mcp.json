@@ -9,7 +9,9 @@
       ],
       "env": {},
       "disabled": false,
-      "autoApprove": []
+      "autoApprove": [
+        "create_directory"
+      ]
     }
   }
 }
