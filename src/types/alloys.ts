@@ -13,6 +13,7 @@ export interface Metal {
   label: string;
   shortLabel: string;
   color: string;
+  nuggetImage: string;
 }
 
 export interface AlloyComponent {
