@@ -73,7 +73,6 @@ function App() {
               onCrucibleChange={handleCrucibleChange}
               allMetals={METALS}
               recipes={ALLOY_RECIPES}
-              selectedRecipe={selectedRecipe}
             />
             <div className="grid gap-4 md:grid-cols-2">
               <CompositionCard
