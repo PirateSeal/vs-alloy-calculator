@@ -1,16 +1,8 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
@@ -25,14 +17,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { CheckCircle2, AlertTriangle, XCircle, Info, Wand2 } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, Info, Wand2, Maximize2 } from "lucide-react";
 import { METALS } from "@/data/alloys";
 import {
-  calculateMaxIngots,
   calculateNuggetAdjustments,
   getAdjustmentSummary,
-  applyNuggetAdjustments
+  applyNuggetAdjustments,
+  createPresetForAlloy,
+  aggregateCrucible
 } from "@/lib/alloyLogic";
+import { optimizeRecipe } from "@/lib/recipeOptimizer";
+import { Switch } from "@/components/ui/switch";
 import type { EvaluationResult } from "@/lib/alloyLogic";
 import type { AlloyRecipe } from "@/types/alloys";
 import type { CrucibleState } from "@/types/crucible";
@@ -45,7 +40,6 @@ interface ResultCardProps {
   onRecipeSelect: (recipe: AlloyRecipe | null) => void;
   selectedRecipe: AlloyRecipe | null;
   onCrucibleChange: (crucible: CrucibleState) => void;
-  ratioLocked: boolean;
 }
 
 export function ResultCard({
@@ -55,10 +49,11 @@ export function ResultCard({
   onLoadPreset,
   onRecipeSelect,
   selectedRecipe,
-  onCrucibleChange,
-  ratioLocked
+  onCrucibleChange
 }: ResultCardProps) {
   const { totalUnits, totalNuggets, bestMatch } = evaluation;
+
+  const [useEconomical, setUseEconomical] = useState(true);
 
   // Create a map for quick metal lookup
   const metalMap = useMemo(() => new Map(METALS.map((m) => [m.id, m])), []);
@@ -69,10 +64,14 @@ export function ResultCard({
     return Math.floor(totalNuggets / 20);
   }, [totalNuggets]);
 
-  // Calculate max ingots for selected recipe
+  // Calculate max ingots for selected recipe using the maximization strategy
   const maxIngots = useMemo(() => {
     if (!selectedRecipe) return 25;
-    return calculateMaxIngots(selectedRecipe);
+    const result = optimizeRecipe({
+      recipe: selectedRecipe,
+      mode: 'maximize',
+    });
+    return result.success ? result.ingotCount : 25;
   }, [selectedRecipe]);
 
   // Derive ingot amount from current crucible when recipe is selected
@@ -137,7 +136,50 @@ export function ResultCard({
   const handleIngotChange = (value: number[]) => {
     const newAmount = value[0];
     if (selectedRecipe) {
-      onLoadPreset(selectedRecipe, newAmount);
+      if (useEconomical) {
+        // Use economical optimization when slider is moved and switch is enabled
+        const result = optimizeRecipe({
+          recipe: selectedRecipe,
+          mode: 'economical',
+          targetIngots: newAmount,
+        });
+        if (result.success && result.crucible) {
+          onCrucibleChange(result.crucible);
+        } else {
+          // Fallback to preset if optimization fails
+          onLoadPreset(selectedRecipe, newAmount);
+        }
+      } else {
+        onLoadPreset(selectedRecipe, newAmount);
+      }
+    }
+  };
+
+  const handleMaximize = () => {
+    if (!selectedRecipe) return;
+
+    setUseEconomical(false);
+    const result = optimizeRecipe({
+      recipe: selectedRecipe,
+      mode: 'maximize',
+    });
+
+    if (result.success && result.crucible) {
+      onCrucibleChange(result.crucible);
+    }
+  };
+
+  const handleEconomicalOptimize = () => {
+    if (!selectedRecipe) return;
+
+    const result = optimizeRecipe({
+      recipe: selectedRecipe,
+      mode: 'economical',
+      targetIngots: ingotAmount,
+    });
+
+    if (result.success && result.crucible) {
+      onCrucibleChange(result.crucible);
     }
   };
 
@@ -190,25 +232,69 @@ export function ResultCard({
               <span>Amount</span>
               <span className="font-medium text-foreground">{ingotAmount} ingot{ingotAmount !== 1 ? 's' : ''}</span>
             </div>
-            <div
-              style={{
-                // @ts-expect-error - CSS custom property
-                '--slider-color': currentRecipe ? getAlloyColor(currentRecipe.id) : '#B87333'
-              }}
-            >
-              <Slider
-                value={[ingotAmount]}
-                onValueChange={handleIngotChange}
-                min={1}
-                max={maxIngots}
-                step={1}
-                aria-label="Ingot amount"
+            <div className="flex gap-2 items-center">
+              <div
+                className="flex-1"
+                style={{
+                  // @ts-expect-error - CSS custom property
+                  '--slider-color': currentRecipe ? getAlloyColor(currentRecipe.id) : '#B87333'
+                }}
+              >
+                <Slider
+                  value={[ingotAmount]}
+                  onValueChange={handleIngotChange}
+                  min={1}
+                  max={maxIngots}
+                  step={1}
+                  aria-label="Ingot amount"
+                  disabled={!selectedRecipe}
+                  className="[&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
+                />
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleMaximize}
                 disabled={!selectedRecipe}
-                className="[&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
-              />
+                className="px-2"
+                title="Maximize ingots"
+              >
+                <Maximize2 className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
+        {selectedRecipe && (
+          <div className="flex items-center gap-2 text-sm">
+            <Switch
+              id="economical-mode"
+              checked={useEconomical}
+              onCheckedChange={setUseEconomical}
+            />
+            <label htmlFor="economical-mode" className="text-sm cursor-pointer">
+              Use economical optimization
+            </label>
+            {useEconomical && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleEconomicalOptimize}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Wand2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Optimize economically for {ingotAmount} ingot{ingotAmount !== 1 ? 's' : ''}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+        )}
       </div>
     );
   };
@@ -260,6 +346,166 @@ export function ResultCard({
     const hasEnoughForIngot = totalUnits >= 100;
     const unitsNeeded = 100 - totalUnits;
 
+    // Check if total units align with complete ingots
+    const UNITS_PER_INGOT = 100;
+    const completeIngots = Math.floor(totalUnits / UNITS_PER_INGOT);
+    const excessUnits = totalUnits % UNITS_PER_INGOT;
+    const hasExcessMaterial = excessUnits > 0;
+    const excessNuggets = Math.floor(excessUnits / 5);
+
+    // Calculate which metals have excess and what's needed for next ingot
+    let excessMessage: React.ReactNode = '';
+    if (hasExcessMaterial && hasEnoughForIngot) {
+      // Check if n+1 ingots is possible first
+      const canMakeNextIngot = completeIngots + 1 <= maxIngots;
+
+      // Use optimizeRecipe to get the actual target amounts for complete ingots
+      const currentIngotsResult = optimizeRecipe({
+        recipe: bestMatch.recipe,
+        mode: 'economical',
+        targetIngots: completeIngots,
+      });
+
+      // Find which metals are contributing to the excess
+      const excessMetals: Array<{ metalId: string; nuggets: number }> = [];
+
+      if (currentIngotsResult.success && currentIngotsResult.crucible) {
+        // Aggregate target crucible
+        const targetAmounts = new Map<string, number>();
+        for (const slot of currentIngotsResult.crucible.slots) {
+          if (slot.metalId) {
+            const current = targetAmounts.get(slot.metalId) || 0;
+            targetAmounts.set(slot.metalId, current + slot.nuggets);
+          }
+        }
+
+        // Compare with current amounts
+        for (const component of bestMatch.recipe.components) {
+          const currentAmount = evaluation.amounts.find(a => a.metalId === component.metalId);
+          const currentNuggets = currentAmount?.nuggets || 0;
+          const targetNuggets = targetAmounts.get(component.metalId) || 0;
+
+          if (currentNuggets > targetNuggets) {
+            const metal = metalMap.get(component.metalId);
+            excessMetals.push({
+              metalId: metal?.shortLabel || component.metalId,
+              nuggets: currentNuggets - targetNuggets
+            });
+          }
+        }
+      }
+
+      // Build the message
+      const removeText = excessMetals.length > 0
+        ? excessMetals.map(m => `${m.nuggets} ${m.metalId}`).join(' and ')
+        : `${excessNuggets}`;
+
+
+      if (canMakeNextIngot) {
+
+        // Use optimizeRecipe to get the actual amounts needed for n+1 ingots
+        const nextIngotsResult = optimizeRecipe({
+          recipe: bestMatch.recipe,
+          mode: 'economical',
+          targetIngots: completeIngots + 1,
+        });
+
+
+        if (nextIngotsResult.success && nextIngotsResult.crucible) {
+          // Aggregate target crucible for next ingot
+          const nextTargetAmounts = new Map<string, number>();
+          for (const slot of nextIngotsResult.crucible.slots) {
+            if (slot.metalId) {
+              const current = nextTargetAmounts.get(slot.metalId) || 0;
+              nextTargetAmounts.set(slot.metalId, current + slot.nuggets);
+            }
+          }
+
+
+          // Calculate which metals need to be added
+          const addMetals: Array<{ metalId: string; nuggets: number }> = [];
+          for (const component of bestMatch.recipe.components) {
+            const currentAmount = evaluation.amounts.find(a => a.metalId === component.metalId);
+            const currentNuggets = currentAmount?.nuggets || 0;
+            const targetNuggets = nextTargetAmounts.get(component.metalId) || 0;
+
+            console.log(`[ExcessMaterial] ${component.metalId}: current=${currentNuggets}, target=${targetNuggets}`);
+
+            if (targetNuggets > currentNuggets) {
+              const metal = metalMap.get(component.metalId);
+              addMetals.push({
+                metalId: metal?.shortLabel || component.metalId,
+                nuggets: targetNuggets - currentNuggets
+              });
+            }
+          }
+
+
+          if (addMetals.length > 0) {
+            const addText = addMetals.map(m => `${m.nuggets} ${m.metalId}`).join(' and ');
+            const totalAddNuggets = addMetals.reduce((sum, m) => sum + m.nuggets, 0);
+
+            excessMessage = (
+              <>
+                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) or <span className="font-bold text-white">add {addText} nugget{totalAddNuggets !== 1 ? 's' : ''}</span> to make <span className="font-bold text-white">{completeIngots + 1} ingots</span>.
+              </>
+            );
+          } else {
+            // No metals need to be added (shouldn't happen but handle it)
+            excessMessage = (
+              <>
+                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+              </>
+            );
+          }
+        } else {
+          // Fallback: try using createPresetForAlloy instead
+          const presetCrucible = createPresetForAlloy(bestMatch.recipe, completeIngots + 1);
+          const presetAmounts = aggregateCrucible(presetCrucible);
+
+
+          // Calculate which metals need to be added using preset
+          const addMetals: Array<{ metalId: string; nuggets: number }> = [];
+          for (const presetAmount of presetAmounts) {
+            const currentAmount = evaluation.amounts.find(a => a.metalId === presetAmount.metalId);
+            const currentNuggets = currentAmount?.nuggets || 0;
+
+            if (presetAmount.nuggets > currentNuggets) {
+              const metal = metalMap.get(presetAmount.metalId);
+              addMetals.push({
+                metalId: metal?.shortLabel || presetAmount.metalId,
+                nuggets: presetAmount.nuggets - currentNuggets
+              });
+            }
+          }
+
+
+          if (addMetals.length > 0) {
+            const addText = addMetals.map(m => `${m.nuggets} ${m.metalId}`).join(' and ');
+            const totalAddNuggets = addMetals.reduce((sum, m) => sum + m.nuggets, 0);
+
+            excessMessage = (
+              <>
+                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) or <span className="font-bold text-white">add {addText} nugget{totalAddNuggets !== 1 ? 's' : ''}</span> to make <span className="font-bold text-white">{completeIngots + 1} ingots</span>.
+              </>
+            );
+          } else {
+            excessMessage = (
+              <>
+                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+              </>
+            );
+          }
+        }
+      } else {
+        excessMessage = (
+          <>
+            <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+          </>
+        );
+      }
+    }
+
     return (
       <Card className="border-green-500/50 bg-card">
         <CardHeader>
@@ -290,51 +536,16 @@ export function ResultCard({
             </Alert>
           )}
 
+          {hasExcessMaterial && hasEnoughForIngot && (
+            <Alert className="border-orange-500/50 bg-orange-500/10">
+              <AlertTriangle className="h-4 w-4 text-orange-500" aria-hidden="true" />
+              <AlertDescription className="text-orange-700 dark:text-orange-300">
+                <strong>Excess material:</strong> {excessMessage}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {renderPresetSelector("Load Different Preset:")}
-
-          <div>
-            <h3 className="text-sm font-medium mb-2">Composition Details</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead scope="col">Metal</TableHead>
-                  <TableHead scope="col">Required</TableHead>
-                  <TableHead scope="col" className="text-right">Actual</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {bestMatch.recipe.components.map((component) => {
-                  const metal = metalMap.get(component.metalId);
-                  const actualAmount = evaluation.amounts.find(
-                    (a) => a.metalId === component.metalId
-                  );
-                  const actualPercent = actualAmount?.percent || 0;
-
-                  return (
-                    <TableRow key={component.metalId}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={metal?.nuggetImage}
-                            alt=""
-                            className="w-4 h-4 object-contain"
-                            aria-hidden="true"
-                          />
-                          {metal?.label}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {component.minPercent}% - {component.maxPercent}%
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {actualPercent.toFixed(1)}%
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
         </CardContent>
       </Card>
     );
@@ -371,113 +582,10 @@ export function ResultCard({
           </Alert>
         )}
 
-        {/* Lock Ratio hint */}
-        {ratioLocked && (
-          <Alert className="border-blue-500/50 bg-blue-500/10">
-            <Info className="h-4 w-4 text-blue-500" aria-hidden="true" />
-            <AlertDescription className="text-blue-700 dark:text-blue-300 text-sm">
-              <strong>Lock Ratio is enabled</strong> – Use the amount slider below to snap to a valid {bestMatch.recipe.name} mix.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {renderPresetSelector("Load Different Preset:")}
 
-        <div>
-          <h3 className="text-sm font-medium mb-2">Adjustments Needed</h3>
-          <TooltipProvider>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead scope="col">Metal</TableHead>
-                  <TableHead scope="col">Required</TableHead>
-                  <TableHead scope="col" className="text-right">Actual</TableHead>
-                  <TableHead scope="col" className="text-right">Adjustment</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {bestMatch.recipe.components.map((component) => {
-                  const metal = metalMap.get(component.metalId);
-                  const actualAmount = evaluation.amounts.find(
-                    (a) => a.metalId === component.metalId
-                  );
-                  const actualPercent = actualAmount?.percent || 0;
-
-                  const adjustment = nuggetAdjustments.find(
-                    (adj) => adj.metalId === component.metalId
-                  );
-
-                  const violation = bestMatch.violations.find(
-                    (v) => v.metalId === component.metalId
-                  );
-
-                  const isValid = !violation;
-                  const isTooLow =
-                    violation && actualPercent < (violation.requiredMin || 0);
-                  const isTooHigh =
-                    violation && actualPercent > (violation.requiredMax || 100);
-
-                  const percentDiff = actualPercent - ((component.minPercent + component.maxPercent) / 2);
-
-                  return (
-                    <TableRow key={component.metalId}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          <img
-                            src={metal?.nuggetImage}
-                            alt=""
-                            className="w-4 h-4 object-contain"
-                            aria-hidden="true"
-                          />
-                          {metal?.label}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {component.minPercent}% - {component.maxPercent}%
-                      </TableCell>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <TableCell
-                            className={`text-right font-mono tabular-nums cursor-help ${
-                              isValid
-                                ? "text-green-600 dark:text-green-400"
-                                : "text-red-600 dark:text-red-400"
-                            }`}
-                          >
-                            {Math.round(actualPercent)}%
-                          </TableCell>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{actualPercent.toFixed(1)}%</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <TableCell className="text-right text-sm">
-                        {isValid && (
-                          <span className="text-green-600 dark:text-green-400" aria-label="Status: OK">
-                            ✓ OK
-                          </span>
-                        )}
-                        {isTooLow && adjustment && (
-                          <span className="text-red-600 dark:text-red-400" aria-label={`Too low, add ${Math.abs(adjustment.delta)} nuggets`}>
-                            Too low ({percentDiff.toFixed(1)}%) → add {Math.abs(adjustment.delta)} nuggets
-                          </span>
-                        )}
-                        {isTooHigh && adjustment && (
-                          <span className="text-orange-600 dark:text-orange-400" aria-label={`Too high, remove ${Math.abs(adjustment.delta)} nuggets`}>
-                            Too high (+{percentDiff.toFixed(1)}%) → remove {Math.abs(adjustment.delta)} nuggets
-                          </span>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TooltipProvider>
-        </div>
-
         {/* Adjust to Valid button */}
-        {!ratioLocked && nuggetAdjustments.length > 0 && (
+        {nuggetAdjustments.length > 0 && (
           <Button
             onClick={handleAdjustToValid}
             className="w-full"

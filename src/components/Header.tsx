@@ -1,4 +1,4 @@
-import { Calculator, BookOpen, BookText } from "lucide-react";
+import { Calculator, BookOpen, BookText, Github } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   NavigationMenu,
@@ -106,6 +106,25 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>Vintage Story Wiki</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <a
+                          href="https://github.com/PirateSeal/vs-alloy-calculator"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="View project on GitHub"
+                          className="inline-flex h-11 w-11 items-center justify-center rounded-lg border-2 border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+                        >
+                          <Github className="h-5 w-5" />
+                        </a>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View on GitHub</p>
                       </TooltipContent>
                     </Tooltip>
                   </NavigationMenuItem>
