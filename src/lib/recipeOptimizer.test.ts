@@ -7,13 +7,13 @@ import { ALLOY_RECIPES } from '../data/alloys';
 describe('Recipe Optimizer', () => {
   describe('Input validation', () => {
     it('should return error for null/undefined input', () => {
-      const result = optimizeRecipe(null as any);
+      const result = optimizeRecipe(null as unknown as Parameters<typeof optimizeRecipe>[0]);
       expect(result.success).toBe(false);
       expect(result.error).toContain('Invalid input');
     });
 
     it('should return error for missing recipe', () => {
-      const result = optimizeRecipe({ mode: 'maximize' } as any);
+      const result = optimizeRecipe({ mode: 'maximize' } as Parameters<typeof optimizeRecipe>[0]);
       expect(result.success).toBe(false);
       expect(result.error).toContain('recipe is required');
     });
@@ -21,7 +21,7 @@ describe('Recipe Optimizer', () => {
     it('should return error for invalid mode', () => {
       const result = optimizeRecipe({
         recipe: ALLOY_RECIPES[0],
-        mode: 'invalid' as any,
+        mode: 'invalid' as 'maximize',
       });
       expect(result.success).toBe(false);
       expect(result.error).toContain('mode must be');
@@ -30,7 +30,7 @@ describe('Recipe Optimizer', () => {
     it('should return error for missing mode', () => {
       const result = optimizeRecipe({
         recipe: ALLOY_RECIPES[0],
-      } as any);
+      } as Parameters<typeof optimizeRecipe>[0]);
       expect(result.success).toBe(false);
       expect(result.error).toContain('mode must be');
     });

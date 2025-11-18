@@ -12,10 +12,9 @@ interface CruciblePanelProps {
   onCrucibleChange: (crucible: CrucibleState) => void;
   allMetals: Metal[];
   recipes: AlloyRecipe[];
-  selectedRecipe: AlloyRecipe | null;
 }
 
-export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes, selectedRecipe }: CruciblePanelProps) {
+export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }: CruciblePanelProps) {
   const handleSlotChange = (slotId: number, patch: Partial<typeof crucible.slots[0]>) => {
     const newSlots = crucible.slots.map(slot =>
       slot.id === slotId ? { ...slot, ...patch } : slot
