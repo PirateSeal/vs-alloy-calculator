@@ -4,16 +4,19 @@ import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Slider } from "./ui/slider";
 import { NumberInput } from "./ui/number-input";
+import { Button } from "./ui/button";
 import { clamp } from "../lib/alloyLogic";
+import { Trash2 } from "lucide-react";
 
 interface CrucibleSlotRowProps {
   slot: CrucibleSlot;
   availableMetals: Metal[];
   onChange: (slotId: number, patch: Partial<CrucibleSlot>) => void;
   onNuggetChange?: (slotId: number, nuggets: number) => void;
+  onClearSlot?: (slotId: number) => void;
 }
 
-export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChange }: CrucibleSlotRowProps) {
+export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChange, onClearSlot }: CrucibleSlotRowProps) {
   const units = slot.nuggets * 5;
 
   const handleMetalChange = (value: string) => {
@@ -40,13 +43,28 @@ export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChang
 
   return (
     <div className="space-y-2 rounded-lg border border-border bg-card/50 p-3 overflow-hidden">
-      <div className="flex flex-col gap-1">
-        <Label htmlFor={`slot-${slot.id}-metal`} className="text-xs font-medium">
-          Slot {slot.id + 1}
-        </Label>
-        <span className="text-[10px] text-muted-foreground transition-all duration-300">
-          {slot.nuggets} nuggets ({units} units)
-        </span>
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex flex-col gap-1">
+          <Label htmlFor={`slot-${slot.id}-metal`} className="text-xs font-medium">
+            Slot {slot.id + 1}
+          </Label>
+          <span className="text-[10px] text-muted-foreground transition-all duration-300">
+            {slot.nuggets} nuggets ({units} units)
+          </span>
+        </div>
+
+        {/* Clear slot button - only show if slot has metal */}
+        {slot.metalId && onClearSlot && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => onClearSlot(slot.id)}
+            className="h-6 w-6 p-0 flex-shrink-0"
+            aria-label={`Clear slot ${slot.id + 1}`}
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        )}
       </div>
 
       <div className="space-y-1.5">

@@ -17,7 +17,6 @@ import { MobileWarning } from "./components/MobileWarning";
 function App() {
   const [crucible, setCrucible] = useState(createEmptyCrucible());
   const [selectedRecipe, setSelectedRecipe] = useState<AlloyRecipe | null>(null);
-  const [ratioLocked, setRatioLocked] = useState(true);
   const [activeTab, setActiveTab] = useState("calculator");
   const [showMobileWarning, setShowMobileWarning] = useState(false);
 
@@ -75,14 +74,13 @@ function App() {
               allMetals={METALS}
               recipes={ALLOY_RECIPES}
               selectedRecipe={selectedRecipe}
-              ratioLocked={ratioLocked}
-              onRatioLockedChange={setRatioLocked}
             />
             <div className="grid gap-4 md:grid-cols-2">
               <CompositionCard
                 amounts={evaluation.amounts}
                 totalNuggets={evaluation.totalNuggets}
                 totalUnits={evaluation.totalUnits}
+                bestMatch={evaluation.bestMatch}
               />
               <ResultCard
                 evaluation={evaluation}
@@ -92,7 +90,6 @@ function App() {
                 onRecipeSelect={handleRecipeSelect}
                 selectedRecipe={selectedRecipe}
                 onCrucibleChange={handleCrucibleChange}
-                ratioLocked={ratioLocked}
               />
             </div>
           </div>
