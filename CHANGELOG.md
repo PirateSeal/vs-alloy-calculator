@@ -5,6 +5,13 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2025-11-19
+
+### Changed
+- **Advanced maximization algorithm** - Replaced heuristic-based optimization with a robust backtracking solver. This ensures the calculator consistently finds the absolute maximum number of ingots for any recipe, including complex edge cases with narrow percentage ranges.
+- **Improved tolerance handling** - The optimizer now correctly handles the game's 0.01% tolerance, allowing for more efficient slot usage in specific scenarios (e.g., finding 23 ingots instead of 22 for certain random recipes).
+- **Enhanced Alloy Reference Table** - Completely overhauled the reference table with search, sorting, and filtering capabilities. Added visual composition bars, interactive tooltips, and direct wiki links for a better user experience.
+
 ## [1.1.0] - 2025-11-18
 
 ### Added

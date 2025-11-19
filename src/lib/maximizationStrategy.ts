@@ -60,7 +60,11 @@ function calculatePercentage(nuggets: number, totalUnits: number): number {
  * 1. Slot-optimized: Try to use full 128-nugget slots where possible
  * 2. Midpoint-based: Use percentage midpoints with simple rounding
  */
-function createRecipeForIngots(
+/**
+ * Find a valid recipe configuration for a given number of ingots
+ * Uses recursive backtracking to find a valid combination of nuggets
+ */
+function findValidRecipe(
   recipe: AlloyRecipe,
   ingotCount: number
 ): MetalAmount[] | null {
@@ -68,160 +72,98 @@ function createRecipeForIngots(
   const targetNuggets = ingotCount * 20;
   const components = recipe.components;
 
-  // Handle single component (shouldn't happen in practice, but handle it)
-  if (components.length === 1) {
-    return [
-      {
-        metalId: components[0].metalId,
-        nuggets: targetUnits / 5,
-      },
-    ];
-  }
-
-  // Strategy 1: Try slot-optimized allocation (prefer full 128-nugget slots)
-  const slotOptimized = trySlotOptimizedAllocation(recipe, targetUnits, targetNuggets);
-  if (slotOptimized) {
-    return slotOptimized;
-  }
-
-  // Strategy 2: Fall back to midpoint-based allocation
-  return tryMidpointAllocation(recipe, targetUnits);
-}
-
-/**
- * Try to allocate nuggets using full 128-nugget slots where possible
- * This maximizes the number of ingots we can fit in 4 slots
- */
-function trySlotOptimizedAllocation(
-  recipe: AlloyRecipe,
-  targetUnits: number,
-  targetNuggets: number
-): MetalAmount[] | null {
-  const components = recipe.components;
-
-  // Try different combinations of slot-friendly sizes
-  const slotSizes = [256, 128, 96, 64, 32];
-
-  // Recursively try all valid combinations
-  function tryRecursive(componentIndex: number, allocatedNuggets: number, amounts: MetalAmount[]): MetalAmount[] | null {
-    // Base case: all components except last are allocated
-    if (componentIndex === components.length - 1) {
-      const lastComponent = components[componentIndex];
-      const lastNuggets = targetNuggets - allocatedNuggets;
-
-      if (lastNuggets <= 0) return null;
-
-      const lastUnits = lastNuggets * 5;
-      const lastPercent = (lastUnits / targetUnits) * 100;
-
-      // Check if last component is valid
-      if (
-        lastPercent >= lastComponent.minPercent - 0.01 &&
-        lastPercent <= lastComponent.maxPercent + 0.01
-      ) {
-        const result = [...amounts, {
-          metalId: lastComponent.metalId,
-          nuggets: lastNuggets,
-        }];
-
-        // Verify it fits in 4 slots
-        let totalSlots = 0;
-        for (const amount of result) {
-          totalSlots += Math.ceil(amount.nuggets / 128);
-        }
-
-        if (totalSlots <= 4) {
-          return result;
+  function solve(
+    index: number,
+    currentNuggets: number,
+    currentAmounts: MetalAmount[]
+  ): MetalAmount[] | null {
+    // Base case: all components handled
+    if (index === components.length) {
+      // Should be exactly target nuggets
+      if (currentNuggets === targetNuggets) {
+        // Final check on slots (though we prune along the way)
+        if (fitsInFourSlots(currentAmounts)) {
+          return currentAmounts;
         }
       }
-
       return null;
     }
 
-    // Try different nugget amounts for this component
-    const component = components[componentIndex];
-    const minNuggets = Math.ceil((component.minPercent / 100) * targetUnits / 5);
-    const maxNuggets = Math.floor((component.maxPercent / 100) * targetUnits / 5);
+    const component = components[index];
 
-    // Try slot-friendly sizes first
-    for (const size of slotSizes) {
-      if (size >= minNuggets && size <= maxNuggets) {
-        const remaining = targetNuggets - allocatedNuggets - size;
+    // Calculate valid range for this component
+    // Min/Max based on percentage constraints
+    // Include 0.01% tolerance to match validation logic
+    const minUnits = ((component.minPercent - 0.01) / 100) * targetUnits;
+    const maxUnits = ((component.maxPercent + 0.01) / 100) * targetUnits;
 
-        if (remaining > 0) {
-          const newAmounts = [...amounts, {
+    // Convert to nuggets
+    // Use a tiny epsilon to handle floating point inaccuracies
+    const minNuggets = Math.ceil((minUnits - 0.000001) / 5);
+    const maxNuggets = Math.floor((maxUnits + 0.000001) / 5);
+
+    // Optimization: For the last component, we don't need to iterate
+    // We can just calculate exactly what's needed
+    if (index === components.length - 1) {
+      const remainingNuggets = targetNuggets - currentNuggets;
+
+      if (remainingNuggets >= minNuggets && remainingNuggets <= maxNuggets) {
+        // Double check percentage to be safe against rounding errors
+        const percent = (remainingNuggets * 5 / targetUnits) * 100;
+        if (percent >= component.minPercent - 0.01 - 1e-9 && percent <= component.maxPercent + 0.01 + 1e-9) {
+          const newAmounts = [...currentAmounts, {
             metalId: component.metalId,
-            nuggets: size,
+            nuggets: remainingNuggets
           }];
 
-          const result = tryRecursive(componentIndex + 1, allocatedNuggets + size, newAmounts);
-          if (result) return result;
+          if (fitsInFourSlots(newAmounts)) {
+            return newAmounts;
+          }
         }
+      }
+      return null;
+    }
+
+    // For other components, iterate through valid range
+    // We also need to ensure we leave enough room for remaining components
+    // And don't leave too much room
+    let minRemaining = 0;
+    let maxRemaining = 0;
+
+    for (let i = index + 1; i < components.length; i++) {
+      const c = components[i];
+      minRemaining += Math.ceil((((c.minPercent - 0.01) / 100) * targetUnits - 0.000001) / 5);
+      maxRemaining += Math.floor((((c.maxPercent + 0.01) / 100) * targetUnits + 0.000001) / 5);
+    }
+
+    const globalMin = Math.max(minNuggets, targetNuggets - currentNuggets - maxRemaining);
+    const globalMax = Math.min(maxNuggets, targetNuggets - currentNuggets - minRemaining);
+
+    for (let n = globalMin; n <= globalMax; n++) {
+      // Double check percentage
+      const percent = (n * 5 / targetUnits) * 100;
+      if (percent < component.minPercent - 0.01 - 1e-9 || percent > component.maxPercent + 0.01 + 1e-9) {
+        continue;
+      }
+
+      const newAmounts = [...currentAmounts, {
+        metalId: component.metalId,
+        nuggets: n
+      }];
+
+      // Check slot usage so far to prune early
+      const slotsUsed = newAmounts.reduce((sum, a) => sum + Math.ceil(a.nuggets / 128), 0);
+
+      if (slotsUsed <= 4) {
+        const result = solve(index + 1, currentNuggets + n, newAmounts);
+        if (result) return result;
       }
     }
 
     return null;
   }
 
-  return tryRecursive(0, 0, []);
-}
-
-/**
- * Allocate nuggets based on percentage midpoints with simple rounding
- */
-function tryMidpointAllocation(
-  recipe: AlloyRecipe,
-  targetUnits: number
-): MetalAmount[] | null {
-  const components = recipe.components;
-  const amounts: MetalAmount[] = [];
-  let allocatedUnits = 0;
-
-  // Allocate nuggets for all components except the last
-  for (let i = 0; i < components.length - 1; i++) {
-    const component = components[i];
-
-    // Use midpoint of percentage range as target
-    const targetPercent = (component.minPercent + component.maxPercent) / 2;
-    const targetUnitsForComponent = Math.round((targetPercent / 100) * targetUnits);
-
-    // Convert to nuggets (round to nearest nugget)
-    let nuggets = Math.round(targetUnitsForComponent / 5);
-
-    // Ensure we stay within percentage bounds
-    const minNuggets = Math.ceil((component.minPercent / 100) * targetUnits / 5);
-    const maxNuggets = Math.floor((component.maxPercent / 100) * targetUnits / 5);
-
-    nuggets = Math.max(minNuggets, Math.min(maxNuggets, nuggets));
-
-    amounts.push({
-      metalId: component.metalId,
-      nuggets,
-    });
-
-    allocatedUnits += nuggets * 5;
-  }
-
-  // Allocate remaining units to last component
-  const lastComponent = components[components.length - 1];
-  const remainingUnits = targetUnits - allocatedUnits;
-  const lastNuggets = remainingUnits / 5;
-
-  // Validate last component is within percentage bounds
-  const lastPercent = (remainingUnits / targetUnits) * 100;
-  if (
-    lastPercent < lastComponent.minPercent - 0.01 ||
-    lastPercent > lastComponent.maxPercent + 0.01
-  ) {
-    return null; // Cannot satisfy percentage constraints
-  }
-
-  amounts.push({
-    metalId: lastComponent.metalId,
-    nuggets: lastNuggets,
-  });
-
-  return amounts;
+  return solve(0, 0, []);
 }
 
 /**
@@ -313,7 +255,7 @@ export function maximizeIngots(recipe: AlloyRecipe): OptimizerResult {
 
   while (low <= high) {
     const mid = Math.floor((low + high) / 2);
-    const amounts = createRecipeForIngots(recipe, mid);
+    const amounts = findValidRecipe(recipe, mid);
 
     if (amounts && fitsInFourSlots(amounts)) {
       // Valid recipe found

@@ -169,6 +169,31 @@ describe("Maximization Strategy", () => {
       }
     });
 
+    it("should handle edge case with narrow ranges near boundaries", () => {
+      // This recipe was found by fuzzing to be tricky
+      // It requires using tolerance correctly to find the optimal 23 ingots
+      const recipe: AlloyRecipe = {
+        id: "regression-1",
+        name: "Regression 1",
+        components: [
+          {
+            metalId: "copper" as MetalId,
+            minPercent: 54.459179457357315,
+            maxPercent: 62.7185665899896
+          },
+          {
+            metalId: "tin" as MetalId,
+            minPercent: 37.83227137406628,
+            maxPercent: 44.989982578586805
+          }
+        ]
+      };
+
+      const result = maximizeIngots(recipe);
+      expect(result.success).toBe(true);
+      expect(result.ingotCount).toBe(23);
+    });
+
     it("should return error for recipe with no components", () => {
       const emptyRecipe: AlloyRecipe = {
         id: "empty-test",
