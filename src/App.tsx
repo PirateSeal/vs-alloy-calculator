@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense, lazy } from "react";
 import { METALS, ALLOY_RECIPES } from "./data/alloys";
 import type { AlloyRecipe } from "./types/alloys";
 import {
@@ -11,7 +11,9 @@ import { Header } from "./components/Header";
 import { CruciblePanel } from "./components/CruciblePanel";
 import { CompositionCard } from "./components/CompositionCard";
 import { ResultCard } from "./components/ResultCard";
-import { AlloyReferenceTable } from "./components/AlloyReferenceTable";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const AlloyReferenceTable = lazy(() => import("./components/AlloyReferenceTable").then(module => ({ default: module.AlloyReferenceTable })));
 import { MobileWarning } from "./components/MobileWarning";
 
 function App() {
@@ -94,7 +96,19 @@ function App() {
           </div>
         )}
         {activeTab === "reference" && (
-          <AlloyReferenceTable recipes={ALLOY_RECIPES} />
+          <Suspense fallback={
+            <div className="space-y-4 p-4">
+              <Skeleton className="h-12 w-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </div>
+          }>
+            <AlloyReferenceTable recipes={ALLOY_RECIPES} />
+          </Suspense>
         )}
       </main>
     </div>

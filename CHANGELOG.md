@@ -5,6 +5,16 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-19
+
+### Added
+- **Performance Optimizations** - Implemented code splitting and lazy loading for the Reference Table, significantly reducing the initial bundle size.
+- **Skeleton Loading** - Added a skeleton loading state for the Reference Table to improve perceived performance during navigation.
+- **Deployment Caching** - Configured aggressive caching (1 year) for hashed assets and immediate revalidation for index.html to ensure users always get the latest updates without sacrificing performance.
+
+### Changed
+- **Build Configuration** - Optimized Vite build to split vendor libraries into separate chunks for better cacheability.
+
 ## [1.1.1] - 2025-11-19
 
 ### Changed
