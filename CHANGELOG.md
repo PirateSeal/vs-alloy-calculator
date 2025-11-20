@@ -5,6 +5,14 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-11-20
+
+### Added
+- **SEO Optimization** - Added comprehensive SEO meta tags including description, keywords, and author information to improve search engine visibility.
+- **Social Media Integration** - Implemented Open Graph and Twitter Card meta tags for enhanced link previews when shared on social platforms.
+- **Sitemap** - Created `sitemap.xml` to help search engines crawl and index the site more effectively.
+- **Robots.txt** - Added `robots.txt` file to guide search engine crawlers and reference the sitemap.
+
 ## [1.2.0] - 2025-11-19
 
 ### Added
