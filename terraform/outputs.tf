@@ -1,6 +1,3 @@
-# Note: These outputs reference resources that will be created in subsequent tasks
-# They are defined here as part of the initial project structure setup
-
 output "s3_bucket_name" {
   description = "Name of the S3 bucket"
   value       = aws_s3_bucket.static_site.id
@@ -21,20 +18,9 @@ output "website_url" {
   value       = "https://${var.subdomain}.${var.domain_name}"
 }
 
-output "iam_user_name" {
-  description = "Name of the IAM user for GitHub Actions"
-  value       = aws_iam_user.github_actions.name
-}
-
-output "iam_access_key_id" {
-  description = "Access key ID for GitHub Actions"
-  value       = aws_iam_access_key.github_actions.id
-}
-
-output "iam_secret_access_key" {
-  description = "Secret access key for GitHub Actions (sensitive)"
-  value       = aws_iam_access_key.github_actions.secret
-  sensitive   = true
+output "github_actions_role_arn" {
+  description = "ARN of the IAM role assumed by GitHub Actions via OIDC — set this as the AWS_ROLE_ARN secret in the repository"
+  value       = aws_iam_role.github_actions.arn
 }
 
 output "appregistry_application_id" {

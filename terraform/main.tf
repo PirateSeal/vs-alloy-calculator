@@ -129,6 +129,46 @@ resource "aws_s3_bucket_lifecycle_configuration" "static_site" {
   }
 }
 
+# Custom CloudFront response headers policy with CSP
+resource "aws_cloudfront_response_headers_policy" "main" {
+  name    = "${var.project_name}-security-headers"
+  comment = "Security headers including Content-Security-Policy for ${var.project_name}"
+
+  security_headers_config {
+    content_security_policy {
+      content_security_policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
+      override                = true
+    }
+
+    content_type_options {
+      override = true
+    }
+
+    frame_options {
+      frame_option = "DENY"
+      override     = true
+    }
+
+    referrer_policy {
+      referrer_policy = "strict-origin-when-cross-origin"
+      override        = true
+    }
+
+    strict_transport_security {
+      access_control_max_age_sec = 31536000
+      include_subdomains         = true
+      preload                    = true
+      override                   = true
+    }
+
+    xss_protection {
+      protection = true
+      mode_block = true
+      override   = true
+    }
+  }
+}
+
 # CloudFront Origin Access Control for secure S3 access
 resource "aws_cloudfront_origin_access_control" "main" {
   name                              = "${var.project_name}-oac"
@@ -218,8 +258,7 @@ resource "aws_cloudfront_distribution" "main" {
     # Use AWS managed cache policy for optimized caching
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
 
-    # Use AWS managed response headers policy for security headers
-    response_headers_policy_id = "67f7725c-6f97-4210-82d7-5512b31e9d03" # Managed-SecurityHeadersPolicy
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
   }
 
   # Custom error responses for SPA routing support
@@ -283,23 +322,43 @@ resource "aws_route53_record" "main_aaaa" {
   }
 }
 
-# IAM user for GitHub Actions deployment
-resource "aws_iam_user" "github_actions" {
+# Reference the existing GitHub Actions OIDC provider (shared across the account)
+data "aws_iam_openid_connect_provider" "github_actions" {
+  url = "https://token.actions.githubusercontent.com"
+}
+
+# IAM role assumed by GitHub Actions via OIDC (no long-lived credentials)
+resource "aws_iam_role" "github_actions" {
   name = "${var.project_name}-github-actions"
-  path = "/service-accounts/"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = data.aws_iam_openid_connect_provider.github_actions.arn
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:ref:refs/tags/*"
+          }
+        }
+      }
+    ]
+  })
 
   tags = local.common_tags
 }
 
-# IAM access key for GitHub Actions
-resource "aws_iam_access_key" "github_actions" {
-  user = aws_iam_user.github_actions.name
-}
-
-# IAM policy for GitHub Actions deployment permissions
-resource "aws_iam_user_policy" "github_actions" {
+# Deployment permissions for the GitHub Actions role
+resource "aws_iam_role_policy" "github_actions" {
   name = "${var.project_name}-deployment-policy"
-  user = aws_iam_user.github_actions.name
+  role = aws_iam_role.github_actions.id
 
   policy = jsonencode({
     Version = "2012-10-17"

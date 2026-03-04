@@ -33,3 +33,9 @@ variable "cloudfront_price_class" {
   type        = string
   default     = "PriceClass_100"
 }
+
+variable "github_repo" {
+  description = "GitHub repository in owner/name format, used to scope the OIDC trust policy"
+  type        = string
+  default     = "PirateSeal/vs-alloy-calculator"
+}

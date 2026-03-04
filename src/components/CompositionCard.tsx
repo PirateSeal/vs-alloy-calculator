@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { METALS } from "@/data/alloys";
 import type { MetalAmount, AlloyMatchDetail } from "@/lib/alloyLogic";
@@ -18,6 +19,13 @@ export function CompositionCard({
   totalUnits,
   bestMatch,
 }: CompositionCardProps) {
+  const metalMap = useMemo(() => new Map(METALS.map((m) => [m.id, m])), []);
+
+  const totalRarityCost = useMemo(
+    () => amounts.reduce((total, amount) => total + (amount.nuggets * getRarityScore(amount.metalId)), 0),
+    [amounts],
+  );
+
   // Empty state
   if (totalUnits === 0) {
     return (
@@ -33,15 +41,6 @@ export function CompositionCard({
       </Card>
     );
   }
-
-  // Create a map for quick metal lookup
-  const metalMap = new Map(METALS.map((m) => [m.id, m]));
-
-  // Calculate total rarity cost
-  const totalRarityCost = amounts.reduce(
-    (total, amount) => total + (amount.nuggets * getRarityScore(amount.metalId)),
-    0
-  );
 
   return (
     <Card className="bg-card">

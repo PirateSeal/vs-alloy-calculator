@@ -40,7 +40,7 @@ export const METALS: Metal[] = [
     id: "silver",
     label: "Silver",
     shortLabel: "Ag",
-    color: "#C0C0C0",
+    color: "#D8D8D8",
     nuggetImage: "/metal-images/Nugget-nativesilver.png",
   },
   {

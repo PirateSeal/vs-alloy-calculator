@@ -5,6 +5,28 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-03-04
+
+### Added
+- **Terraform remote state backend** — S3 backend with versioning and native lock file support. Bootstrap config in `terraform/bootstrap/` creates the state bucket.
+- **Content-Security-Policy header** — Custom CloudFront response headers policy with full CSP, HSTS preload, and `X-Frame-Options: DENY`.
+- **GitHub Actions OIDC** — Replaced long-lived IAM access keys with short-lived OIDC role credentials for CI/CD deployments.
+
+### Changed
+- **Security hardening** — Removed IAM user/access key from Terraform; credentials are now ephemeral via `sts:AssumeRoleWithWebIdentity`. Removed sensitive outputs (`iam_secret_access_key`, `iam_access_key_id`) from Terraform outputs.
+- **Public repo hygiene** — AWS account ID kept out of committed files via partial backend config and gitignored tfvars. Removed `.terraform.lock.hcl` from `.gitignore` (lock files should be tracked).
+- **Node.js 22 LTS** — CI workflow pinned to Node 22 LTS (was 25 current-release).
+- **ResultCard refactored** — Extracted 160-line excess-material computation into `computeExcessMessage()` helper function.
+- **CSS cleanup** — Removed unused sidebar variables, consolidated duplicate spinner rules, replaced global `*` transition with targeted selectors.
+- **CompositionCard memoization** — Added `useMemo` for `metalMap` and `totalRarityCost` to avoid recalculation on every render.
+
+### Fixed
+- **Silver/Tin color collision** — Silver changed from `#C0C0C0` (identical to Tin) to `#D8D8D8` for visual distinction in composition bar charts.
+
+### Security
+- Resolved all 20 `pnpm audit` vulnerabilities (shadcn 3.5→3.8, vite 7.2→7.3, rollup path traversal fix).
+- Upgraded typescript-eslint 8.47→8.56, vitest 4.0.10→4.0.18, tailwindcss 4.1→4.2.
+
 ## [1.3.0] - 2025-11-20
 
 ### Added

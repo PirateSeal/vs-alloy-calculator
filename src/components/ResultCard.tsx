@@ -24,13 +24,122 @@ import {
   getAdjustmentSummary,
   applyNuggetAdjustments,
   createPresetForAlloy,
-  aggregateCrucible
 } from "@/lib/alloyLogic";
 import { optimizeRecipe } from "@/lib/recipeOptimizer";
 import { Switch } from "@/components/ui/switch";
 import type { EvaluationResult } from "@/lib/alloyLogic";
 import type { AlloyRecipe } from "@/types/alloys";
 import type { CrucibleState } from "@/types/crucible";
+
+/**
+ * Computes a JSX message describing excess material in the crucible
+ * and how to fix it (remove nuggets or add to reach next ingot).
+ */
+function computeExcessMessage(
+  bestMatch: EvaluationResult["bestMatch"],
+  evaluation: EvaluationResult,
+  maxIngots: number,
+  metalMap: Map<string, (typeof METALS)[number]>,
+): React.ReactNode {
+  if (!bestMatch || !bestMatch.isExact) return null;
+
+  const UNITS_PER_INGOT = 100;
+  const { totalUnits } = evaluation;
+  const completeIngots = Math.floor(totalUnits / UNITS_PER_INGOT);
+  const excessUnits = totalUnits % UNITS_PER_INGOT;
+  const excessNuggets = Math.floor(excessUnits / 5);
+
+  if (excessUnits === 0 || totalUnits < 100) return null;
+
+  // Compute per-metal excess vs the clean target for completeIngots
+  const currentIngotsResult = optimizeRecipe({
+    recipe: bestMatch.recipe,
+    mode: "economical",
+    targetIngots: completeIngots,
+  });
+
+  const excessMetals: Array<{ label: string; nuggets: number }> = [];
+  if (currentIngotsResult.success && currentIngotsResult.crucible) {
+    const targetAmounts = new Map<string, number>();
+    for (const slot of currentIngotsResult.crucible.slots) {
+      if (slot.metalId) {
+        targetAmounts.set(slot.metalId, (targetAmounts.get(slot.metalId) || 0) + slot.nuggets);
+      }
+    }
+    for (const component of bestMatch.recipe.components) {
+      const current = evaluation.amounts.find(a => a.metalId === component.metalId)?.nuggets || 0;
+      const target = targetAmounts.get(component.metalId) || 0;
+      if (current > target) {
+        excessMetals.push({
+          label: metalMap.get(component.metalId)?.shortLabel || component.metalId,
+          nuggets: current - target,
+        });
+      }
+    }
+  }
+
+  const removeText = excessMetals.length > 0
+    ? excessMetals.map(m => `${m.nuggets} ${m.label}`).join(" and ")
+    : `${excessNuggets}`;
+
+  // Check if we can make one more ingot
+  const canMakeNextIngot = completeIngots + 1 <= maxIngots;
+  if (!canMakeNextIngot) {
+    return (
+      <>
+        <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? "s" : ""}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+      </>
+    );
+  }
+
+  // Compute what metals to add for n+1 ingots
+  const nextResult = optimizeRecipe({
+    recipe: bestMatch.recipe,
+    mode: "economical",
+    targetIngots: completeIngots + 1,
+  });
+
+  let nextCrucible = nextResult.success ? nextResult.crucible : null;
+  if (!nextCrucible) {
+    nextCrucible = createPresetForAlloy(bestMatch.recipe, completeIngots + 1);
+  }
+
+  const addMetals: Array<{ label: string; nuggets: number }> = [];
+  if (nextCrucible) {
+    const nextTargetAmounts = new Map<string, number>();
+    for (const slot of nextCrucible.slots) {
+      if (slot.metalId) {
+        nextTargetAmounts.set(slot.metalId, (nextTargetAmounts.get(slot.metalId) || 0) + slot.nuggets);
+      }
+    }
+    for (const component of bestMatch.recipe.components) {
+      const current = evaluation.amounts.find(a => a.metalId === component.metalId)?.nuggets || 0;
+      const target = nextTargetAmounts.get(component.metalId) || 0;
+      if (target > current) {
+        addMetals.push({
+          label: metalMap.get(component.metalId)?.shortLabel || component.metalId,
+          nuggets: target - current,
+        });
+      }
+    }
+  }
+
+  if (addMetals.length > 0) {
+    const addText = addMetals.map(m => `${m.nuggets} ${m.label}`).join(" and ");
+    const totalAddNuggets = addMetals.reduce((sum, m) => sum + m.nuggets, 0);
+    return (
+      <>
+        <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? "s" : ""}</span> ({excessUnits} units) or <span className="font-bold text-white">add {addText} nugget{totalAddNuggets !== 1 ? "s" : ""}</span> to make <span className="font-bold text-white">{completeIngots + 1} ingots</span>.
+      </>
+    );
+  }
+
+  return (
+    <>
+      <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? "s" : ""}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+    </>
+  );
+}
 
 interface ResultCardProps {
   evaluation: EvaluationResult;
@@ -345,166 +454,9 @@ export function ResultCard({
   if (bestMatch.isExact) {
     const hasEnoughForIngot = totalUnits >= 100;
     const unitsNeeded = 100 - totalUnits;
-
-    // Check if total units align with complete ingots
-    const UNITS_PER_INGOT = 100;
-    const completeIngots = Math.floor(totalUnits / UNITS_PER_INGOT);
-    const excessUnits = totalUnits % UNITS_PER_INGOT;
+    const excessUnits = totalUnits % 100;
     const hasExcessMaterial = excessUnits > 0;
-    const excessNuggets = Math.floor(excessUnits / 5);
-
-    // Calculate which metals have excess and what's needed for next ingot
-    let excessMessage: React.ReactNode = '';
-    if (hasExcessMaterial && hasEnoughForIngot) {
-      // Check if n+1 ingots is possible first
-      const canMakeNextIngot = completeIngots + 1 <= maxIngots;
-
-      // Use optimizeRecipe to get the actual target amounts for complete ingots
-      const currentIngotsResult = optimizeRecipe({
-        recipe: bestMatch.recipe,
-        mode: 'economical',
-        targetIngots: completeIngots,
-      });
-
-      // Find which metals are contributing to the excess
-      const excessMetals: Array<{ metalId: string; nuggets: number }> = [];
-
-      if (currentIngotsResult.success && currentIngotsResult.crucible) {
-        // Aggregate target crucible
-        const targetAmounts = new Map<string, number>();
-        for (const slot of currentIngotsResult.crucible.slots) {
-          if (slot.metalId) {
-            const current = targetAmounts.get(slot.metalId) || 0;
-            targetAmounts.set(slot.metalId, current + slot.nuggets);
-          }
-        }
-
-        // Compare with current amounts
-        for (const component of bestMatch.recipe.components) {
-          const currentAmount = evaluation.amounts.find(a => a.metalId === component.metalId);
-          const currentNuggets = currentAmount?.nuggets || 0;
-          const targetNuggets = targetAmounts.get(component.metalId) || 0;
-
-          if (currentNuggets > targetNuggets) {
-            const metal = metalMap.get(component.metalId);
-            excessMetals.push({
-              metalId: metal?.shortLabel || component.metalId,
-              nuggets: currentNuggets - targetNuggets
-            });
-          }
-        }
-      }
-
-      // Build the message
-      const removeText = excessMetals.length > 0
-        ? excessMetals.map(m => `${m.nuggets} ${m.metalId}`).join(' and ')
-        : `${excessNuggets}`;
-
-
-      if (canMakeNextIngot) {
-
-        // Use optimizeRecipe to get the actual amounts needed for n+1 ingots
-        const nextIngotsResult = optimizeRecipe({
-          recipe: bestMatch.recipe,
-          mode: 'economical',
-          targetIngots: completeIngots + 1,
-        });
-
-
-        if (nextIngotsResult.success && nextIngotsResult.crucible) {
-          // Aggregate target crucible for next ingot
-          const nextTargetAmounts = new Map<string, number>();
-          for (const slot of nextIngotsResult.crucible.slots) {
-            if (slot.metalId) {
-              const current = nextTargetAmounts.get(slot.metalId) || 0;
-              nextTargetAmounts.set(slot.metalId, current + slot.nuggets);
-            }
-          }
-
-
-          // Calculate which metals need to be added
-          const addMetals: Array<{ metalId: string; nuggets: number }> = [];
-          for (const component of bestMatch.recipe.components) {
-            const currentAmount = evaluation.amounts.find(a => a.metalId === component.metalId);
-            const currentNuggets = currentAmount?.nuggets || 0;
-            const targetNuggets = nextTargetAmounts.get(component.metalId) || 0;
-
-            console.log(`[ExcessMaterial] ${component.metalId}: current=${currentNuggets}, target=${targetNuggets}`);
-
-            if (targetNuggets > currentNuggets) {
-              const metal = metalMap.get(component.metalId);
-              addMetals.push({
-                metalId: metal?.shortLabel || component.metalId,
-                nuggets: targetNuggets - currentNuggets
-              });
-            }
-          }
-
-
-          if (addMetals.length > 0) {
-            const addText = addMetals.map(m => `${m.nuggets} ${m.metalId}`).join(' and ');
-            const totalAddNuggets = addMetals.reduce((sum, m) => sum + m.nuggets, 0);
-
-            excessMessage = (
-              <>
-                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) or <span className="font-bold text-white">add {addText} nugget{totalAddNuggets !== 1 ? 's' : ''}</span> to make <span className="font-bold text-white">{completeIngots + 1} ingots</span>.
-              </>
-            );
-          } else {
-            // No metals need to be added (shouldn't happen but handle it)
-            excessMessage = (
-              <>
-                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
-              </>
-            );
-          }
-        } else {
-          // Fallback: try using createPresetForAlloy instead
-          const presetCrucible = createPresetForAlloy(bestMatch.recipe, completeIngots + 1);
-          const presetAmounts = aggregateCrucible(presetCrucible);
-
-
-          // Calculate which metals need to be added using preset
-          const addMetals: Array<{ metalId: string; nuggets: number }> = [];
-          for (const presetAmount of presetAmounts) {
-            const currentAmount = evaluation.amounts.find(a => a.metalId === presetAmount.metalId);
-            const currentNuggets = currentAmount?.nuggets || 0;
-
-            if (presetAmount.nuggets > currentNuggets) {
-              const metal = metalMap.get(presetAmount.metalId);
-              addMetals.push({
-                metalId: metal?.shortLabel || presetAmount.metalId,
-                nuggets: presetAmount.nuggets - currentNuggets
-              });
-            }
-          }
-
-
-          if (addMetals.length > 0) {
-            const addText = addMetals.map(m => `${m.nuggets} ${m.metalId}`).join(' and ');
-            const totalAddNuggets = addMetals.reduce((sum, m) => sum + m.nuggets, 0);
-
-            excessMessage = (
-              <>
-                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) or <span className="font-bold text-white">add {addText} nugget{totalAddNuggets !== 1 ? 's' : ''}</span> to make <span className="font-bold text-white">{completeIngots + 1} ingots</span>.
-              </>
-            );
-          } else {
-            excessMessage = (
-              <>
-                <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
-              </>
-            );
-          }
-        }
-      } else {
-        excessMessage = (
-          <>
-            <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? 's' : ''}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
-          </>
-        );
-      }
-    }
+    const excessMessage = computeExcessMessage(bestMatch, evaluation, maxIngots, metalMap);
 
     return (
       <Card className="border-green-500/50 bg-card">
