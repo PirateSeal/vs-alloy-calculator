@@ -585,9 +585,8 @@ export function adjustCrucibleForAlloy(
  */
 export function calculateMaxIngots(recipe: AlloyRecipe): number {
   let maxIngots = 1;
-  let isFullCrucible = false;
 
-  while (!isFullCrucible) {
+  while (true) {
     maxIngots++;
     const ppp = maxIngots * 100;
 
@@ -632,7 +631,6 @@ export function calculateMaxIngots(recipe: AlloyRecipe): number {
       }
 
       if (slotsNeeded > 4) {
-        isFullCrucible = true;
         return maxIngots - 1;
       }
     }

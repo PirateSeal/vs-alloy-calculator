@@ -1,4 +1,4 @@
-import { Calculator, BookOpen, BookText, Github } from "lucide-react";
+import { Calculator, BookOpen, BookText, GitFork } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   NavigationMenu,
@@ -120,7 +120,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                           aria-label="View project on GitHub"
                           className="inline-flex h-11 w-11 items-center justify-center rounded-lg border-2 border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all"
                         >
-                          <Github className="h-5 w-5" />
+                          <GitFork className="h-5 w-5" />
                         </a>
                       </TooltipTrigger>
                       <TooltipContent>

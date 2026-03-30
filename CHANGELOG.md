@@ -5,6 +5,21 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-30
+
+### Changed
+- **Vite 7 → 8 (Rolldown)** — Migrated build config from `rollupOptions`/`manualChunks` to `rolldownOptions`/`codeSplitting.groups`. The bundler is now Rolldown (Rust-based), replacing Rollup/esbuild.
+- **TypeScript 5 → 6** — Removed deprecated `baseUrl` from `tsconfig.app.json`; paths already used `./`-relative entries so no resolution changes. All TS 6 defaults (`strict`, `module`, `target`) were already set explicitly.
+- **ESLint 9 → 10** — Upgraded ESLint and `@eslint/js`. Already on flat config format, so no migration required. Fixed one `no-useless-assignment` violation in `alloyLogic.ts` (dead write before `return` in `calculateMaxIngots`).
+- **shadcn 3 → 4 + Radix consolidation** — Ran `shadcn migrate radix`; 10 individual `@radix-ui/react-*` packages consolidated into the unified `radix-ui` package.
+- **lucide-react 0.x → 1.x** — `Github` (brand icon, removed in v1) replaced with `GitFork` in the header.
+- **plugin-react 5 → 6** — Drops Babel; no custom Babel config was in use so this is transparent.
+- **jsdom 27 → 29** — Test environment upgrade; no test changes needed.
+- Removed all `pnpm.overrides` security patches — every previously vulnerable transitive dependency is now fixed at the source by the major upgrades above.
+
+### Security
+- Resolved 9 `pnpm audit` vulnerabilities (express-rate-limit, hono, flatted, brace-expansion, picomatch, path-to-regexp) — previously patched via overrides, now resolved by dependency upgrades.
+
 ## [1.4.0] - 2026-03-04
 
 ### Added
