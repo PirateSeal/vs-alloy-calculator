@@ -5,6 +5,16 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-03-30
+
+### Added
+- **LICENSE file** — MIT license added to the project root (README already claimed MIT but the file was missing).
+- **Credits footer** — Thin footer at the bottom of the app attributing Vintage Story game assets & data to Anego Studios, with links to Credits, MIT License, and GitHub.
+- **Credits dialog** — "Credits" link in the footer opens a modal listing all third-party attributions: game assets (Anego Studios), alloy data (Vintage Story Wiki), fonts (Nunito & JetBrains Mono — SIL OFL 1.1), and open-source libraries (React, Radix UI, shadcn/ui, Tailwind CSS, Framer Motion, Lucide, CVA).
+
+### Fixed
+- **Dialog animation** — Removed `slide-in-from-left`/`slide-in-from-top` animation classes that caused the credits dialog to appear to fly in from the top-left corner; it now fades and zooms in from the center.
+
 ## [1.5.0] - 2026-03-30
 
 ### Changed

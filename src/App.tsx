@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const AlloyReferenceTable = lazy(() => import("./components/AlloyReferenceTable").then(module => ({ default: module.AlloyReferenceTable })));
 import { MobileWarning } from "./components/MobileWarning";
+import { Footer } from "./components/Footer";
 
 function App() {
   const [crucible, setCrucible] = useState(createEmptyCrucible());
@@ -111,6 +112,7 @@ function App() {
           </Suspense>
         )}
       </main>
+      <Footer />
     </div>
   );
 }
