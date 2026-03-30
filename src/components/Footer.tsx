@@ -1,15 +1,26 @@
 import { CreditsDialog } from "./CreditsDialog";
+import { PrivacyNote } from "./PrivacyNote";
 
 export function Footer() {
   return (
     <footer className="bg-card border-t shrink-0" role="contentinfo">
       <div className="container mx-auto px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>Game assets &amp; data &copy; Anego Studios / Vintage Story</span>
+        <span>
+          Game assets &amp; data &copy; Anego Studios / Vintage Story
+          <span className="ml-3 opacity-50">v{__APP_VERSION__}</span>
+        </span>
         <div className="flex items-center gap-4">
           <CreditsDialog
             trigger={
               <button className="hover:text-foreground transition-colors cursor-pointer">
                 Credits
+              </button>
+            }
+          />
+          <PrivacyNote
+            trigger={
+              <button className="hover:text-foreground transition-colors cursor-pointer">
+                Privacy
               </button>
             }
           />

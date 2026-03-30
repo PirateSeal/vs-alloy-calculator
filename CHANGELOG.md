@@ -5,6 +5,16 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2026-03-30
+
+### Added
+- **Umami analytics** — Privacy-friendly, cookieless page-view analytics via Umami Cloud. No cookies, no personal data, no IP storage. GDPR/CCPA/ePrivacy compliant without a consent banner.
+- **Privacy dialog** — "Privacy" link in the footer opens a modal explaining the analytics approach, localStorage usage, and compliance status.
+- **Version display** — App version (`vX.Y.Z`) shown in the footer, injected at build time from `package.json` so it stays in sync automatically.
+
+### Security
+- **CSP updated** — `script-src` and `connect-src` directives in the CloudFront response headers policy now allow `https://cloud.umami.is` for the analytics script and its beacon endpoint.
+
 ## [1.5.1] - 2026-03-30
 
 ### Added
