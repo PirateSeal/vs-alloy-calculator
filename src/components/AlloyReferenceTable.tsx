@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import { track } from "@/lib/analytics";
 import type { AlloyRecipe } from "../types/alloys";
 import { METALS } from "../data/alloys";
 import { ExternalLink, Search, ArrowUpDown, ArrowUp, ArrowDown, Filter } from "lucide-react";
@@ -53,6 +54,16 @@ function SortIcon({ field, sortField, sortOrder }: { field: SortField; sortField
 export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (!searchQuery) return;
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      track("reference-searched", { query: searchQuery });
+    }, 1000);
+    return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
+  }, [searchQuery]);
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [selectedMetals, setSelectedMetals] = useState<string[]>([]);
 

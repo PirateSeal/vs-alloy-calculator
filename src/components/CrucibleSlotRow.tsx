@@ -6,6 +6,7 @@ import { Slider } from "./ui/slider";
 import { NumberInput } from "./ui/number-input";
 import { Button } from "./ui/button";
 import { clamp } from "../lib/alloyLogic";
+import { track } from "../lib/analytics";
 import { Trash2 } from "lucide-react";
 
 interface CrucibleSlotRowProps {
@@ -24,6 +25,7 @@ export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChang
       onChange(slot.id, { metalId: null, nuggets: 0 });
     } else {
       onChange(slot.id, { metalId: value as MetalId });
+      track("metal-selected", { slot: slot.id, metal: value });
     }
   };
 
@@ -58,7 +60,7 @@ export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChang
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => onClearSlot(slot.id)}
+            onClick={() => { onClearSlot(slot.id); track("slot-cleared", { slot: slot.id }); }}
             className="h-6 w-6 p-0 flex-shrink-0"
             aria-label={`Clear slot ${slot.id + 1}`}
           >

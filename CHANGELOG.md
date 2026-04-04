@@ -5,6 +5,18 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-04-04
+
+### Added
+- **Custom event tracking** — Umami `track()` calls added throughout the app via a new `src/lib/analytics.ts` wrapper. Tracked events: `metal-selected`, `slot-cleared`, `preset-loaded`, `optimize-clicked` (maximize & economical), `adjust-clicked`, `tab-switched`, `external-link`, `theme-toggled`, `reference-searched` (1 s debounce), `mobile-warning-dismissed`. All calls are optional-chained so the app works normally when Umami is blocked.
+- **CloudFront proxy for Umami** — Analytics traffic now routes through the existing CloudFront distribution (`/umami/*` → `cloud.umami.is/script.js`, `/api/*` → `cloud.umami.is/api/send`) via a CloudFront Function that strips the path prefix. Defeats hostname-based ad blockers without a separate subdomain or certificate.
+
+### Changed
+- **Umami script src** — Changed from `https://cloud.umami.is/script.js` to `/umami/script.js` (same-origin via proxy). Added `data-host-url` so events POST to `/api/send` on the same domain.
+
+### Security
+- **CSP simplified** — Removed `https://cloud.umami.is` and `https://api-gateway.umami.dev` from `script-src` and `connect-src`; all Umami traffic is now same-origin so `'self'` covers it.
+
 ## [1.5.3] - 2026-03-30
 
 ### Fixed

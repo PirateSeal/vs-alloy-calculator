@@ -1,4 +1,5 @@
 import { Calculator, BookOpen, BookText, GitFork } from "lucide-react";
+import { track } from "@/lib/analytics";
 import { ThemeToggle } from "./ThemeToggle";
 import {
   NavigationMenu,
@@ -77,6 +78,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                           rel="noopener noreferrer"
                           aria-label="Visit Vintage Story website"
                           className="inline-flex h-11 w-11 items-center justify-center rounded-lg border-2 border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all p-1.5"
+                          onClick={() => track("external-link", { destination: "vintage-story" })}
                         >
                           <img
                             src="/gamelogo-vintagestory-square.webp"
@@ -100,6 +102,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                           rel="noopener noreferrer"
                           aria-label="Visit Vintage Story wiki"
                           className="inline-flex h-11 w-11 items-center justify-center rounded-lg border-2 border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+                          onClick={() => track("external-link", { destination: "wiki" })}
                         >
                           <BookText className="h-5 w-5" />
                         </a>
@@ -119,6 +122,7 @@ export function Header({ activeTab, onTabChange }: HeaderProps) {
                           rel="noopener noreferrer"
                           aria-label="View project on GitHub"
                           className="inline-flex h-11 w-11 items-center justify-center rounded-lg border-2 border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all"
+                          onClick={() => track("external-link", { destination: "github" })}
                         >
                           <GitFork className="h-5 w-5" />
                         </a>

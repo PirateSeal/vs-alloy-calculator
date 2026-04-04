@@ -26,6 +26,7 @@ import {
   createPresetForAlloy,
 } from "@/lib/alloyLogic";
 import { optimizeRecipe } from "@/lib/recipeOptimizer";
+import { track } from "@/lib/analytics";
 import { Switch } from "@/components/ui/switch";
 import type { EvaluationResult } from "@/lib/alloyLogic";
 import type { AlloyRecipe } from "@/types/alloys";
@@ -211,6 +212,7 @@ export function ResultCard({
     const adjustedCrucible = applyNuggetAdjustments(crucible, nuggetAdjustments);
     onCrucibleChange(adjustedCrucible);
     onRecipeSelect(bestMatch.recipe);
+    track("adjust-clicked", { alloy: bestMatch.recipe.name });
   };
 
   // Helper to get ingot image path
@@ -239,6 +241,7 @@ export function ResultCard({
     if (recipe) {
       onRecipeSelect(recipe);
       onLoadPreset(recipe, ingotAmount);
+      track("preset-loaded", { alloy: recipe.name });
     }
   };
 
@@ -275,6 +278,7 @@ export function ResultCard({
 
     if (result.success && result.crucible) {
       onCrucibleChange(result.crucible);
+      track("optimize-clicked", { strategy: "maximize", alloy: selectedRecipe.name, ingotCount: result.ingotCount });
     }
   };
 
@@ -289,6 +293,7 @@ export function ResultCard({
 
     if (result.success && result.crucible) {
       onCrucibleChange(result.crucible);
+      track("optimize-clicked", { strategy: "economical", alloy: selectedRecipe.name, targetIngots: ingotAmount });
     }
   };
 

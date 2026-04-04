@@ -7,6 +7,7 @@ import {
   createEmptyCrucible,
   createPresetForAlloy,
 } from "./lib/alloyLogic";
+import { track } from "./lib/analytics";
 import { Header } from "./components/Header";
 import { CruciblePanel } from "./components/CruciblePanel";
 import { CompositionCard } from "./components/CompositionCard";
@@ -62,12 +63,13 @@ function App() {
   const handleDismissWarning = () => {
     localStorage.setItem("mobileWarningDismissed", "true");
     setShowMobileWarning(false);
+    track("mobile-warning-dismissed");
   };
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
       <MobileWarning isOpen={showMobileWarning} onDismiss={handleDismissWarning} />
-      <Header activeTab={activeTab} onTabChange={setActiveTab} />
+      <Header activeTab={activeTab} onTabChange={(tab) => { setActiveTab(tab); track("tab-switched", { tab }); }} />
       <main className="flex-1 overflow-auto p-4" role="main">
         {activeTab === "calculator" && (
           <div className="space-y-4">
