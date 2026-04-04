@@ -5,6 +5,11 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2026-04-04
+
+### Fixed
+- **Umami proxy url field** — Removed `data-host-url` from the script tag; the tracker now derives the endpoint from the script's own `src` origin (`/umami/script.js` → `vs-calculator.tcousin.com`) so the `url` payload field is sent as a path (`/`) instead of a full URL (`https://vs-calculator.tcousin.com/`). This fixes sessions not appearing in Umami's realtime view.
+
 ## [1.6.0] - 2026-04-04
 
 ### Added
