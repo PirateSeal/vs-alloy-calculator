@@ -5,6 +5,11 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2026-04-04
+
+### Fixed
+- **Umami proxy not intercepting events** — The Umami cloud script (`cloud.umami.is/script.js`) hardcodes `api-gateway.umami.dev` as its event endpoint regardless of where it is loaded from, so the CloudFront proxy at `/api/*` was bypassed entirely. Re-added `data-host-url="https://vs-calculator.tcousin.com"` to the script tag so the tracker POSTs to the same-origin `/api/send`, which CloudFront then proxies to `api-gateway.umami.dev`. This eliminates the CSP `connect-src 'self'` violation introduced in v1.6.1.
+
 ## [1.6.2] - 2026-04-04
 
 ### Fixed
