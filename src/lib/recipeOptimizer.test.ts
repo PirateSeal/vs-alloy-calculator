@@ -152,8 +152,7 @@ describe('Recipe Optimizer', () => {
 
     it('should catch and wrap a non-Error thrown by the strategy', () => {
       const spy = vi.spyOn(maximizationStrategy, 'maximizeIngots').mockImplementationOnce(() => {
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
-        throw 'plain string, not an Error';
+        throw { message: 'not an Error instance' };
       });
 
       const result = optimizeRecipe({ recipe: ALLOY_RECIPES[0], mode: 'maximize' });
