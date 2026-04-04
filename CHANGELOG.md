@@ -5,6 +5,11 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4] - 2026-04-04
+
+### Changed
+- **Umami proxy removed** — Reverted the CloudFront proxy approach for Umami analytics. The script now loads directly from `https://cloud.umami.is/script.js` and events post to `api-gateway.umami.dev` as originally designed. CSP updated to explicitly allow both hosts.
+
 ## [1.6.3] - 2026-04-04
 
 ### Fixed

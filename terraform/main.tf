@@ -136,7 +136,7 @@ resource "aws_cloudfront_response_headers_policy" "main" {
 
   security_headers_config {
     content_security_policy {
-      content_security_policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'"
+      content_security_policy = "default-src 'self'; script-src 'self' https://cloud.umami.is; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api-gateway.umami.dev; frame-ancestors 'none'"
       override                = true
     }
 
@@ -245,62 +245,6 @@ resource "aws_cloudfront_distribution" "main" {
     domain_name              = aws_s3_bucket.static_site.bucket_regional_domain_name
     origin_id                = "S3-${aws_s3_bucket.static_site.id}"
     origin_access_control_id = aws_cloudfront_origin_access_control.main.id
-  }
-
-  origin {
-    domain_name = "cloud.umami.is"
-    origin_id   = "umami-cloud"
-
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
-
-  # Umami event ingestion API — separate host from the script CDN
-  origin {
-    domain_name = "api-gateway.umami.dev"
-    origin_id   = "umami-api-gateway"
-
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
-  }
-
-  # /api/* — Umami event collection proxy (POST, no cache)
-  # Proxies to api-gateway.umami.dev which is the actual ingestion endpoint
-  ordered_cache_behavior {
-    path_pattern     = "/api/*"
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "umami-api-gateway"
-
-    viewer_protocol_policy   = "https-only"
-    compress                 = false
-    cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingDisabled
-    origin_request_policy_id = aws_cloudfront_origin_request_policy.umami_api.id
-  }
-
-  # /umami/* — Umami script proxy (GET, cacheable, strips /umami prefix via CF Function)
-  ordered_cache_behavior {
-    path_pattern     = "/umami/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "umami-cloud"
-
-    viewer_protocol_policy = "https-only"
-    compress               = true
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
-
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.umami_rewrite.arn
-    }
   }
 
   # Default cache behavior configuration
