@@ -259,12 +259,26 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 
+  # Umami event ingestion API — separate host from the script CDN
+  origin {
+    domain_name = "api-gateway.umami.dev"
+    origin_id   = "umami-api-gateway"
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+  }
+
   # /api/* — Umami event collection proxy (POST, no cache)
+  # Proxies to api-gateway.umami.dev which is the actual ingestion endpoint
   ordered_cache_behavior {
     path_pattern     = "/api/*"
     allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "umami-cloud"
+    target_origin_id = "umami-api-gateway"
 
     viewer_protocol_policy   = "https-only"
     compress                 = false

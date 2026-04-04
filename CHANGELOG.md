@@ -5,16 +5,28 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2026-04-04
+
+### Fixed
+- **Umami event ingestion proxy** — The `/api/*` CloudFront behavior was proxying to `cloud.umami.is`, but Umami's tracker script sends events to `api-gateway.umami.dev`. Added `api-gateway.umami.dev` as a separate CloudFront origin and pointed the `/api/*` behavior at it. Fixes the CSP `connect-src 'self'` violation that blocked analytics events from reaching Umami.
+
 ## [1.6.1] - 2026-04-04
 
 ### Fixed
 - **Umami proxy url field** — Removed `data-host-url` from the script tag; the tracker now derives the endpoint from the script's own `src` origin (`/umami/script.js` → `vs-calculator.tcousin.com`) so the `url` payload field is sent as a path (`/`) instead of a full URL (`https://vs-calculator.tcousin.com/`). This fixes sessions not appearing in Umami's realtime view.
+- **Test lint** — Replaced an invalid `@typescript-eslint/no-throw-literal` eslint-disable comment (rule was renamed) with a plain object throw, clearing the ESLint error.
+
+### Changed
+- **CI actions updated** — All GitHub Actions bumped to latest major versions: `checkout@v6`, `setup-node@v6`, `pnpm/action-setup@v5`, `upload-artifact@v7`, `download-artifact@v8`, `configure-aws-credentials@v6`, `softprops/action-gh-release@v2`.
+
+### Tests
+- **Optimizer and validator coverage** — Added property-based and unit tests for `recipeOptimizer`, `economicalStrategy`, and `recipeValidator`; updated lockfile to match.
 
 ## [1.6.0] - 2026-04-04
 
 ### Added
 - **Custom event tracking** — Umami `track()` calls added throughout the app via a new `src/lib/analytics.ts` wrapper. Tracked events: `metal-selected`, `slot-cleared`, `preset-loaded`, `optimize-clicked` (maximize & economical), `adjust-clicked`, `tab-switched`, `external-link`, `theme-toggled`, `reference-searched` (1 s debounce), `mobile-warning-dismissed`. All calls are optional-chained so the app works normally when Umami is blocked.
-- **CloudFront proxy for Umami** — Analytics traffic now routes through the existing CloudFront distribution (`/umami/*` → `cloud.umami.is/script.js`, `/api/*` → `cloud.umami.is/api/send`) via a CloudFront Function that strips the path prefix. Defeats hostname-based ad blockers without a separate subdomain or certificate.
+- **CloudFront proxy for Umami** — Analytics traffic now routes through the existing CloudFront distribution (`/umami/*` → `cloud.umami.is/script.js`, `/api/*` → `api-gateway.umami.dev/api/send`) via a CloudFront Function that strips the path prefix. Defeats hostname-based ad blockers without a separate subdomain or certificate.
 
 ### Changed
 - **Umami script src** — Changed from `https://cloud.umami.is/script.js` to `/umami/script.js` (same-origin via proxy). Added `data-host-url` so events POST to `/api/send` on the same domain.
