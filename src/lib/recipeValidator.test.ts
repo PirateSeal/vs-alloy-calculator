@@ -113,6 +113,15 @@ describe('Recipe Validator', () => {
       ];
       expect(validatePercentages(amounts, recipe)).toBe(false);
     });
+
+    it('should return false when all amounts have zero nuggets (totalUnits = 0)', () => {
+      const recipe = ALLOY_RECIPES.find((r) => r.id === 'tin-bronze')!;
+      const amounts: MetalAmount[] = [
+        { metalId: 'copper', nuggets: 0 },
+        { metalId: 'tin', nuggets: 0 },
+      ];
+      expect(validatePercentages(amounts, recipe)).toBe(false);
+    });
   });
 
   describe('validateTotalUnits', () => {
@@ -175,6 +184,23 @@ describe('Recipe Validator', () => {
       const result = validateRecipe(crucible, recipe, 1);
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
+    });
+
+    it('should report error for exceeding slot count (> 4 occupied slots)', () => {
+      const recipe = ALLOY_RECIPES.find((r) => r.id === 'tin-bronze')!;
+      // 5 non-empty slots — more than the crucible maximum
+      const crucible: CrucibleState = {
+        slots: [
+          { id: 0, metalId: 'copper', nuggets: 10 },
+          { id: 1, metalId: 'tin', nuggets: 2 },
+          { id: 2, metalId: 'zinc', nuggets: 2 },
+          { id: 3, metalId: 'bismuth', nuggets: 2 },
+          { id: 4, metalId: 'gold', nuggets: 4 },
+        ],
+      };
+      const result = validateRecipe(crucible, recipe, 1);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('Crucible exceeds maximum of 4 slots');
     });
 
     it('should report error for exceeding slot capacity', () => {

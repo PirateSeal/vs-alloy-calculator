@@ -1,8 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { test, fc } from '@fast-check/vitest';
 import { optimizeRecipe } from './recipeOptimizer';
 import type { AlloyRecipe } from '../types/alloys';
 import { ALLOY_RECIPES } from '../data/alloys';
+import * as maximizationStrategy from './maximizationStrategy';
 
 describe('Recipe Optimizer', () => {
   describe('Input validation', () => {
@@ -134,6 +135,32 @@ describe('Recipe Optimizer', () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toBeTruthy();
+    });
+
+    it('should catch and wrap an Error thrown by the strategy', () => {
+      const spy = vi.spyOn(maximizationStrategy, 'maximizeIngots').mockImplementationOnce(() => {
+        throw new Error('unexpected internal failure');
+      });
+
+      const result = optimizeRecipe({ recipe: ALLOY_RECIPES[0], mode: 'maximize' });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Optimization failed');
+      expect(result.error).toContain('unexpected internal failure');
+      spy.mockRestore();
+    });
+
+    it('should catch and wrap a non-Error thrown by the strategy', () => {
+      const spy = vi.spyOn(maximizationStrategy, 'maximizeIngots').mockImplementationOnce(() => {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw 'plain string, not an Error';
+      });
+
+      const result = optimizeRecipe({ recipe: ALLOY_RECIPES[0], mode: 'maximize' });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Optimization failed: Unknown error occurred');
+      spy.mockRestore();
     });
 
     it('should return descriptive error messages', () => {

@@ -282,4 +282,27 @@ describe("Economical Strategy", () => {
       }
     }
   );
+
+  describe("Impossible constraints", () => {
+    it("should fail when percentage constraints cannot be satisfied for target ingot count", () => {
+      // copper 92-93% forces exactly 19 nuggets (95 units) out of 20 total.
+      // That leaves 1 nugget (5 units, 5%) for tin whose range is 7-8%.
+      // createEconomicalRecipe returns null → optimizeEconomical returns failure.
+      const tightRecipe: AlloyRecipe = {
+        id: "tight-test",
+        name: "Tight Constraints",
+        components: [
+          { metalId: "copper", minPercent: 92, maxPercent: 93 },
+          { metalId: "tin", minPercent: 7, maxPercent: 8 },
+        ],
+      };
+
+      const result = optimizeEconomical(tightRecipe, 1);
+
+      expect(result.success).toBe(false);
+      expect(result.crucible).toBeNull();
+      expect(result.ingotCount).toBe(0);
+      expect(result.error).toBeTruthy();
+    });
+  });
 });
