@@ -14,6 +14,7 @@ import type { Locale } from "./types";
 import type { MetalId } from "@/types/alloys";
 import { applySeoToDocument } from "./head";
 import { buildLocalizedUrl, isLocale, resolveLocale } from "./routing";
+import { setAnalyticsLocale } from "@/lib/analytics";
 
 type Translations = Record<string, string>;
 const LOCALES: Record<Locale, Translations> = { en, fr, de, es, ru, zh, ja, ko, pl, pt };
@@ -55,6 +56,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     localStorage.setItem("locale", locale);
+    setAnalyticsLocale(locale);
     const nextUrl = buildLocalizedUrl(locale, window.location);
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     if (nextUrl !== currentUrl) {

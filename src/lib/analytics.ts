@@ -4,6 +4,12 @@ declare global {
   }
 }
 
+let _locale = "en";
+
+export function setAnalyticsLocale(locale: string) {
+  _locale = locale;
+}
+
 export function track(name: string, data?: Record<string, unknown>) {
-  window.umami?.track(name, data);
+  window.umami?.track(name, { locale: _locale, ...data });
 }
