@@ -417,7 +417,6 @@ describe('Recipe Validator', () => {
     it('should handle empty recipe (no components)', () => {
       const emptyRecipe: AlloyRecipe = {
         id: 'empty',
-        name: 'Empty',
         components: [],
       };
       const amounts: MetalAmount[] = [
@@ -431,7 +430,6 @@ describe('Recipe Validator', () => {
     it('should handle single-component recipe', () => {
       const singleRecipe: AlloyRecipe = {
         id: 'pure-copper',
-        name: 'Pure Copper',
         components: [
           { metalId: 'copper', minPercent: 100, maxPercent: 100 },
         ],
@@ -471,7 +469,6 @@ describe('Recipe Validator', () => {
     it('should reject recipe with conflicting percentages (impossible ranges)', () => {
       const impossibleRecipe: AlloyRecipe = {
         id: 'impossible',
-        name: 'Impossible',
         components: [
           { metalId: 'copper', minPercent: 60, maxPercent: 70 },
           { metalId: 'tin', minPercent: 60, maxPercent: 70 }, // Can't both be 60-70%

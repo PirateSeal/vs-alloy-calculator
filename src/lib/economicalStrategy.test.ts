@@ -11,7 +11,6 @@ describe("Economical Strategy", () => {
       // Create a recipe with only common metals (copper, lead, zinc, bismuth)
       const commonMetalsRecipe: AlloyRecipe = {
         id: "common-test",
-        name: "Common Metals Test",
         components: [
           { metalId: "copper", minPercent: 40, maxPercent: 60 },
           { metalId: "zinc", minPercent: 40, maxPercent: 60 },
@@ -40,7 +39,6 @@ describe("Economical Strategy", () => {
       // Create a recipe with only rare metals (gold, silver, nickel)
       const rareMetalsRecipe: AlloyRecipe = {
         id: "rare-test",
-        name: "Rare Metals Test",
         components: [
           { metalId: "gold", minPercent: 45, maxPercent: 55 },
           { metalId: "silver", minPercent: 45, maxPercent: 55 },
@@ -69,7 +67,6 @@ describe("Economical Strategy", () => {
       // Use a recipe with flexible percentage ranges
       const flexibleRecipe: AlloyRecipe = {
         id: "flexible-test",
-        name: "Flexible Test",
         components: [
           { metalId: "copper", minPercent: 30, maxPercent: 70 },
           { metalId: "tin", minPercent: 30, maxPercent: 70 },
@@ -88,7 +85,6 @@ describe("Economical Strategy", () => {
       // Test with a 3-component recipe
       const threeComponentRecipe: AlloyRecipe = {
         id: "three-component-test",
-        name: "Three Component Test",
         components: [
           { metalId: "copper", minPercent: 30, maxPercent: 40 },
           { metalId: "zinc", minPercent: 30, maxPercent: 40 },
@@ -115,7 +111,6 @@ describe("Economical Strategy", () => {
       // Create a recipe with very tight constraints that can't fit many ingots
       const tightRecipe: AlloyRecipe = {
         id: "tight-test",
-        name: "Tight Test",
         components: [
           { metalId: "copper", minPercent: 24.9, maxPercent: 25.1 },
           { metalId: "tin", minPercent: 24.9, maxPercent: 25.1 },
@@ -158,7 +153,6 @@ describe("Economical Strategy", () => {
     it("should return error for recipe with no components", () => {
       const emptyRecipe: AlloyRecipe = {
         id: "empty-test",
-        name: "Empty Test",
         components: [],
       };
 
@@ -290,7 +284,6 @@ describe("Economical Strategy", () => {
       // createEconomicalRecipe returns null → optimizeEconomical returns failure.
       const tightRecipe: AlloyRecipe = {
         id: "tight-test",
-        name: "Tight Constraints",
         components: [
           { metalId: "copper", minPercent: 92, maxPercent: 93 },
           { metalId: "tin", minPercent: 7, maxPercent: 8 },

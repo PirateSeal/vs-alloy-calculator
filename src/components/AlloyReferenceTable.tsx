@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
 import type { AlloyRecipe } from "../types/alloys";
 import { METALS } from "../data/alloys";
@@ -52,6 +53,7 @@ function SortIcon({ field, sortField, sortOrder }: { field: SortField; sortField
 }
 
 export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
+  const { t, getMetalLabel, getMetalShortLabel, getRecipeName, getRecipeNotes } = useTranslation();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("name");
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -73,9 +75,19 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
   };
 
   // Get wiki URL for alloy
-  const getWikiUrl = (alloyName: string) => {
-    const formattedName = alloyName.replace(/ /g, "_");
-    return `https://wiki.vintagestory.at/index.php/${formattedName}`;
+  const getWikiUrl = (recipeId: string) => {
+    const wikiPages: Record<string, string> = {
+      "tin-bronze": "Tin_Bronze",
+      "bismuth-bronze": "Bismuth_Bronze",
+      "black-bronze": "Black_Bronze",
+      "brass": "Brass",
+      "molybdochalkos": "Molybdochalkos",
+      "lead-solder": "Lead_Solder",
+      "silver-solder": "Silver_Solder",
+      "cupronickel": "Cupronickel",
+      "electrum": "Electrum",
+    };
+    return `https://wiki.vintagestory.at/index.php/${wikiPages[recipeId] ?? recipeId}`;
   };
 
   // Get ingot image path for alloy
@@ -107,7 +119,8 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter((recipe) =>
-        recipe.name.toLowerCase().includes(query)
+        getRecipeName(recipe.id).toLowerCase().includes(query) ||
+        getRecipeNotes(recipe.id).toLowerCase().includes(query)
       );
     }
 
@@ -124,7 +137,7 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
     result.sort((a, b) => {
       let comparison = 0;
       if (sortField === "name") {
-        comparison = a.name.localeCompare(b.name);
+        comparison = getRecipeName(a.id).localeCompare(getRecipeName(b.id));
       } else if (sortField === "meltTempC") {
         const tempA = a.meltTempC || 0;
         const tempB = b.meltTempC || 0;
@@ -134,18 +147,18 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
     });
 
     return result;
-  }, [recipes, searchQuery, sortField, sortOrder, selectedMetals]);
+  }, [getRecipeName, getRecipeNotes, recipes, searchQuery, sortField, sortOrder, selectedMetals]);
 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <CardTitle>Alloy Reference</CardTitle>
+          <CardTitle>{t("reference.title")}</CardTitle>
           <div className="flex items-center gap-2 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search alloys..."
+                placeholder={t("reference.search_placeholder")}
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="pl-8"
@@ -153,12 +166,12 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="shrink-0">
+                <Button variant="outline" size="icon" className="shrink-0" aria-label={t("reference.filter_aria")}>
                   <Filter className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 max-h-[300px] overflow-y-auto">
-                <DropdownMenuLabel>Filter by Metal</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("reference.filter_by_metal")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {METALS.map((metal) => (
                   <DropdownMenuCheckboxItem
@@ -170,7 +183,7 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                       className="w-2 h-2 rounded-full mr-2 inline-block"
                       style={{ backgroundColor: metal.color }}
                     />
-                    {metal.label}
+                    {getMetalLabel(metal.id)}
                   </DropdownMenuCheckboxItem>
                 ))}
               </DropdownMenuContent>
@@ -179,7 +192,7 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
         </div>
       </CardHeader>
       <CardContent className="flex-1 overflow-auto">
-        <Table aria-label="Alloy recipes reference table" className="text-base">
+        <Table aria-label={t("reference.table_aria")} className="text-base">
           <TableHeader>
             <TableRow>
               <TableHead scope="col" className="w-[200px]">
@@ -188,12 +201,12 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                   onClick={() => handleSort("name")}
                   className="-ml-4 h-8 data-[state=open]:bg-accent"
                 >
-                  Alloy Name
+                  {t("reference.col.alloy_name")}
                   <SortIcon field="name" sortField={sortField} sortOrder={sortOrder} />
                 </Button>
               </TableHead>
               <TableHead scope="col" className="min-w-[300px]">
-                Components
+                {t("reference.col.components")}
               </TableHead>
               <TableHead scope="col" className="text-right w-[150px]">
                 <Button
@@ -201,15 +214,15 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                   onClick={() => handleSort("meltTempC")}
                   className="-mr-4 h-8 data-[state=open]:bg-accent"
                 >
-                  Smelting Temp
+                  {t("reference.col.smelting_temp")}
                   <SortIcon field="meltTempC" sortField={sortField} sortOrder={sortOrder} />
                 </Button>
               </TableHead>
               <TableHead scope="col" className="text-center w-[80px]">
-                Wiki
+                {t("reference.col.wiki")}
               </TableHead>
               <TableHead scope="col">
-                Uses
+                {t("reference.col.uses")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -217,7 +230,7 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
             {filteredAndSortedRecipes.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center">
-                  No results found.
+                  {t("reference.no_results")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -235,7 +248,7 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <span>{recipe.name}</span>
+                      <span>{getRecipeName(recipe.id)}</span>
                     </div>
                   </TableCell>
                   <TableCell className="text-base py-4">
@@ -255,7 +268,11 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                                   width: `${width}%`,
                                   backgroundColor: metal?.color,
                                 }}
-                                title={`${metal?.label}: ${component.minPercent}-${component.maxPercent}%`}
+                                title={t("reference.component_range_title", {
+                                  metal: metal ? getMetalLabel(metal.id) : component.metalId,
+                                  min: component.minPercent,
+                                  max: component.maxPercent,
+                                })}
                               />
                             );
                           })}
@@ -280,12 +297,12 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                                       className="w-1.5 h-1.5 rounded-full mr-1.5 inline-block"
                                       style={{ backgroundColor: metal?.color }}
                                     />
-                                    {metal?.shortLabel || component.metalId}{" "}
+                                    {metal ? getMetalShortLabel(metal.id) : component.metalId}{" "}
                                     {component.minPercent}-{component.maxPercent}%
                                   </Badge>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>{metal?.label || component.metalId}</p>
+                                  <p>{metal ? getMetalLabel(metal.id) : component.metalId}</p>
                                 </TooltipContent>
                               </Tooltip>
                             );
@@ -308,22 +325,22 @@ export function AlloyReferenceTable({ recipes }: AlloyReferenceTableProps) {
                       <TooltipTrigger asChild>
                         <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
                           <a
-                            href={getWikiUrl(recipe.name)}
+                            href={getWikiUrl(recipe.id)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            aria-label={`View ${recipe.name} on wiki`}
+                            aria-label={t("reference.wiki_aria", { alloy: getRecipeName(recipe.id) })}
                           >
                             <ExternalLink className="h-4 w-4" />
                           </a>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>View on wiki</p>
+                        <p>{t("reference.view_on_wiki")}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TableCell>
                   <TableCell className="text-base py-4 text-muted-foreground text-sm">
-                    {recipe.notes || "—"}
+                    {getRecipeNotes(recipe.id) || "—"}
                   </TableCell>
                 </TableRow>
               ))

@@ -10,7 +10,6 @@ describe("Maximization Strategy", () => {
       // Create a recipe with very tight constraints
       const narrowRecipe: AlloyRecipe = {
         id: "narrow-test",
-        name: "Narrow Test",
         components: [
           { metalId: "copper", minPercent: 49.5, maxPercent: 50.5 },
           { metalId: "tin", minPercent: 49.5, maxPercent: 50.5 },
@@ -51,7 +50,6 @@ describe("Maximization Strategy", () => {
       // Create a recipe that requires many small amounts (impossible to fit)
       const impossibleRecipe: AlloyRecipe = {
         id: "impossible-test",
-        name: "Impossible Test",
         components: [
           { metalId: "copper", minPercent: 24, maxPercent: 26 },
           { metalId: "tin", minPercent: 24, maxPercent: 26 },
@@ -145,7 +143,6 @@ describe("Maximization Strategy", () => {
       // Create a 4-component recipe
       const fourComponentRecipe: AlloyRecipe = {
         id: "four-component-test",
-        name: "Four Component Test",
         components: [
           { metalId: "copper", minPercent: 25, maxPercent: 30 },
           { metalId: "tin", minPercent: 25, maxPercent: 30 },
@@ -174,7 +171,6 @@ describe("Maximization Strategy", () => {
       // It requires using tolerance correctly to find the optimal 23 ingots
       const recipe: AlloyRecipe = {
         id: "regression-1",
-        name: "Regression 1",
         components: [
           {
             metalId: "copper" as MetalId,
@@ -197,7 +193,6 @@ describe("Maximization Strategy", () => {
     it("should return error for recipe with no components", () => {
       const emptyRecipe: AlloyRecipe = {
         id: "empty-test",
-        name: "Empty Test",
         components: [],
       };
 

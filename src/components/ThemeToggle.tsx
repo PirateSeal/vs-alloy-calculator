@@ -1,6 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { track } from "@/lib/analytics";
+import { useTranslation } from "@/i18n";
 
 function getInitialTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
@@ -11,6 +12,7 @@ function getInitialTheme(): "light" | "dark" {
 
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme);
+  const { t } = useTranslation();
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
@@ -27,8 +29,8 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       className="relative w-11 h-11 rounded-lg border-2 border-border bg-background hover:bg-accent hover:text-accent-foreground transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
-      title={`Switch to ${theme === "light" ? "dark" : "light"} theme`}
+      aria-label={t(theme === "light" ? "theme.toggle_to_dark" : "theme.toggle_to_light")}
+      title={t(theme === "light" ? "theme.toggle_to_dark" : "theme.toggle_to_light")}
     >
       <div className="relative w-full h-full flex items-center justify-center">
         <Sun

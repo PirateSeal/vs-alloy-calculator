@@ -110,7 +110,7 @@ describe('Recipe Optimizer', () => {
 
         // All recipes should be optimizable
         if (!result.success) {
-          console.log(`Failed recipe: ${recipe.name}`, result.error);
+          console.log(`Failed recipe: ${recipe.id}`, result.error);
         }
         expect(result.success).toBe(true);
         expect(result.ingotCount).toBe(5); // Should produce exactly the target
@@ -124,7 +124,6 @@ describe('Recipe Optimizer', () => {
     it('should handle recipe with no components', () => {
       const invalidRecipe: AlloyRecipe = {
         id: 'invalid',
-        name: 'Invalid',
         components: [],
       };
 
@@ -165,7 +164,6 @@ describe('Recipe Optimizer', () => {
     it('should return descriptive error messages', () => {
       const invalidRecipe: AlloyRecipe = {
         id: 'invalid',
-        name: 'Invalid',
         components: [],
       };
 
@@ -198,7 +196,6 @@ describe('Recipe Optimizer', () => {
     // Verify recipe is unchanged
     expect(recipe).toEqual(originalRecipe);
     expect(recipe.id).toBe(originalRecipe.id);
-    expect(recipe.name).toBe(originalRecipe.name);
     expect(recipe.components).toEqual(originalRecipe.components);
 
     // Verify components array is unchanged

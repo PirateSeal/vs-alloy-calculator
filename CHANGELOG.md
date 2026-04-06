@@ -5,6 +5,26 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-04-06
+
+### Added
+- **Internationalisation (10 locales)** — Full i18n system with locale detection (URL path → localStorage → browser language), URL-preserving locale switching, and per-locale SEO (canonical, hreflang alternates, Open Graph, JSON-LD). Supported languages: English, Français, Deutsch, Español, Русский, 中文, 日本語, 한국어, Polski, Português (Brasil).
+- **Translation notice banner** — Dismissible amber banner automatically shown for machine-translated locales (DE, ES, RU, ZH, JA, KO, PL, PT) with a bilingual message so users know the translation may contain errors.
+- **Locale-specific static HTML** — Vite build plugin generates `/dist/{locale}/index.html` for each non-default locale with localised meta tags for SEO.
+- **CompositionCard collapsible on mobile** — A chevron toggle button (visible on small screens only) lets users collapse the composition panel to free up vertical space.
+- **44 px minimum touch targets on sliders** — Both the crucible-slot and ingot-amount sliders now meet the WCAG 2.5.8 minimum target size on mobile.
+
+### Changed
+- **Data layer decoupled from English strings** — `Metal.label`, `Metal.shortLabel`, `AlloyRecipe.name`, and `AlloyRecipe.notes` removed from the TypeScript types and static data; all display strings are now resolved through the i18n system (`getMetalLabel()`, `getMetalShortLabel()`, `getRecipeName()`, `getRecipeNotes()`).
+- **MobileWarning removed** — Replaced by the fully responsive layout introduced in v1.6.x; the standalone warning component is no longer needed.
+- **Sitemap expanded** — Added URL entries for all 10 locale paths.
+- **Translation accuracy** — French and German alloy names corrected to match Vintage Story wiki (FR: Cuproplomb, Bronze-étain, Bronze-bismuth; DE: Bismutbronze, Kupferblei, Kupfernickel).
+
+### Fixed
+- **"1 nuggets" plural bug** — Slot row now correctly shows "1 nugget" vs "2 nuggets" by passing pre-resolved singular/plural labels via interpolation variables.
+- **Duplicate `className` prop on Slider** — Two `className` attributes were merged into one on both crucible-slot and ingot-amount sliders (was a TypeScript error).
+- **Stale `name` field in test fixtures** — Inline `AlloyRecipe` objects in strategy and validator tests retained a `name` property after it was removed from the type; all occurrences removed.
+
 ## [1.6.4] - 2026-04-04
 
 ### Changed

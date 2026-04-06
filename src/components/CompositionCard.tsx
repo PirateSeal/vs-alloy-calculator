@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useTranslation } from "@/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { METALS } from "@/data/alloys";
 import type { MetalAmount, AlloyMatchDetail } from "@/lib/alloyLogic";
 import { getRarityScore } from "@/lib/metalRarity";
 import CountUp from "@/components/ui/count-up";
-import { ArrowUp, ArrowDown, Check } from "lucide-react";
+import { ArrowUp, ArrowDown, Check, ChevronDown } from "lucide-react";
 
 interface CompositionCardProps {
   amounts: MetalAmount[];
@@ -19,7 +20,9 @@ export function CompositionCard({
   totalUnits,
   bestMatch,
 }: CompositionCardProps) {
+  const { t, getMetalLabel, getMetalShortLabel, getRecipeName } = useTranslation();
   const metalMap = useMemo(() => new Map(METALS.map((m) => [m.id, m])), []);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const totalRarityCost = useMemo(
     () => amounts.reduce((total, amount) => total + (amount.nuggets * getRarityScore(amount.metalId)), 0),
@@ -31,11 +34,11 @@ export function CompositionCard({
     return (
       <Card className="bg-card">
         <CardHeader>
-          <CardTitle>Current Composition</CardTitle>
+          <CardTitle>{t("composition.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-8">
-            Empty crucible
+            {t("composition.empty")}
           </p>
         </CardContent>
       </Card>
@@ -45,19 +48,30 @@ export function CompositionCard({
   return (
     <Card className="bg-card">
       <CardHeader>
-        <CardTitle>Current Composition</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>{t("composition.title")}</CardTitle>
+          <button
+            className="sm:hidden rounded p-1 hover:bg-muted transition-colors"
+            onClick={() => setIsExpanded(!isExpanded)}
+            aria-expanded={isExpanded}
+            aria-label={t("composition.title")}
+          >
+            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "" : "-rotate-90"}`} />
+          </button>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      {isExpanded && <CardContent className="space-y-4">
         {/* Total summary */}
         <div className="grid grid-cols-2 gap-4 text-base" role="status" aria-live="polite">
           <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">Total Amount</span>
+            <span className="text-sm text-muted-foreground">{t("composition.total_amount")}</span>
             <span className="font-semibold">
-              <CountUp to={totalNuggets} duration={0.2} /> nuggets (<CountUp to={totalUnits} duration={0.2} /> units)
+              <CountUp to={totalNuggets} duration={0.2} /> {t(totalNuggets === 1 ? "common.nugget" : "common.nuggets")} (
+              <CountUp to={totalUnits} duration={0.2} /> {t(totalUnits === 1 ? "common.unit" : "common.units")})
             </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">Total Rarity Cost</span>
+            <span className="text-sm text-muted-foreground">{t("composition.rarity_cost")}</span>
             <span className="font-semibold font-mono">
               <CountUp to={parseFloat(totalRarityCost.toFixed(1))} duration={0.2} />
             </span>
@@ -69,10 +83,13 @@ export function CompositionCard({
           <div
             className="flex h-10 rounded-md overflow-hidden border border-border"
             role="img"
-            aria-label={`Composition bar chart: ${amounts.map(a => {
+            aria-label={t("composition.bar_chart_aria", { segments: amounts.map(a => {
               const metal = metalMap.get(a.metalId);
-              return `${metal?.label} ${a.percent.toFixed(1)}%`;
-            }).join(', ')}`}
+              return t("composition.bar_chart_segment", {
+                metal: metal ? getMetalLabel(metal.id) : a.metalId,
+                percent: a.percent.toFixed(1),
+              });
+            }).join(", ") })}
           >
             {amounts.map((amount) => {
               const metal = metalMap.get(amount.metalId);
@@ -86,11 +103,14 @@ export function CompositionCard({
                     backgroundColor: metal.color,
                     width: `${amount.percent}%`,
                   }}
-                  title={`${metal.label}: ${amount.percent.toFixed(1)}%`}
+                  title={t("composition.segment_title", {
+                    metal: getMetalLabel(metal.id),
+                    percent: amount.percent.toFixed(1),
+                  })}
                   aria-hidden="true"
                 >
                   {amount.percent >= 10 && (
-                    <span className="drop-shadow-md">{metal.shortLabel}</span>
+                    <span className="drop-shadow-md">{getMetalShortLabel(metal.id)}</span>
                   )}
                 </div>
               );
@@ -101,7 +121,7 @@ export function CompositionCard({
           {bestMatch && (
             <div className="space-y-2">
               <div className="text-xs font-medium text-muted-foreground mb-2">
-                Sweet Spot Zones for {bestMatch.recipe.name}:
+                {t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}
               </div>
               {bestMatch.recipe.components.map((component) => {
                 const metal = metalMap.get(component.metalId);
@@ -122,7 +142,7 @@ export function CompositionCard({
                         className="w-5 h-5 object-contain"
                         aria-hidden="true"
                       />
-                      <span className="font-medium">{metal?.label}</span>
+                      <span className="font-medium">{metal ? getMetalLabel(metal.id) : component.metalId}</span>
                     </div>
 
                     {/* Visual range indicator */}
@@ -164,7 +184,7 @@ export function CompositionCard({
                       {isValid ? (
                         <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                           <Check className="h-4 w-4" />
-                          <span className="text-xs font-medium">Valid</span>
+                          <span className="text-xs font-medium">{t("composition.status_valid")}</span>
                         </div>
                       ) : isTooLow ? (
                         <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
@@ -191,7 +211,7 @@ export function CompositionCard({
             </div>
           )}
         </div>
-      </CardContent>
+      </CardContent>}
     </Card>
   );
 }

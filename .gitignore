@@ -31,3 +31,5 @@ dist-ssr
 terraform.tfvars
 backend.tfvars
 CLAUDE.md
+AGENTS.md
+.claude/

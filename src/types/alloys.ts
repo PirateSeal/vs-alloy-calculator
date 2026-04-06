@@ -10,8 +10,6 @@ export type MetalId =
 
 export interface Metal {
   id: MetalId;
-  label: string;
-  shortLabel: string;
   color: string;
   nuggetImage: string;
 }
@@ -24,9 +22,7 @@ export interface AlloyComponent {
 
 export interface AlloyRecipe {
   id: string;
-  name: string;
   description?: string;
   components: AlloyComponent[];
-  notes?: string;
   meltTempC?: number;
 }

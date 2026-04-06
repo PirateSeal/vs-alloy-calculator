@@ -5,25 +5,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useTranslation } from "@/i18n";
 
 interface CreditsDialogProps {
   trigger: React.ReactNode;
 }
 
 export function CreditsDialog({ trigger }: CreditsDialogProps) {
+  const { t } = useTranslation();
+
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+      <DialogContent closeLabel={t("common.close")} className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Credits & Licenses</DialogTitle>
+          <DialogTitle>{t("credits.title")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-5 text-sm">
           <section>
-            <h3 className="font-semibold text-foreground mb-1">Game Assets & Data</h3>
+            <h3 className="font-semibold text-foreground mb-1">{t("credits.assets.title")}</h3>
             <p className="text-muted-foreground">
-              All game images (ingots, nuggets, logo, anvil icon) and alloy recipe data are
-              the intellectual property of{" "}
+              {t("credits.assets.body_before")}{" "}
               <a
                 href="https://www.vintagestory.at"
                 target="_blank"
@@ -32,8 +34,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
               >
                 Anego Studios
               </a>{" "}
-              / Vintage Story. Used here for fan/community purposes with attribution.
-              Alloy data sourced from the{" "}
+              {t("credits.assets.body_middle")}{" "}
               <a
                 href="https://wiki.vintagestory.at"
                 target="_blank"
@@ -42,12 +43,12 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
               >
                 Vintage Story Wiki
               </a>
-              .
+              {t("credits.assets.body_after")}
             </p>
           </section>
 
           <section>
-            <h3 className="font-semibold text-foreground mb-1">Fonts</h3>
+            <h3 className="font-semibold text-foreground mb-1">{t("credits.fonts.title")}</h3>
             <ul className="text-muted-foreground space-y-1">
               <li>
                 <a
@@ -58,7 +59,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   Nunito
                 </a>{" "}
-                — SIL Open Font License 1.1
+                {t("credits.fonts.license")}
               </li>
               <li>
                 <a
@@ -69,13 +70,13 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   JetBrains Mono
                 </a>{" "}
-                — SIL Open Font License 1.1
+                {t("credits.fonts.license")}
               </li>
             </ul>
           </section>
 
           <section>
-            <h3 className="font-semibold text-foreground mb-1">Open Source Libraries</h3>
+            <h3 className="font-semibold text-foreground mb-1">{t("credits.opensource.title")}</h3>
             <ul className="text-muted-foreground space-y-1">
               <li>
                 <a
@@ -86,7 +87,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   React
                 </a>{" "}
-                — MIT License
+                {t("credits.opensource.mit")}
               </li>
               <li>
                 <a
@@ -97,7 +98,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   Radix UI
                 </a>{" "}
-                — MIT License
+                {t("credits.opensource.mit")}
               </li>
               <li>
                 <a
@@ -108,7 +109,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   shadcn/ui
                 </a>{" "}
-                — MIT License
+                {t("credits.opensource.mit")}
               </li>
               <li>
                 <a
@@ -119,7 +120,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   Tailwind CSS
                 </a>{" "}
-                — MIT License
+                {t("credits.opensource.mit")}
               </li>
               <li>
                 <a
@@ -130,7 +131,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   Framer Motion
                 </a>{" "}
-                — MIT License
+                {t("credits.opensource.mit")}
               </li>
               <li>
                 <a
@@ -141,7 +142,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   Lucide
                 </a>{" "}
-                — ISC License
+                {t("credits.opensource.isc")}
               </li>
               <li>
                 <a
@@ -152,15 +153,15 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
                 >
                   class-variance-authority
                 </a>{" "}
-                — Apache-2.0 License
+                {t("credits.opensource.apache")}
               </li>
             </ul>
           </section>
 
           <section>
-            <h3 className="font-semibold text-foreground mb-1">This Project</h3>
+            <h3 className="font-semibold text-foreground mb-1">{t("credits.project.title")}</h3>
             <p className="text-muted-foreground">
-              Source code licensed under the{" "}
+              {t("credits.project.body_before")}{" "}
               <a
                 href="https://github.com/PirateSeal/vs-alloy-calculator/blob/master/LICENSE"
                 target="_blank"
@@ -169,7 +170,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
               >
                 MIT License
               </a>
-              . Not affiliated with Anego Studios.
+              {t("credits.project.body_after")}
             </p>
           </section>
         </div>

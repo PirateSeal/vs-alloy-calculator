@@ -17,20 +17,76 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { CheckCircle2, AlertTriangle, XCircle, Info, Wand2, Maximize2 } from "lucide-react";
-import { METALS } from "@/data/alloys";
+import { CheckCircle2, AlertTriangle, XCircle, Info, Wand2, Maximize2, Thermometer } from "lucide-react";
 import {
   calculateNuggetAdjustments,
-  getAdjustmentSummary,
   applyNuggetAdjustments,
   createPresetForAlloy,
 } from "@/lib/alloyLogic";
 import { optimizeRecipe } from "@/lib/recipeOptimizer";
 import { track } from "@/lib/analytics";
 import { Switch } from "@/components/ui/switch";
-import type { EvaluationResult } from "@/lib/alloyLogic";
-import type { AlloyRecipe } from "@/types/alloys";
+import type { EvaluationResult, NuggetAdjustment } from "@/lib/alloyLogic";
+import type { AlloyRecipe, MetalId } from "@/types/alloys";
 import type { CrucibleState } from "@/types/crucible";
+import { useTranslation } from "@/i18n";
+
+type TranslateFn = (key: string, vars?: Record<string, string | number>) => string;
+
+function joinLocalizedList(items: string[], conjunction: string): string {
+  if (items.length === 0) {
+    return "";
+  }
+
+  if (items.length === 1) {
+    return items[0];
+  }
+
+  const head = items.slice(0, -1).join(", ");
+  return `${head} ${conjunction} ${items[items.length - 1]}`;
+}
+
+function formatIngotCount(t: TranslateFn, count: number): string {
+  return count === 1
+    ? t("result.ingots", { n: count })
+    : t("result.ingots_plural", { n: count });
+}
+
+function formatAdjustmentAction(
+  t: TranslateFn,
+  action: "add" | "remove",
+  count: number,
+  metal: string,
+): string {
+  const nuggets = t(count === 1 ? "common.nugget" : "common.nuggets");
+  return t(
+    action === "add" ? "result.adjust_action_add" : "result.adjust_action_remove",
+    { count, metal, nuggets },
+  ).replace(/\s+/g, " ").trim();
+}
+
+function getLocalizedAdjustmentSummary(
+  adjustments: NuggetAdjustment[],
+  t: TranslateFn,
+  getMetalShortLabel: (metalId: MetalId) => string,
+): string {
+  const parts = adjustments.flatMap((adjustment) => {
+    if (adjustment.action === "ok") {
+      return [];
+    }
+
+    return [
+      formatAdjustmentAction(
+        t,
+        adjustment.action,
+        Math.abs(adjustment.delta),
+        getMetalShortLabel(adjustment.metalId),
+      ),
+    ];
+  });
+
+  return joinLocalizedList(parts, t("common.and"));
+}
 
 /**
  * Computes a JSX message describing excess material in the crucible
@@ -40,7 +96,8 @@ function computeExcessMessage(
   bestMatch: EvaluationResult["bestMatch"],
   evaluation: EvaluationResult,
   maxIngots: number,
-  metalMap: Map<string, (typeof METALS)[number]>,
+  t: TranslateFn,
+  getMetalShortLabel: (metalId: MetalId) => string,
 ): React.ReactNode {
   if (!bestMatch || !bestMatch.isExact) return null;
 
@@ -72,7 +129,7 @@ function computeExcessMessage(
       const target = targetAmounts.get(component.metalId) || 0;
       if (current > target) {
         excessMetals.push({
-          label: metalMap.get(component.metalId)?.shortLabel || component.metalId,
+          label: getMetalShortLabel(component.metalId),
           nuggets: current - target,
         });
       }
@@ -80,15 +137,27 @@ function computeExcessMessage(
   }
 
   const removeText = excessMetals.length > 0
-    ? excessMetals.map(m => `${m.nuggets} ${m.label}`).join(" and ")
-    : `${excessNuggets}`;
+    ? joinLocalizedList(
+        excessMetals.map((metal) =>
+          formatAdjustmentAction(t, "remove", metal.nuggets, metal.label),
+        ),
+        t("common.and"),
+      )
+    : formatAdjustmentAction(t, "remove", excessNuggets, "");
 
   // Check if we can make one more ingot
   const canMakeNextIngot = completeIngots + 1 <= maxIngots;
   if (!canMakeNextIngot) {
     return (
       <>
-        <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? "s" : ""}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+        <span className="font-bold text-white">
+          {t("result.excess_remove_only", {
+            remove: removeText,
+            units: excessUnits,
+            unitsLabel: t(excessUnits === 1 ? "common.unit" : "common.units"),
+            ingots: formatIngotCount(t, completeIngots),
+          })}
+        </span>
       </>
     );
   }
@@ -118,7 +187,7 @@ function computeExcessMessage(
       const target = nextTargetAmounts.get(component.metalId) || 0;
       if (target > current) {
         addMetals.push({
-          label: metalMap.get(component.metalId)?.shortLabel || component.metalId,
+          label: getMetalShortLabel(component.metalId),
           nuggets: target - current,
         });
       }
@@ -126,18 +195,37 @@ function computeExcessMessage(
   }
 
   if (addMetals.length > 0) {
-    const addText = addMetals.map(m => `${m.nuggets} ${m.label}`).join(" and ");
-    const totalAddNuggets = addMetals.reduce((sum, m) => sum + m.nuggets, 0);
+    const addText = joinLocalizedList(
+      addMetals.map((metal) =>
+        formatAdjustmentAction(t, "add", metal.nuggets, metal.label),
+      ),
+      t("common.and"),
+    );
     return (
       <>
-        <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? "s" : ""}</span> ({excessUnits} units) or <span className="font-bold text-white">add {addText} nugget{totalAddNuggets !== 1 ? "s" : ""}</span> to make <span className="font-bold text-white">{completeIngots + 1} ingots</span>.
+        <span className="font-bold text-white">
+          {t("result.excess_remove_or_add", {
+            remove: removeText,
+            units: excessUnits,
+            unitsLabel: t(excessUnits === 1 ? "common.unit" : "common.units"),
+            add: addText,
+            ingots: formatIngotCount(t, completeIngots + 1),
+          })}
+        </span>
       </>
     );
   }
 
   return (
     <>
-      <span className="font-bold text-white">Remove {removeText} nugget{excessNuggets !== 1 ? "s" : ""}</span> ({excessUnits} units) to make exactly <span className="font-bold text-white">{completeIngots} ingots</span>.
+      <span className="font-bold text-white">
+        {t("result.excess_remove_only", {
+          remove: removeText,
+          units: excessUnits,
+          unitsLabel: t(excessUnits === 1 ? "common.unit" : "common.units"),
+          ingots: formatIngotCount(t, completeIngots),
+        })}
+      </span>
     </>
   );
 }
@@ -162,11 +250,9 @@ export function ResultCard({
   onCrucibleChange
 }: ResultCardProps) {
   const { totalUnits, totalNuggets, bestMatch } = evaluation;
+  const { t, getMetalLabel, getMetalShortLabel, getRecipeName } = useTranslation();
 
   const [useEconomical, setUseEconomical] = useState(true);
-
-  // Create a map for quick metal lookup
-  const metalMap = useMemo(() => new Map(METALS.map((m) => [m.id, m])), []);
 
   // Calculate current ingot amount from crucible
   const currentIngotAmount = useMemo(() => {
@@ -176,13 +262,14 @@ export function ResultCard({
 
   // Calculate max ingots for selected recipe using the maximization strategy
   const maxIngots = useMemo(() => {
-    if (!selectedRecipe) return 25;
+    const recipe = selectedRecipe ?? bestMatch?.recipe;
+    if (!recipe) return 25;
     const result = optimizeRecipe({
-      recipe: selectedRecipe,
+      recipe,
       mode: 'maximize',
     });
     return result.success ? result.ingotCount : 25;
-  }, [selectedRecipe]);
+  }, [bestMatch?.recipe, selectedRecipe]);
 
   // Derive ingot amount from current crucible when recipe is selected
   const ingotAmount = useMemo(() => {
@@ -200,8 +287,8 @@ export function ResultCard({
 
   const adjustmentSummary = useMemo(() => {
     if (nuggetAdjustments.length === 0) return '';
-    return getAdjustmentSummary(nuggetAdjustments, metalMap);
-  }, [nuggetAdjustments, metalMap]);
+    return getLocalizedAdjustmentSummary(nuggetAdjustments, t, getMetalShortLabel);
+  }, [getMetalShortLabel, nuggetAdjustments, t]);
 
   // Derive selected recipe ID from selectedRecipe prop
   const selectedRecipeId = selectedRecipe?.id || "";
@@ -212,7 +299,7 @@ export function ResultCard({
     const adjustedCrucible = applyNuggetAdjustments(crucible, nuggetAdjustments);
     onCrucibleChange(adjustedCrucible);
     onRecipeSelect(bestMatch.recipe);
-    track("adjust-clicked", { alloy: bestMatch.recipe.name });
+    track("adjust-clicked", { alloy: bestMatch.recipe.id });
   };
 
   // Helper to get ingot image path
@@ -241,7 +328,7 @@ export function ResultCard({
     if (recipe) {
       onRecipeSelect(recipe);
       onLoadPreset(recipe, ingotAmount);
-      track("preset-loaded", { alloy: recipe.name });
+      track("preset-loaded", { alloy: recipe.id });
     }
   };
 
@@ -278,7 +365,7 @@ export function ResultCard({
 
     if (result.success && result.crucible) {
       onCrucibleChange(result.crucible);
-      track("optimize-clicked", { strategy: "maximize", alloy: selectedRecipe.name, ingotCount: result.ingotCount });
+      track("optimize-clicked", { strategy: "maximize", alloy: selectedRecipe.id, ingotCount: result.ingotCount });
     }
   };
 
@@ -293,7 +380,7 @@ export function ResultCard({
 
     if (result.success && result.crucible) {
       onCrucibleChange(result.crucible);
-      track("optimize-clicked", { strategy: "economical", alloy: selectedRecipe.name, targetIngots: ingotAmount });
+      track("optimize-clicked", { strategy: "economical", alloy: selectedRecipe.id, targetIngots: ingotAmount });
     }
   };
 
@@ -304,13 +391,13 @@ export function ResultCard({
     return (
       <div className="space-y-3">
         <label htmlFor="preset-select" className="text-sm font-medium">
-          {label}
+          {t(label)}
         </label>
         <div className="flex gap-3 items-center">
           <div className="flex-[2]">
             <Select value={selectedRecipeId} onValueChange={handlePresetChange}>
-              <SelectTrigger id="preset-select" aria-label="Select alloy preset" className="h-12">
-                <SelectValue placeholder="Choose an alloy...">
+              <SelectTrigger id="preset-select" aria-label={t("result.choose_alloy")} className="h-12">
+                <SelectValue placeholder={t("result.choose_alloy")}>
                   {currentRecipe && (
                     <div className="flex items-center gap-3">
                       <img
@@ -319,7 +406,7 @@ export function ResultCard({
                         className="w-8 h-8 object-contain"
                         aria-hidden="true"
                       />
-                      <span className="text-base">{currentRecipe.name}</span>
+                      <span className="text-base">{getRecipeName(currentRecipe.id)}</span>
                     </div>
                   )}
                 </SelectValue>
@@ -334,7 +421,7 @@ export function ResultCard({
                         className="w-8 h-8 object-contain"
                         aria-hidden="true"
                       />
-                      <span className="text-base">{recipe.name}</span>
+                      <span className="text-base">{getRecipeName(recipe.id)}</span>
                     </div>
                   </SelectItem>
                 ))}
@@ -343,12 +430,14 @@ export function ResultCard({
           </div>
           <div className="flex-1 space-y-1">
             <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Amount</span>
-              <span className="font-medium text-foreground">{ingotAmount} ingot{ingotAmount !== 1 ? 's' : ''}</span>
+              <span>{t("result.amount")}</span>
+              <span className="font-medium text-foreground">
+                {ingotAmount === 1 ? t("result.ingots", { n: 1 }) : t("result.ingots_plural", { n: ingotAmount })}
+              </span>
             </div>
             <div className="flex gap-2 items-center">
               <div
-                className="flex-1"
+                className="flex-1 flex items-center min-h-[44px]"
                 style={{
                   // @ts-expect-error - CSS custom property
                   '--slider-color': currentRecipe ? getAlloyColor(currentRecipe.id) : '#B87333'
@@ -360,9 +449,9 @@ export function ResultCard({
                   min={1}
                   max={maxIngots}
                   step={1}
-                  aria-label="Ingot amount"
+                  aria-label={t("result.ingot_amount_aria")}
                   disabled={!selectedRecipe}
-                  className="[&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
+                  className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
                 />
               </div>
               <Button
@@ -371,7 +460,7 @@ export function ResultCard({
                 onClick={handleMaximize}
                 disabled={!selectedRecipe}
                 className="px-2"
-                title="Maximize ingots"
+                title={t("result.maximize_title")}
               >
                 <Maximize2 className="h-4 w-4" />
               </Button>
@@ -386,7 +475,7 @@ export function ResultCard({
               onCheckedChange={setUseEconomical}
             />
             <label htmlFor="economical-mode" className="text-sm cursor-pointer">
-              Use economical optimization
+              {t("result.economical_label")}
             </label>
             {useEconomical && (
               <TooltipProvider>
@@ -402,7 +491,7 @@ export function ResultCard({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Optimize economically for {ingotAmount} ingot{ingotAmount !== 1 ? 's' : ''}</p>
+                    <p>{ingotAmount === 1 ? t("result.economical_tooltip", { n: 1 }) : t("result.economical_tooltip_plural", { n: ingotAmount })}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -418,17 +507,17 @@ export function ResultCard({
     return (
       <Card className="bg-card">
         <CardHeader>
-          <CardTitle>Alloy Result</CardTitle>
+          <CardTitle>{t("result.title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Alert role="status" aria-live="polite">
             <Info className="h-4 w-4" aria-hidden="true" />
             <AlertDescription>
-              Add metals to the crucible to see alloy results
+              {t("result.empty")}
             </AlertDescription>
           </Alert>
 
-          {renderPresetSelector("Load Preset:")}
+          {renderPresetSelector("result.load_preset")}
         </CardContent>
       </Card>
     );
@@ -439,17 +528,17 @@ export function ResultCard({
     return (
       <Card className="bg-card">
         <CardHeader>
-          <CardTitle>Alloy Result</CardTitle>
+          <CardTitle>{t("result.title")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <Alert variant="destructive" role="alert" aria-live="assertive">
             <XCircle className="h-4 w-4" aria-hidden="true" />
             <AlertDescription>
-              No known alloy from this composition
+              {t("result.no_match")}
             </AlertDescription>
           </Alert>
 
-          {renderPresetSelector("Load Preset:")}
+          {renderPresetSelector("result.load_preset")}
         </CardContent>
       </Card>
     );
@@ -461,18 +550,26 @@ export function ResultCard({
     const unitsNeeded = 100 - totalUnits;
     const excessUnits = totalUnits % 100;
     const hasExcessMaterial = excessUnits > 0;
-    const excessMessage = computeExcessMessage(bestMatch, evaluation, maxIngots, metalMap);
+    const excessMessage = computeExcessMessage(bestMatch, evaluation, maxIngots, t, getMetalShortLabel);
 
     return (
       <Card className="border-green-500/50 bg-card">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="h-5 w-5 text-green-500" aria-hidden="true" />
-              {bestMatch.recipe.name}
-            </CardTitle>
+            <div className="flex flex-col gap-0.5">
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-green-500" aria-hidden="true" />
+                {getRecipeName(bestMatch.recipe.id)}
+              </CardTitle>
+              {bestMatch.recipe.meltTempC && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Thermometer className="h-3 w-3" aria-hidden="true" />
+                  {t("result.melts_at", { temp: bestMatch.recipe.meltTempC })}
+                </span>
+              )}
+            </div>
             <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-              Valid alloy
+              {t("result.valid_badge")}
             </Badge>
           </div>
         </CardHeader>
@@ -480,7 +577,7 @@ export function ResultCard({
           <Alert className="border-green-500/50 bg-green-500/10" role="status" aria-live="polite">
             <CheckCircle2 className="h-4 w-4 text-green-500" aria-hidden="true" />
             <AlertDescription className="text-green-700 dark:text-green-300">
-              This composition creates a valid {bestMatch.recipe.name} alloy!
+              {t("result.valid_message", { alloy: getRecipeName(bestMatch.recipe.id) })}
             </AlertDescription>
           </Alert>
 
@@ -488,7 +585,7 @@ export function ResultCard({
             <Alert className="border-orange-500/50 bg-orange-500/10">
               <AlertTriangle className="h-4 w-4 text-orange-500" aria-hidden="true" />
               <AlertDescription className="text-orange-700 dark:text-orange-300">
-                <strong>Not enough material:</strong> You need {unitsNeeded} more units ({Math.ceil(unitsNeeded / 5)} nuggets) to make 1 ingot (100 units minimum).
+                {t("result.not_enough", { units: unitsNeeded, nuggets: Math.ceil(unitsNeeded / 5) })}
               </AlertDescription>
             </Alert>
           )}
@@ -497,12 +594,12 @@ export function ResultCard({
             <Alert className="border-orange-500/50 bg-orange-500/10">
               <AlertTriangle className="h-4 w-4 text-orange-500" aria-hidden="true" />
               <AlertDescription className="text-orange-700 dark:text-orange-300">
-                <strong>Excess material:</strong> {excessMessage}
+                <strong>{t("result.excess_label")}</strong> {excessMessage}
               </AlertDescription>
             </Alert>
           )}
 
-          {renderPresetSelector("Load Different Preset:")}
+          {renderPresetSelector("result.load_different")}
         </CardContent>
       </Card>
     );
@@ -516,15 +613,23 @@ export function ResultCard({
           <div className="flex flex-col gap-1">
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-orange-500" aria-hidden="true" />
-              Closest alloy: {bestMatch.recipe.name}
+              {t("result.closest", { alloy: getRecipeName(bestMatch.recipe.id) })}
             </CardTitle>
-            <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
-              <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
-              Not valid yet – adjust composition
-            </p>
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+                {t("result.not_valid_subtitle")}
+              </p>
+              {bestMatch.recipe.meltTempC && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Thermometer className="h-3 w-3" aria-hidden="true" />
+                  {t("result.temp_short", { temp: bestMatch.recipe.meltTempC })}
+                </span>
+              )}
+            </div>
           </div>
           <Badge variant="outline" className="border-orange-500 text-orange-500">
-            Not valid yet
+            {t("result.not_valid_badge")}
           </Badge>
         </div>
       </CardHeader>
@@ -534,12 +639,15 @@ export function ResultCard({
           <Alert className="border-orange-500/50 bg-orange-500/10" role="status" aria-live="polite">
             <AlertTriangle className="h-4 w-4 text-orange-500" aria-hidden="true" />
             <AlertDescription className="text-orange-700 dark:text-orange-300">
-              <strong>{adjustmentSummary}</strong> to create a valid {bestMatch.recipe.name} mix.
+              <strong>{t("result.valid_mix_hint", {
+                summary: adjustmentSummary,
+                alloy: getRecipeName(bestMatch.recipe.id),
+              })}</strong>
             </AlertDescription>
           </Alert>
         )}
 
-        {renderPresetSelector("Load Different Preset:")}
+        {renderPresetSelector("result.load_different")}
 
         {/* Adjust to Valid button */}
         {nuggetAdjustments.length > 0 && (
@@ -549,7 +657,7 @@ export function ResultCard({
             size="lg"
           >
             <Wand2 className="h-4 w-4 mr-2" />
-            Adjust to Valid {bestMatch.recipe.name}
+            {t("result.adjust_button", { alloy: getRecipeName(bestMatch.recipe.id) })}
           </Button>
         )}
 
@@ -558,12 +666,12 @@ export function ResultCard({
           <Alert variant="destructive" role="alert" aria-live="assertive">
             <XCircle className="h-4 w-4" aria-hidden="true" />
             <AlertDescription>
-              <strong>Contamination detected:</strong> This alloy contains metals
-              that shouldn't be present:{" "}
-              {bestMatch.violations
-                .filter((v) => !v.requiredMin && !v.requiredMax)
-                .map((v) => metalMap.get(v.metalId)?.label)
-                .join(", ")}
+              {t("result.contamination", {
+                metals: bestMatch.violations
+                  .filter((v) => !v.requiredMin && !v.requiredMax)
+                  .map((v) => getMetalLabel(v.metalId))
+                  .join(", ")
+              })}
             </AlertDescription>
           </Alert>
         )}

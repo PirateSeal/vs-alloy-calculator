@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { CrucibleSlotRow } from "./CrucibleSlotRow";
 import { Trash2 } from "lucide-react";
+import { useTranslation } from "@/i18n";
 
 
 interface CruciblePanelProps {
@@ -15,6 +16,7 @@ interface CruciblePanelProps {
 }
 
 export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }: CruciblePanelProps) {
+  const { t } = useTranslation();
   const handleSlotChange = (slotId: number, patch: Partial<typeof crucible.slots[0]>) => {
     const newSlots = crucible.slots.map(slot =>
       slot.id === slotId ? { ...slot, ...patch } : slot
@@ -51,25 +53,23 @@ export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="space-y-1.5">
-            <CardTitle>Crucible Inputs</CardTitle>
-            <CardDescription>
-              Add metals to your crucible. Each slot can hold 0-128 nuggets of a single metal type.
-            </CardDescription>
+            <CardTitle>{t("crucible.title")}</CardTitle>
+            <CardDescription>{t("crucible.description")}</CardDescription>
           </div>
           <Button
             variant="destructive"
             size="sm"
             onClick={handleClear}
-            aria-label="Clear all crucible slots"
+            aria-label={t("crucible.clear_all")}
             className="flex items-center gap-2"
           >
             <Trash2 className="h-4 w-4" />
-            Clear All
+            {t("crucible.clear_all")}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-4 gap-3" role="group" aria-label="Crucible slots">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3" role="group" aria-label={t("crucible.aria_group")}>
           {crucible.slots.map(slot => (
             <CrucibleSlotRow
               key={slot.id}
