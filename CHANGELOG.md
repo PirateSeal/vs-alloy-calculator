@@ -5,6 +5,19 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2026-04-17
+
+### Security
+- **Vite upgraded 8.0.3 → 8.0.8** — Patches three advisories affecting the dev server only (not the production bundle): path traversal in optimized-deps `.map` handling (GHSA-4w7w-66w2-5vf9, CVE-2026-39365), `server.fs.deny` bypass via query parameters (GHSA-v2wj-q39q-566r, CVE-2026-39364, high), and arbitrary file read via Vite dev-server WebSocket (high). All require `--host` / `server.host` exposure, which this project does not use, but upgraded as a hardening measure.
+- **hono / @hono/node-server pinned via pnpm overrides** — Transitive dependency under `shadcn` (dev-only CLI, never bundled). Forced to `hono@^4.12.14` and `@hono/node-server@^1.19.14` to clear seven moderate advisories: `setCookie` cookie-name validation, NBSP-prefix cookie-name bypass in `getCookie`, IPv4-mapped IPv6 handling in `ipRestriction`, `toSSG` path traversal, `serveStatic` repeated-slash middleware bypass (hono + @hono/node-server), and hono/jsx HTML injection via attribute names.
+- **`pnpm audit` now reports 0 vulnerabilities** (was 2 high, 8 moderate).
+
+### Reviewed — no action needed
+- All user input validated against whitelist sets (`VALID_METAL_IDS`, `VALID_RECIPE_IDS`) before use; URL-param parsing in `App.tsx` rejects unknown metal/recipe IDs, non-numeric nugget counts, and out-of-range values.
+- No `dangerouslySetInnerHTML`, `eval`, `document.write`, or `new Function` usage anywhere in `src/`.
+- All 17 `target="_blank"` external links carry `rel="noopener noreferrer"`.
+- No hardcoded API keys, tokens, or passwords in source.
+
 ## [1.7.1] - 2026-04-06
 
 ### Fixed
