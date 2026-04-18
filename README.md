@@ -1,6 +1,6 @@
 # 🔥 Vintage Story Alloy Calculator
 
-> A web-based calculator for Vintage Story alloy crafting
+> A web-based Vintage Story alloy calculator for bronze ratios, crucible planning, nugget counts, and ingot yield.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6-blue)](https://www.typescriptlang.org/)
@@ -8,7 +8,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8-646cff)](https://vitejs.dev/)
 [![Deployment](https://img.shields.io/github/actions/workflow/status/PirateSeal/vs-alloy-calculator/deploy.yml?branch=master&label=deployment)](https://github.com/PirateSeal/vs-alloy-calculator/actions)
 
-A dedicated Vintage Story helper for mapping crucible compositions to valid alloy recipes. The calculator simulates the in-game crucible (four slots, 0‑128 nuggets each), visualizes metal ratios in real-time, and validates whether your composition matches known recipes like Tin Bronze, Bismuth Bronze, Black Bronze, Brass, Electrum, and more.
+A dedicated Vintage Story helper for mapping crucible compositions to valid alloy recipes. The calculator simulates the in-game crucible (four slots, 0-128 nuggets each), visualizes metal ratios in real time, and validates whether your composition matches recipes like Tin Bronze, Bismuth Bronze, Black Bronze, Brass, Electrum, and more while showing exact nugget counts and ingot yield.
 
 ## ✨ Why This Exists
 

@@ -6,6 +6,7 @@ import {
   ExternalLink,
   Globe,
   Calculator,
+  Info,
   Languages,
   Link,
 } from "lucide-react";
@@ -24,7 +25,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-export type ShellTab = "calculator" | "reference";
+export type ShellTab = "calculator" | "reference" | "about";
 
 interface ShellNavigationProps {
   activeTab: ShellTab;
@@ -325,6 +326,13 @@ export function ShellNavigationRail({
             label={t("header.nav.reference")}
             onClick={() => onTabChange("reference")}
           />
+          <NavButton
+            active={activeTab === "about"}
+            collapsed={collapsed}
+            icon={Info}
+            label={t("header.nav.about")}
+            onClick={() => onTabChange("about")}
+          />
         </nav>
 
         <div className="mt-6 space-y-1.5 border-t border-border/20 pt-4">
@@ -391,6 +399,7 @@ export function ShellMobileNav({
   const items: Array<{ tab: ShellTab; label: string; icon: LucideIcon }> = [
     { tab: "calculator", label: t("header.nav.calculator"), icon: Calculator },
     { tab: "reference", label: t("header.nav.reference"), icon: BookOpen },
+    { tab: "about", label: t("header.nav.about"), icon: Info },
   ];
   const mobileActionClassName =
     "inline-flex h-10 w-10 items-center justify-center rounded-full bg-card/80 text-muted-foreground ring-1 ring-inset ring-border/20 transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
@@ -443,7 +452,7 @@ export function ShellMobileNav({
           </DropdownMenu>
           <ThemeToggle />
         </div>
-        <div className="mx-auto grid w-full max-w-3xl grid-cols-2 gap-2">
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-3 gap-2">
           {items.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.tab;

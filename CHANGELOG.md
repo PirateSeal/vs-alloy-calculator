@@ -5,6 +5,19 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-04-18
+
+### Added
+- **Dedicated About page** — Added a route-backed `About` page in the SPA so longer-form guide, FAQ, and trust-building content live on their own screen without getting in the way of the calculator-first experience.
+- **Route-aware static entries** — The production build now emits localized HTML entry points for `/`, `/reference/`, and `/about/`, including locale-prefixed variants such as `/fr/about/`.
+- **Search-focused landing content** — Introduced localized hero copy, supported-alloys summaries, workflow explanations, and FAQ content designed around Vintage Story alloy calculator search intent.
+
+### Changed
+- **SEO metadata expanded** — Titles, descriptions, canonical URLs, hreflang alternates, Open Graph, and Twitter metadata now adapt to the current SPA route instead of treating the entire app as a single page.
+- **Structured data improved** — Added FAQPage JSON-LD alongside the existing WebApplication schema and kept both synchronized with the localized SEO content source.
+- **Sitemap upgraded** — Refreshed the sitemap dates and added alternate-language annotations plus dedicated `/about/` URLs to improve crawler discovery.
+- **Repository positioning clarified** — Updated the README lead copy to better describe the app as a Vintage Story alloy ratio, nugget-count, and crucible-planning tool.
+
 ## [1.8.0] - 2026-04-18
 
 ### Added

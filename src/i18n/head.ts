@@ -1,22 +1,28 @@
 import { getSeoContent } from "./seo";
 import type { Locale } from "./types";
 
-function setMetaByName(name: string, content: string) {
-  const element = document.head.querySelector<HTMLMetaElement>(
-    `meta[name="${name}"]`,
-  );
-  if (element) {
-    element.setAttribute("content", content);
+function ensureMetaByName(name: string): HTMLMetaElement {
+  const existing = document.head.querySelector<HTMLMetaElement>(`meta[name="${name}"]`);
+  if (existing) {
+    return existing;
   }
+
+  const meta = document.createElement("meta");
+  meta.setAttribute("name", name);
+  document.head.appendChild(meta);
+  return meta;
 }
 
-function setMetaByProperty(property: string, content: string) {
-  const element = document.head.querySelector<HTMLMetaElement>(
-    `meta[property="${property}"]`,
-  );
-  if (element) {
-    element.setAttribute("content", content);
+function ensureMetaByProperty(property: string): HTMLMetaElement {
+  const existing = document.head.querySelector<HTMLMetaElement>(`meta[property="${property}"]`);
+  if (existing) {
+    return existing;
   }
+
+  const meta = document.createElement("meta");
+  meta.setAttribute("property", property);
+  document.head.appendChild(meta);
+  return meta;
 }
 
 function ensureLink(rel: string, selector: string): HTMLLinkElement {
@@ -32,20 +38,23 @@ function ensureLink(rel: string, selector: string): HTMLLinkElement {
 }
 
 export function applySeoToDocument(locale: Locale) {
-  const seo = getSeoContent(locale);
+  const seo = getSeoContent(locale, window.location.pathname);
 
   document.documentElement.lang = locale;
   document.title = seo.title;
 
-  setMetaByName("description", seo.description);
-  setMetaByName("keywords", seo.keywords);
-  setMetaByProperty("og:url", seo.canonicalUrl);
-  setMetaByProperty("og:title", seo.title);
-  setMetaByProperty("og:description", seo.description);
-  setMetaByProperty("og:locale", seo.localeCode);
-  setMetaByProperty("twitter:url", seo.canonicalUrl);
-  setMetaByProperty("twitter:title", seo.title);
-  setMetaByProperty("twitter:description", seo.description);
+  ensureMetaByName("description").setAttribute("content", seo.description);
+  ensureMetaByName("keywords").setAttribute("content", seo.keywords);
+  ensureMetaByProperty("og:url").setAttribute("content", seo.canonicalUrl);
+  ensureMetaByProperty("og:title").setAttribute("content", seo.title);
+  ensureMetaByProperty("og:description").setAttribute("content", seo.description);
+  ensureMetaByProperty("og:locale").setAttribute("content", seo.localeCode);
+  ensureMetaByProperty("og:site_name").setAttribute("content", seo.siteName);
+  ensureMetaByProperty("og:image").setAttribute("content", seo.socialImageUrl);
+  ensureMetaByProperty("twitter:url").setAttribute("content", seo.canonicalUrl);
+  ensureMetaByProperty("twitter:title").setAttribute("content", seo.title);
+  ensureMetaByProperty("twitter:description").setAttribute("content", seo.description);
+  ensureMetaByProperty("twitter:image").setAttribute("content", seo.socialImageUrl);
 
   const canonical = ensureLink("canonical", 'link[rel="canonical"]');
   canonical.setAttribute("href", seo.canonicalUrl);

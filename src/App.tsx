@@ -1,5 +1,6 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { DEFAULT_LOCALE, applySeoToDocument, getLocaleFromPath, stripLocalePrefix } from "@/i18n";
 import { METALS, ALLOY_RECIPES } from "./data/alloys";
 import type { AlloyRecipe, MetalId } from "./types/alloys";
 import type { CrucibleState } from "./types/crucible";
@@ -12,6 +13,7 @@ import {
 } from "./lib/alloyLogic";
 import { track } from "./lib/analytics";
 import { Header } from "./components/Header";
+import { SeoLandingContent } from "./components/SeoLandingContent";
 import { CalculatorControls } from "./components/CalculatorControls";
 import { CruciblePanel } from "./components/CruciblePanel";
 import { CompositionCard } from "./components/CompositionCard";
@@ -27,6 +29,44 @@ const AlloyReferenceTable = lazy(() =>
 
 const VALID_METAL_IDS = new Set<string>(METALS.map((metal) => metal.id));
 const VALID_RECIPE_IDS = new Set<string>(ALLOY_RECIPES.map((recipe) => recipe.id));
+const TAB_PATHS: Record<ShellTab, string> = {
+  calculator: "/",
+  reference: "/reference/",
+  about: "/about/",
+};
+
+function normalizeTabPath(pathname: string): string {
+  const stripped = stripLocalePrefix(pathname);
+  if (stripped === "/") {
+    return "/";
+  }
+
+  return stripped.endsWith("/") ? stripped : `${stripped}/`;
+}
+
+function getTabFromPath(pathname: string): ShellTab {
+  const normalized = normalizeTabPath(pathname);
+
+  if (normalized === "/reference/") {
+    return "reference";
+  }
+
+  if (normalized === "/about/") {
+    return "about";
+  }
+
+  return "calculator";
+}
+
+function getPathnameForTab(pathname: string, tab: ShellTab): string {
+  const locale = getLocaleFromPath(pathname);
+
+  if (!locale) {
+    return TAB_PATHS[tab];
+  }
+
+  return TAB_PATHS[tab] === "/" ? `/${locale}/` : `/${locale}${TAB_PATHS[tab]}`;
+}
 
 function parseStateFromURL(): { crucible: CrucibleState; recipe: AlloyRecipe | null } {
   const params = new URLSearchParams(window.location.search);
@@ -58,13 +98,19 @@ const { crucible: initialCrucible, recipe: initialRecipe } = parseStateFromURL()
 function App() {
   const [crucible, setCrucible] = useState<CrucibleState>(initialCrucible);
   const [selectedRecipe, setSelectedRecipe] = useState<AlloyRecipe | null>(initialRecipe);
-  const [activeTab, setActiveTab] = useState<ShellTab>("calculator");
+  const [activeTab, setActiveTab] = useState<ShellTab>(() => getTabFromPath(window.location.pathname));
   const [railCollapsed, setRailCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem("shell-rail-collapsed") === "true";
   });
 
   useEffect(() => {
+    if (activeTab !== "calculator") {
+      const nextUrl = `${window.location.pathname}${window.location.hash}`;
+      history.replaceState(null, "", nextUrl);
+      return;
+    }
+
     const params = new URLSearchParams();
     for (const slot of crucible.slots) {
       if (slot.metalId && slot.nuggets > 0) {
@@ -79,7 +125,17 @@ function App() {
       ? `${window.location.pathname}?${search}${window.location.hash}`
       : `${window.location.pathname}${window.location.hash}`;
     history.replaceState(null, "", nextUrl);
-  }, [crucible, selectedRecipe]);
+  }, [activeTab, crucible, selectedRecipe]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveTab(getTabFromPath(window.location.pathname));
+      applySeoToDocument(getLocaleFromPath(window.location.pathname) ?? DEFAULT_LOCALE);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem("shell-rail-collapsed", String(railCollapsed));
@@ -107,6 +163,10 @@ function App() {
 
   const handleTabChange = (tab: ShellTab) => {
     setActiveTab(tab);
+    const nextPathname = getPathnameForTab(window.location.pathname, tab);
+    const search = tab === "calculator" ? window.location.search : "";
+    history.pushState(null, "", `${nextPathname}${search}${window.location.hash}`);
+    applySeoToDocument(getLocaleFromPath(nextPathname) ?? DEFAULT_LOCALE);
     track("tab-switched", { tab });
   };
 
@@ -174,6 +234,8 @@ function App() {
                   />
                 </aside>
               </div>
+            ) : activeTab === "about" ? (
+              <SeoLandingContent />
             ) : (
               <Suspense
                 fallback={

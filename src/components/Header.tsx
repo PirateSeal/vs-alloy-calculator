@@ -1,7 +1,8 @@
 import { useTranslation } from "@/i18n";
+import type { ShellTab } from "./ShellNavigation";
 
 interface HeaderProps {
-  activeTab: "calculator" | "reference";
+  activeTab: ShellTab;
 }
 
 export function Header({ activeTab }: HeaderProps) {
@@ -16,9 +17,9 @@ export function Header({ activeTab }: HeaderProps) {
         <div className="flex min-w-0 items-center gap-3">
           <div className="min-w-0">
             <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <h1 className="truncate text-sm font-semibold text-foreground sm:text-base">
+              <p className="truncate text-sm font-semibold text-foreground sm:text-base">
                 {t("header.title")}
-              </h1>
+              </p>
               <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary">
                 {t(`header.nav.${activeTab}`)}
               </span>

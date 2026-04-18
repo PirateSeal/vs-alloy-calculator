@@ -8,6 +8,7 @@ import { SUPPORTED_LOCALES } from './src/i18n/routing'
 import { localizeHtmlDocument } from './src/i18n/seo'
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
+const APP_ROUTES = ['/', '/reference/', '/about/'] as const
 
 function localizedHtmlPlugin() {
   return {
@@ -17,13 +18,21 @@ function localizedHtmlPlugin() {
       const indexPath = join(outDir, 'index.html')
       const rootHtml = readFileSync(indexPath, 'utf-8')
 
-      for (const locale of SUPPORTED_LOCALES) {
-        const localizedHtml = localizeHtmlDocument(rootHtml, locale)
-        const targetPath =
-          locale === 'en' ? indexPath : join(outDir, locale, 'index.html')
+      for (const route of APP_ROUTES) {
+        for (const locale of SUPPORTED_LOCALES) {
+          const localizedHtml = localizeHtmlDocument(rootHtml, locale, route)
+          const targetPath =
+            locale === 'en'
+              ? route === '/'
+                ? indexPath
+                : join(outDir, route.slice(1), 'index.html')
+              : route === '/'
+                ? join(outDir, locale, 'index.html')
+                : join(outDir, locale, route.slice(1), 'index.html')
 
-        mkdirSync(path.dirname(targetPath), { recursive: true })
-        writeFileSync(targetPath, localizedHtml)
+          mkdirSync(path.dirname(targetPath), { recursive: true })
+          writeFileSync(targetPath, localizedHtml)
+        }
       }
     },
   }
