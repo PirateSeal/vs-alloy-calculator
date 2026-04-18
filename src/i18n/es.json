@@ -5,10 +5,8 @@
   "common.nuggets": "pepitas",
   "common.unit": "unidad",
   "common.units": "unidades",
-
   "theme.toggle_to_dark": "Cambiar al tema oscuro",
   "theme.toggle_to_light": "Cambiar al tema claro",
-
   "header.title": "Calculadora de Aleaciones de Vintage Story",
   "header.subtitle": "Calcula composiciones de aleaciones válidas para tu crisol. Datos extraídos del wiki de Vintage Story.",
   "header.logo_alt": "Calculadora de aleaciones de Vintage Story",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "Contraer navegación",
   "header.share.copy": "Copiar enlace",
   "header.share.copied": "¡Enlace copiado!",
-
   "crucible.title": "Contenido del Crisol",
   "crucible.description": "Añade metales a tu crisol. Cada ranura puede contener 0-128 pepitas de un solo tipo de metal.",
   "crucible.clear_all": "Vaciar todo",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "Cantidad de pepitas para la ranura {n}",
   "crucible.slot.input_aria": "Entrada de pepitas para la ranura {n}",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "Composición actual",
   "composition.empty": "Crisol vacío",
   "composition.total_amount": "Cantidad total",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "Barra de composición: {segments}",
   "composition.bar_chart_segment": "{metal} {percent} %",
   "composition.segment_title": "{metal}: {percent} %",
-
   "result.title": "Resultado de aleación",
   "result.current_product": "Producto actual",
   "result.empty": "Añade metales al crisol para ver los resultados",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove} ({units} {unitsLabel}) para obtener exactamente {ingots}.",
   "result.excess_remove_or_add": "{remove} ({units} {unitsLabel}) o {add} para obtener {ingots}.",
   "result.valid_mix_hint": "{summary} para crear una mezcla válida de {alloy}.",
-
   "reference.title": "Referencia de aleaciones",
   "reference.search_placeholder": "Buscar aleaciones...",
   "reference.filter_by_metal": "Filtrar por metal",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Ver en el wiki",
   "reference.wiki_aria": "Ver {alloy} en el wiki",
   "reference.component_range_title": "{metal}: {min}-{max} %",
-
   "footer.copyright": "Assets y datos © Anego Studios / Vintage Story",
   "footer.credits": "Créditos",
   "footer.privacy": "Privacidad",
   "footer.license": "Licencia MIT",
   "footer.github": "GitHub",
-
   "credits.title": "Créditos y licencias",
   "credits.assets.title": "Recursos del juego y datos",
   "credits.assets.body_before": "Todas las imágenes del juego, los logos y los datos de recetas de aleaciones siguen siendo propiedad intelectual de",
@@ -117,7 +109,6 @@
   "credits.project.title": "Este proyecto",
   "credits.project.body_before": "El código fuente está bajo la",
   "credits.project.body_after": ". Este proyecto no está afiliado con Anego Studios.",
-
   "privacy.title": "Privacidad",
   "privacy.analytics.title": "Analítica",
   "privacy.analytics.body_before": "Este sitio usa",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "y se usa para recordar el idioma y el tema elegidos.",
   "privacy.compliance.title": "Cumplimiento",
   "privacy.compliance.body": "Como no se recopilan datos personales, este sitio puede funcionar sin banner de consentimiento de cookies según GDPR, CCPA y la Directiva ePrivacy.",
-
   "metal.copper.label": "Cobre",
   "metal.copper.short": "Cu",
   "metal.tin.label": "Estaño",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "Níquel",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "Bronce de estaño",
   "alloy.tin-bronze.notes": "Herramientas y armas comunes",
   "alloy.bismuth-bronze.name": "Bronce de bismuto",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "Metal decorativo",
   "alloy.electrum.name": "Electro",
   "alloy.electrum.notes": "Metal decorativo",
-
-  "app.translation_notice": "Esta traducción fue generada automáticamente y puede no ser completamente precisa. / This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "Esta traducción fue generada automáticamente y puede no ser completamente precisa. / This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "Metalurgia",
+  "header.nav.planner": "Planificador",
+  "header.nav.metallurgy_tools": "Herramientas de metalurgia",
+  "planner.title": "Planificador de metalurgia",
+  "planner.description": "Planifica a partir de tu inventario, convierte aleaciones en tandas reales de crisol y compara los compromisos de escasez antes de gastar metales raros.",
+  "planner.discovery.label": "Modo descubrimiento",
+  "planner.mode.label": "Método",
+  "planner.mode.balanced": "Equilibrado",
+  "planner.mode.economical": "Económico",
+  "planner.mode.preserve_copper": "Conservar cobre",
+  "planner.mode.max_output": "Máxima producción",
+  "planner.inventory.title": "Planificación basada en inventario",
+  "planner.inventory.description": "Introduce tus pepitas actuales por metal. El planificador solo busca lo que realmente puedes ejecutar con las restricciones reales del crisol.",
+  "planner.inventory.clear": "Vaciar inventario",
+  "planner.inventory.metal_aria": "Pepitas de {metal} en el inventario",
+  "planner.inventory.total_nuggets": "{n} pepitas en stock",
+  "planner.inventory.total_ingots": "{n} equivalentes a lingotes",
+  "planner.target.title": "Plan de receta",
+  "planner.target.description": "Elige una receta, fija un objetivo y el planificador construirá tandas ejecutables que se mantengan dentro de los cuatro espacios del crisol.",
+  "planner.target.ingots_aria": "Cantidad de lingotes solicitada",
+  "planner.target.recipe": "Aleación seleccionada",
+  "planner.target.max_craftable": "Máximo fabricable: {n} lingotes",
+  "planner.target.limiting_metal": "Metal limitante: {metal}",
+  "planner.target.none": "Ninguno",
+  "planner.target.breakpoints": "Puntos de corte",
+  "planner.target.minimum_valid": "Lote válido más pequeño con este stock: {n}",
+  "planner.target.previous_valid": "Objetivo válido más cercano igual o inferior a tu petición: {n}",
+  "planner.target.next_valid": "Siguiente punto de corte válido por encima de tu petición: {n}",
+  "planner.target.next_valid_none": "No hay un punto de corte válido más alto con el stock actual",
+  "planner.target.invalid_target": "{n} lingotes no es un punto de corte válido para este inventario. Objetivo válido más cercano igual o inferior a tu petición: {previous}. Siguiente punto de corte válido: {next}.",
+  "planner.plan.summary_title": "Resumen del plan",
+  "planner.plan.total_ingots": "{n} lingotes planificados",
+  "planner.plan.total_runs": "{n} tandas de crisol",
+  "planner.plan.leftovers": "Sobras después de este plan: {inventory}",
+  "planner.plan.tradeoff_title": "Resumen de compensaciones",
+  "planner.plan.consumed": "Consume: {inventory}",
+  "planner.plan.remaining": "Conserva: {inventory}",
+  "planner.run.title": "Tanda {n}",
+  "planner.run.subtitle": "{ingots} lingotes a partir de {consumed}",
+  "planner.run.open_in_calculator": "Abrir en la calculadora",
+  "planner.run.crucible_load": "Carga del crisol",
+  "planner.run.remaining_inventory": "Inventario después de esta tanda",
+  "planner.run.slot_nuggets": "{n} pepitas",
+  "planner.find.empty": "Añade inventario para ver qué aleaciones se pueden fabricar ahora mismo.",
+  "planner.find.open_plan": "Abrir plan de receta",
+  "planner.find.hide_plan": "Ocultar plan de receta",
+  "planner.find.max_output": "Fabricable ahora: {n} lingotes",
+  "planner.find.limiting_metal": "Metal limitante: {metal}",
+  "planner.find.run_summary": "Resumen de tandas",
+  "header": {
+    "domain": {
+      "metallurgy": "Metalurgia"
+    },
+    "nav": {
+      "planner": "Planificador",
+      "metallurgy_tools": "Herramientas de metalurgia"
+    }
+  },
+  "planner": {
+    "title": "Planificador de metalurgia",
+    "description": "Planifica desde tu inventario, convierte aleaciones en tandas reales de crisol y compara los compromisos de escasez antes de gastar metales raros.",
+    "discovery": {
+      "label": "Modo descubrimiento"
+    },
+    "mode": {
+      "label": "Método",
+      "balanced": "Equilibrado",
+      "economical": "Económico",
+      "preserve_copper": "Conservar cobre",
+      "max_output": "Producción máxima"
+    },
+    "inventory": {
+      "title": "Planificación guiada por inventario",
+      "description": "Introduce tus pepitas actuales por metal. El planificador solo busca lo que realmente puedes ejecutar con restricciones reales de crisol.",
+      "clear": "Vaciar inventario",
+      "metal_aria": "Pepitas de {metal} en el inventario",
+      "total_nuggets": "{n} pepitas en stock",
+      "total_ingots": "{n} equivalentes en lingotes"
+    },
+    "target": {
+      "title": "Plan de aleación objetivo",
+      "description": "Elige una receta, fija un objetivo y el planificador construirá tandas ejecutables que se mantengan dentro de cuatro ranuras de crisol.",
+      "ingots_aria": "Cantidad de lingotes solicitada",
+      "recipe": "Aleación seleccionada",
+      "max_craftable": "Máximo fabricable: {n} lingotes",
+      "limiting_metal": "Metal limitante: {metal}",
+      "none": "Ninguno",
+      "breakpoints": "Puntos de corte",
+      "minimum_valid": "Lote válido más pequeño con este stock: {n}",
+      "previous_valid": "Objetivo válido más cercano en o por debajo de tu solicitud: {n}",
+      "next_valid": "Siguiente punto de corte válido por encima de tu solicitud: {n}",
+      "next_valid_none": "No hay un punto de corte válido más alto con el stock actual",
+      "invalid_target": "{n} lingotes no es un punto de corte válido para este inventario. El valor válido más cercano en o por debajo de tu solicitud es: {previous}. El siguiente punto de corte válido es: {next}."
+    },
+    "plan": {
+      "summary_title": "Resumen del plan",
+      "total_ingots": "{n} lingotes planificados",
+      "total_runs": "{n} tandas de crisol",
+      "leftovers": "Restos después de este plan: {inventory}",
+      "tradeoff_title": "Resumen de compromisos",
+      "consumed": "Consume: {inventory}",
+      "remaining": "Conserva: {inventory}"
+    },
+    "run": {
+      "title": "Tanda {n}",
+      "subtitle": "{ingots} lingotes a partir de {consumed}",
+      "open_in_calculator": "Abrir en la calculadora",
+      "crucible_load": "Carga del crisol",
+      "remaining_inventory": "Inventario después de esta tanda",
+      "slot_nuggets": "{n} pepitas"
+    },
+    "find": {
+      "empty": "Añade inventario para ver qué aleaciones se pueden fabricar ahora mismo.",
+      "open_plan": "Abrir plan de receta",
+      "hide_plan": "Ocultar plan de receta",
+      "max_output": "Fabricable ahora: {n} lingotes",
+      "limiting_metal": "Metal limitante: {metal}",
+      "run_summary": "Resumen de tandas"
+    }
+  }
 }

@@ -5,6 +5,23 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-04-19
+
+### Added
+- **Metallurgy planner** - Added a new planner workflow that starts from aggregate metal inventory, surfaces currently craftable alloys, compares scarcity strategies, and expands into per-recipe crucible run plans with calculator deep-links.
+- **Domain-ready navigation model** - Refactored the app shell and routing around `Metallurgy` tools so `Calculator`, `Planner`, `Reference`, and `About` can coexist cleanly now without blocking a later `Leatherwork` expansion.
+- **Planner URL state and test coverage** - Added dedicated planner routing/state handling plus tests for route restoration, inventory planning logic, scarcity ranking, and multi-run execution constraints.
+
+### Changed
+- **Planner simplified around discovery** - Removed the separate top-level `Plan a specific alloy` mode and folded recipe drill-down into the discovery results, while keeping the scarcity-method selector available in the main planner flow.
+- **Planner copy localized across all supported languages** - Completed the new planner and metallurgy-navigation translations for French, German, Spanish, Russian, Chinese, Japanese, Korean, Polish, and Portuguese.
+- **Planner SEO coverage completed** - Added dedicated planner static HTML output, localized planner route metadata, and sitemap generation so `/planner/` and its localized variants are discoverable by search engines.
+- **i18n loading made nested-key safe** - Updated the translation provider to flatten nested locale objects at load time so new structured planner/header locale sections continue to work with the existing dot-key `t()` lookups.
+
+### Fixed
+- **Planner hero surface** - Removed the bottom strip artifact on the planner hero card so the background treatment fills the full rounded surface cleanly.
+- **Breakpoint guidance wording** - Planner breakpoints no longer show `0` as the `next valid breakpoint` when no higher craftable target exists; the UI now reports that state explicitly.
+
 ## [1.9.2] - 2026-04-18
 
 ### Changed
@@ -310,3 +327,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tailwind CSS and Radix UI integration
 - Build tooling configuration (Vite, PostCSS, TypeScript)
 - Path alias support for cleaner imports
+
+

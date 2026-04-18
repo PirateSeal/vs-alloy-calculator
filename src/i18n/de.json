@@ -5,10 +5,8 @@
   "common.nuggets": "Nuggets",
   "common.unit": "Einheit",
   "common.units": "Einheiten",
-
   "theme.toggle_to_dark": "Zum dunklen Thema wechseln",
   "theme.toggle_to_light": "Zum hellen Thema wechseln",
-
   "header.title": "Vintage Story Legierungsrechner",
   "header.subtitle": "Berechne gültige Legierungszusammensetzungen für deinen Tiegel. Daten aus dem Vintage Story Wiki.",
   "header.logo_alt": "Vintage Story Legierungsrechner",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "Navigation reduzieren",
   "header.share.copy": "Link kopieren",
   "header.share.copied": "Link kopiert!",
-
   "crucible.title": "Tiegelinhalt",
   "crucible.description": "Füge Metalle zu deinem Tiegel hinzu. Jeder Slot kann 0-128 Nuggets eines einzelnen Metalltyps aufnehmen.",
   "crucible.clear_all": "Alles leeren",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "Nuggetmenge für Slot {n}",
   "crucible.slot.input_aria": "Nugget-Eingabe für Slot {n}",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "Aktuelle Zusammensetzung",
   "composition.empty": "Leerer Tiegel",
   "composition.total_amount": "Gesamtmenge",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "Zusammensetzungsbalken: {segments}",
   "composition.bar_chart_segment": "{metal} {percent} %",
   "composition.segment_title": "{metal}: {percent} %",
-
   "result.title": "Legierungsergebnis",
   "result.current_product": "Aktuelles Produkt",
   "result.empty": "Füge Metalle hinzu, um Ergebnisse zu sehen",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove} ({units} {unitsLabel}), um genau {ingots} zu erhalten.",
   "result.excess_remove_or_add": "{remove} ({units} {unitsLabel}) oder {add}, um {ingots} zu erhalten.",
   "result.valid_mix_hint": "{summary}, um eine gültige {alloy}-Mischung zu erhalten.",
-
   "reference.title": "Legierungsreferenz",
   "reference.search_placeholder": "Legierungen suchen...",
   "reference.filter_by_metal": "Nach Metall filtern",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Im Wiki ansehen",
   "reference.wiki_aria": "{alloy} im Wiki ansehen",
   "reference.component_range_title": "{metal}: {min}-{max} %",
-
   "footer.copyright": "Assets & Daten © Anego Studios / Vintage Story",
   "footer.credits": "Mitwirkende",
   "footer.privacy": "Datenschutz",
   "footer.license": "MIT-Lizenz",
   "footer.github": "GitHub",
-
   "credits.title": "Credits & Lizenzen",
   "credits.assets.title": "Spielressourcen & Daten",
   "credits.assets.body_before": "Alle Spielbilder, Logos und Legierungsdaten bleiben geistiges Eigentum von",
@@ -117,7 +109,6 @@
   "credits.project.title": "Dieses Projekt",
   "credits.project.body_before": "Der Quellcode steht unter der",
   "credits.project.body_after": ". Dieses Projekt ist nicht mit Anego Studios verbunden.",
-
   "privacy.title": "Datenschutz",
   "privacy.analytics.title": "Analytics",
   "privacy.analytics.body_before": "Diese Seite verwendet",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "und dient dazu, Sprache und Theme zu speichern.",
   "privacy.compliance.title": "Compliance",
   "privacy.compliance.body": "Da keine personenbezogenen Daten erhoben werden, kann diese Seite ohne Cookie-Banner im Rahmen von DSGVO, CCPA und ePrivacy-Richtlinie betrieben werden.",
-
   "metal.copper.label": "Kupfer",
   "metal.copper.short": "Cu",
   "metal.tin.label": "Zinn",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "Nickel",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "Zinnbronze",
   "alloy.tin-bronze.notes": "Gewöhnliche Werkzeuge und Waffen",
   "alloy.bismuth-bronze.name": "Bismutbronze",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "Dekoratives Metall",
   "alloy.electrum.name": "Elektrum",
   "alloy.electrum.notes": "Dekoratives Metall",
-
-  "app.translation_notice": "Diese Übersetzung wurde maschinell erstellt und ist möglicherweise nicht vollständig korrekt. / This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "Diese Übersetzung wurde maschinell erstellt und ist möglicherweise nicht vollständig korrekt. / This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "Metallurgie",
+  "header.nav.planner": "Planer",
+  "header.nav.metallurgy_tools": "Metallurgie-Werkzeuge",
+  "planner.title": "Metallurgie-Planer",
+  "planner.description": "Plane auf Basis deines Inventars, wandle Legierungen in echte Tiegeldurchgänge um und vergleiche Seltenheits-Abwägungen, bevor du seltene Metalle ausgibst.",
+  "planner.discovery.label": "Entdeckungsmodus",
+  "planner.mode.label": "Methode",
+  "planner.mode.balanced": "Ausgewogen",
+  "planner.mode.economical": "Wirtschaftlich",
+  "planner.mode.preserve_copper": "Kupfer sparen",
+  "planner.mode.max_output": "Maximaler Ertrag",
+  "planner.inventory.title": "Inventarbasierte Planung",
+  "planner.inventory.description": "Gib deine aktuellen Nuggets je Metall ein. Der Planer sucht nur nach dem, was du mit echten Tiegelgrenzen wirklich herstellen kannst.",
+  "planner.inventory.clear": "Inventar leeren",
+  "planner.inventory.metal_aria": "{metal}-Nuggets im Inventar",
+  "planner.inventory.total_nuggets": "{n} Nuggets auf Lager",
+  "planner.inventory.total_ingots": "{n} Barren-Äquivalente",
+  "planner.target.title": "Rezeptplan",
+  "planner.target.description": "Wähle ein Rezept, setze ein Ziel, und der Planer erstellt ausführbare Durchgänge, die innerhalb von vier Tiegelslots bleiben.",
+  "planner.target.ingots_aria": "Gewünschte Barrenanzahl",
+  "planner.target.recipe": "Ausgewählte Legierung",
+  "planner.target.max_craftable": "Maximal herstellbar: {n} Barren",
+  "planner.target.limiting_metal": "Begrenzendes Metall: {metal}",
+  "planner.target.none": "Keine",
+  "planner.target.breakpoints": "Schwellenwerte",
+  "planner.target.minimum_valid": "Kleinste gültige Charge mit diesem Bestand: {n}",
+  "planner.target.previous_valid": "Nächstliegendes gültiges Ziel auf oder unter deiner Anfrage: {n}",
+  "planner.target.next_valid": "Nächster gültiger Schwellenwert über deiner Anfrage: {n}",
+  "planner.target.next_valid_none": "Kein höherer gültiger Schwellenwert mit dem aktuellen Bestand",
+  "planner.target.invalid_target": "{n} Barren sind kein gültiger Schwellenwert für dieses Inventar. Nächstliegendes gültiges Ziel auf oder unter deiner Anfrage: {previous}. Nächster gültiger Schwellenwert: {next}.",
+  "planner.plan.summary_title": "Planübersicht",
+  "planner.plan.total_ingots": "{n} geplante Barren",
+  "planner.plan.total_runs": "{n} Tiegeldurchgänge",
+  "planner.plan.leftovers": "Reste nach diesem Plan: {inventory}",
+  "planner.plan.tradeoff_title": "Abwägungsübersicht",
+  "planner.plan.consumed": "Verbraucht: {inventory}",
+  "planner.plan.remaining": "Behält: {inventory}",
+  "planner.run.title": "Durchgang {n}",
+  "planner.run.subtitle": "{ingots} Barren aus {consumed}",
+  "planner.run.open_in_calculator": "Im Rechner öffnen",
+  "planner.run.crucible_load": "Tiegelbeladung",
+  "planner.run.remaining_inventory": "Inventar nach diesem Durchgang",
+  "planner.run.slot_nuggets": "{n} Nuggets",
+  "planner.find.empty": "Füge Inventar hinzu, um zu sehen, welche Legierungen derzeit herstellbar sind.",
+  "planner.find.open_plan": "Rezeptplan öffnen",
+  "planner.find.hide_plan": "Rezeptplan ausblenden",
+  "planner.find.max_output": "Jetzt herstellbar: {n} Barren",
+  "planner.find.limiting_metal": "Begrenzendes Metall: {metal}",
+  "planner.find.run_summary": "Durchgangsübersicht",
+  "header": {
+    "domain": {
+      "metallurgy": "Metallurgie"
+    },
+    "nav": {
+      "planner": "Planer",
+      "metallurgy_tools": "Metallurgie-Werkzeuge"
+    }
+  },
+  "planner": {
+    "title": "Metallurgie-Planer",
+    "description": "Plane mit deinem Inventar, verwandle Legierungen in echte Tiegel-Durchgänge und vergleiche Knappheitsabwägungen, bevor du seltene Metalle verbrauchst.",
+    "discovery": {
+      "label": "Entdeckungsmodus"
+    },
+    "mode": {
+      "label": "Methode",
+      "balanced": "Ausgewogen",
+      "economical": "Sparsam",
+      "preserve_copper": "Kupfer schonen",
+      "max_output": "Maximale Ausbeute"
+    },
+    "inventory": {
+      "title": "Inventargesteuerte Planung",
+      "description": "Gib deine aktuellen Nuggets pro Metall ein. Der Planer sucht nur nach dem, was du unter echten Tiegel-Beschränkungen tatsächlich ausführen kannst.",
+      "clear": "Inventar leeren",
+      "metal_aria": "{metal}-Nuggets im Inventar",
+      "total_nuggets": "{n} Nuggets auf Lager",
+      "total_ingots": "{n} Barren-Äquivalente"
+    },
+    "target": {
+      "title": "Gezielter Legierungsplan",
+      "description": "Wähle ein Rezept, setze ein Ziel, und der Planer erstellt ausführbare Durchgänge, die innerhalb von vier Tiegelplätzen bleiben.",
+      "ingots_aria": "Gewünschte Barrenzahl",
+      "recipe": "Ausgewählte Legierung",
+      "max_craftable": "Maximal herstellbar: {n} Barren",
+      "limiting_metal": "Begrenzendes Metall: {metal}",
+      "none": "Keines",
+      "breakpoints": "Schwellenwerte",
+      "minimum_valid": "Kleinste gültige Charge aus diesem Bestand: {n}",
+      "previous_valid": "Nächstes gültiges Ziel auf oder unter deiner Anfrage: {n}",
+      "next_valid": "Nächster gültiger Schwellenwert über deiner Anfrage: {n}",
+      "next_valid_none": "Kein höherer gültiger Schwellenwert mit dem aktuellen Bestand",
+      "invalid_target": "{n} Barren sind für dieses Inventar kein gültiger Schwellenwert. Der nächste gültige Wert auf oder unter deiner Anfrage ist: {previous}. Der nächste höhere gültige Schwellenwert ist: {next}."
+    },
+    "plan": {
+      "summary_title": "Planübersicht",
+      "total_ingots": "{n} geplante Barren",
+      "total_runs": "{n} Tiegel-Durchgänge",
+      "leftovers": "Übrig nach diesem Plan: {inventory}",
+      "tradeoff_title": "Abwägungsüberblick",
+      "consumed": "Verbraucht: {inventory}",
+      "remaining": "Behält: {inventory}"
+    },
+    "run": {
+      "title": "Durchgang {n}",
+      "subtitle": "{ingots} Barren aus {consumed}",
+      "open_in_calculator": "Im Rechner öffnen",
+      "crucible_load": "Tiegel-Füllung",
+      "remaining_inventory": "Inventar nach diesem Durchgang",
+      "slot_nuggets": "{n} Nuggets"
+    },
+    "find": {
+      "empty": "Füge Inventar hinzu, um zu sehen, welche Legierungen aktuell herstellbar sind.",
+      "open_plan": "Rezeptplan öffnen",
+      "hide_plan": "Rezeptplan ausblenden",
+      "max_output": "Jetzt herstellbar: {n} Barren",
+      "limiting_metal": "Begrenzendes Metall: {metal}",
+      "run_summary": "Durchgangsübersicht"
+    }
+  }
 }

@@ -5,10 +5,8 @@
   "common.nuggets": "너겟",
   "common.unit": "단위",
   "common.units": "단위",
-
   "theme.toggle_to_dark": "다크 테마로 전환",
   "theme.toggle_to_light": "라이트 테마로 전환",
-
   "header.title": "Vintage Story 합금 계산기",
   "header.subtitle": "용광로에 맞는 유효한 합금 배합을 계산하세요. 데이터는 Vintage Story 위키에서 가져왔습니다.",
   "header.logo_alt": "Vintage Story 합금 계산기",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "탐색 접기",
   "header.share.copy": "공유 링크 복사",
   "header.share.copied": "링크가 복사되었습니다!",
-
   "crucible.title": "도가니 내용물",
   "crucible.description": "도가니에 금속을 추가하세요. 각 슬롯에는 동일한 금속 종류의 너겟을 최대 128개까지 넣을 수 있습니다.",
   "crucible.clear_all": "모두 지우기",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "슬롯 {n}의 너겟 수량",
   "crucible.slot.input_aria": "슬롯 {n}의 너겟 입력",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "현재 구성",
   "composition.empty": "도가니가 비어 있습니다",
   "composition.total_amount": "총 수량",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "구성 막대 차트: {segments}",
   "composition.bar_chart_segment": "{metal} {percent}%",
   "composition.segment_title": "{metal}: {percent}%",
-
   "result.title": "합금 결과",
   "result.current_product": "현재 결과물",
   "result.empty": "도가니에 금속을 추가하면 합금 결과가 표시됩니다",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "정확히 {ingots}을(를) 만들려면 {remove}({units} {unitsLabel}).",
   "result.excess_remove_or_add": "{ingots}을(를) 만들려면 {remove}({units} {unitsLabel}) 또는 {add}.",
   "result.valid_mix_hint": "유효한 {alloy} 혼합물을 만들려면 {summary}.",
-
   "reference.title": "합금 참고 자료",
   "reference.search_placeholder": "합금 검색...",
   "reference.filter_by_metal": "금속으로 필터",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "위키에서 보기",
   "reference.wiki_aria": "위키에서 {alloy} 보기",
   "reference.component_range_title": "{metal}: {min}–{max}%",
-
   "footer.copyright": "게임 에셋 및 데이터 © Anego Studios / Vintage Story",
   "footer.credits": "크레딧",
   "footer.privacy": "개인정보",
   "footer.license": "MIT 라이선스",
   "footer.github": "GitHub",
-
   "credits.title": "크레딧 및 라이선스",
   "credits.assets.title": "게임 에셋 및 데이터",
   "credits.assets.body_before": "모든 게임 이미지, 로고 및 합금 레시피 데이터는",
@@ -117,7 +109,6 @@
   "credits.project.title": "이 프로젝트",
   "credits.project.body_before": "소스 코드는",
   "credits.project.body_after": " 하에 배포됩니다. 이 프로젝트는 Anego Studios와 무관합니다.",
-
   "privacy.title": "개인정보",
   "privacy.analytics.title": "분석",
   "privacy.analytics.body_before": "이 사이트는",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "이며, 선택한 언어와 테마를 저장하는 데만 사용됩니다.",
   "privacy.compliance.title": "규정 준수",
   "privacy.compliance.body": "개인 데이터를 수집하지 않으므로, 이 사이트는 GDPR, CCPA 및 ePrivacy 지침에 따라 쿠키 동의 배너 없이 운영할 수 있습니다.",
-
   "metal.copper.label": "구리",
   "metal.copper.short": "Cu",
   "metal.tin.label": "주석",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "니켈",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "주석 청동",
   "alloy.tin-bronze.notes": "일반 도구와 무기",
   "alloy.bismuth-bronze.name": "비스무트 청동",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "장식용 금속",
   "alloy.electrum.name": "일렉트럼",
   "alloy.electrum.notes": "장식용 금속",
-
-  "app.translation_notice": "이 번역은 자동으로 생성되었으며 완전히 정확하지 않을 수 있습니다. / This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "이 번역은 자동으로 생성되었으며 완전히 정확하지 않을 수 있습니다. / This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "야금",
+  "header.nav.planner": "플래너",
+  "header.nav.metallurgy_tools": "야금 도구",
+  "planner.title": "야금 플래너",
+  "planner.description": "인벤토리를 기준으로 계획하고, 합금을 실제 도가니 작업 단계로 나누며, 희귀 금속을 쓰기 전에 선택지의 트레이드오프를 비교하세요.",
+  "planner.discovery.label": "탐색 모드",
+  "planner.mode.label": "방법",
+  "planner.mode.balanced": "균형형",
+  "planner.mode.economical": "절약형",
+  "planner.mode.preserve_copper": "구리 보존",
+  "planner.mode.max_output": "최대 생산",
+  "planner.inventory.title": "인벤토리 기반 계획",
+  "planner.inventory.description": "금속별 현재 너겟 수를 입력하세요. 플래너는 실제 도가니 제약 안에서 실제로 실행 가능한 것만 찾습니다.",
+  "planner.inventory.clear": "인벤토리 비우기",
+  "planner.inventory.metal_aria": "인벤토리의 {metal} 너겟",
+  "planner.inventory.total_nuggets": "보유 중인 너겟 {n}개",
+  "planner.inventory.total_ingots": "{n}개 주괴 상당",
+  "planner.target.title": "레시피 계획",
+  "planner.target.description": "레시피를 선택하고 목표를 정하면, 플래너가 4개의 도가니 슬롯 안에서 실행 가능한 작업을 구성합니다.",
+  "planner.target.ingots_aria": "요청한 주괴 수",
+  "planner.target.recipe": "선택된 합금",
+  "planner.target.max_craftable": "최대 제작 가능: {n}개 주괴",
+  "planner.target.limiting_metal": "제한 금속: {metal}",
+  "planner.target.none": "없음",
+  "planner.target.breakpoints": "브레이크포인트",
+  "planner.target.minimum_valid": "현재 재고에서 가능한 최소 유효 배치: {n}",
+  "planner.target.previous_valid": "요청 이하에서 가장 가까운 유효 목표: {n}",
+  "planner.target.next_valid": "요청보다 큰 다음 유효 브레이크포인트: {n}",
+  "planner.target.next_valid_none": "현재 재고로는 더 높은 유효 브레이크포인트가 없습니다",
+  "planner.target.invalid_target": "{n}개 주괴는 이 인벤토리에서 유효한 브레이크포인트가 아닙니다. 요청 이하에서 가장 가까운 유효 목표: {previous}. 다음 유효 브레이크포인트: {next}.",
+  "planner.plan.summary_title": "계획 요약",
+  "planner.plan.total_ingots": "{n}개 주괴 계획",
+  "planner.plan.total_runs": "도가니 작업 {n}회",
+  "planner.plan.leftovers": "이 계획 후 남는 재고: {inventory}",
+  "planner.plan.tradeoff_title": "트레이드오프 요약",
+  "planner.plan.consumed": "소모: {inventory}",
+  "planner.plan.remaining": "보존: {inventory}",
+  "planner.run.title": "작업 {n}",
+  "planner.run.subtitle": "{consumed}로 {ingots}개 주괴",
+  "planner.run.open_in_calculator": "계산기에서 열기",
+  "planner.run.crucible_load": "도가니 투입량",
+  "planner.run.remaining_inventory": "이 작업 후 인벤토리",
+  "planner.run.slot_nuggets": "{n}개 너겟",
+  "planner.find.empty": "현재 제작 가능한 합금을 보려면 인벤토리를 입력하세요.",
+  "planner.find.open_plan": "레시피 계획 열기",
+  "planner.find.hide_plan": "레시피 계획 숨기기",
+  "planner.find.max_output": "지금 제작 가능: {n}개 주괴",
+  "planner.find.limiting_metal": "제한 금속: {metal}",
+  "planner.find.run_summary": "작업 요약",
+  "header": {
+    "domain": {
+      "metallurgy": "야금"
+    },
+    "nav": {
+      "planner": "플래너",
+      "metallurgy_tools": "야금 도구"
+    }
+  },
+  "planner": {
+    "title": "야금 플래너",
+    "description": "인벤토리에서 계획을 세우고, 합금을 실제 도가니 작업 단위로 나누며, 희귀 금속을 쓰기 전에 희소성 기준의 선택지를 비교하세요.",
+    "discovery": {
+      "label": "탐색 모드"
+    },
+    "mode": {
+      "label": "방식",
+      "balanced": "균형",
+      "economical": "절약",
+      "preserve_copper": "구리 보존",
+      "max_output": "최대 생산"
+    },
+    "inventory": {
+      "title": "인벤토리 기반 계획",
+      "description": "현재 보유한 너깃 수를 금속별로 입력하세요. 플래너는 실제 도가니 제약 안에서 정말 실행 가능한 경우만 찾습니다.",
+      "clear": "인벤토리 비우기",
+      "metal_aria": "인벤토리의 {metal} 너깃",
+      "total_nuggets": "보유 너깃 {n}개",
+      "total_ingots": "주괴 환산 {n}개"
+    },
+    "target": {
+      "title": "목표 합금 계획",
+      "description": "레시피를 고르고 목표치를 설정하면, 플래너가 도가니 4칸 안에서 실행 가능한 작업 단위를 구성합니다.",
+      "ingots_aria": "요청한 주괴 수량",
+      "recipe": "선택한 합금",
+      "max_craftable": "최대 제작 가능: {n}개 주괴",
+      "limiting_metal": "제한 금속: {metal}",
+      "none": "없음",
+      "breakpoints": "구간 기준",
+      "minimum_valid": "이 재고에서 가능한 최소 유효 배치: {n}",
+      "previous_valid": "요청 이하에서 가장 가까운 유효 목표: {n}",
+      "next_valid": "요청보다 큰 다음 유효 구간: {n}",
+      "next_valid_none": "현재 재고로는 더 높은 유효 구간이 없습니다",
+      "invalid_target": "{n}개 주괴는 이 인벤토리에서 유효한 구간이 아닙니다. 요청 이하에서 가장 가까운 유효 값은 {previous}이고, 다음 유효 구간은 {next}입니다."
+    },
+    "plan": {
+      "summary_title": "계획 요약",
+      "total_ingots": "계획된 주괴 {n}개",
+      "total_runs": "도가니 작업 {n}회",
+      "leftovers": "이 계획 후 남는 재고: {inventory}",
+      "tradeoff_title": "선택지 요약",
+      "consumed": "소모: {inventory}",
+      "remaining": "보존: {inventory}"
+    },
+    "run": {
+      "title": "작업 {n}",
+      "subtitle": "{consumed}로 {ingots}개 주괴",
+      "open_in_calculator": "계산기에서 열기",
+      "crucible_load": "도가니 투입량",
+      "remaining_inventory": "이 작업 후 인벤토리",
+      "slot_nuggets": "{n} 너깃"
+    },
+    "find": {
+      "empty": "인벤토리를 입력하면 지금 제작 가능한 합금을 확인할 수 있습니다.",
+      "open_plan": "레시피 계획 열기",
+      "hide_plan": "레시피 계획 숨기기",
+      "max_output": "지금 제작 가능: {n}개 주괴",
+      "limiting_metal": "제한 금속: {metal}",
+      "run_summary": "작업 요약"
+    }
+  }
 }

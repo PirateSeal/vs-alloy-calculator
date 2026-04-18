@@ -5,10 +5,8 @@
   "common.nuggets": "pépites",
   "common.unit": "unité",
   "common.units": "unités",
-
   "theme.toggle_to_dark": "Passer au thème sombre",
   "theme.toggle_to_light": "Passer au thème clair",
-
   "header.title": "Calculateur d'Alliages Vintage Story",
   "header.subtitle": "Calculez des compositions d'alliages valides pour votre creuset. Données issues du wiki Vintage Story.",
   "header.logo_alt": "Calculateur d'alliages Vintage Story",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "Réduire la navigation",
   "header.share.copy": "Copier le lien",
   "header.share.copied": "Lien copié !",
-
   "crucible.title": "Contenu du Creuset",
   "crucible.description": "Ajoutez des métaux à votre creuset. Chaque emplacement peut contenir 0-128 pépites d'un seul type de métal.",
   "crucible.clear_all": "Tout vider",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "Quantité de pépites pour l'emplacement {n}",
   "crucible.slot.input_aria": "Saisie de pépites pour l'emplacement {n}",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "Composition actuelle",
   "composition.empty": "Creuset vide",
   "composition.total_amount": "Quantité totale",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "Barre de composition : {segments}",
   "composition.bar_chart_segment": "{metal} {percent} %",
   "composition.segment_title": "{metal} : {percent} %",
-
   "result.title": "Résultat d'alliage",
   "result.current_product": "Produit actuel",
   "result.empty": "Ajoutez des métaux pour voir les résultats",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove} ({units} {unitsLabel}) pour obtenir exactement {ingots}.",
   "result.excess_remove_or_add": "{remove} ({units} {unitsLabel}) ou {add} pour obtenir {ingots}.",
   "result.valid_mix_hint": "{summary} pour obtenir un mélange {alloy} valide.",
-
   "reference.title": "Référence des alliages",
   "reference.search_placeholder": "Rechercher un alliage...",
   "reference.filter_by_metal": "Filtrer par métal",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Voir sur le wiki",
   "reference.wiki_aria": "Voir {alloy} sur le wiki",
   "reference.component_range_title": "{metal} : {min}-{max} %",
-
   "footer.copyright": "Assets & données © Anego Studios / Vintage Story",
   "footer.credits": "Crédits",
   "footer.privacy": "Confidentialité",
   "footer.license": "Licence MIT",
   "footer.github": "GitHub",
-
   "credits.title": "Crédits & Licences",
   "credits.assets.title": "Ressources du jeu & données",
   "credits.assets.body_before": "Toutes les images du jeu, les logos et les données des recettes d'alliages restent la propriété intellectuelle de",
@@ -117,7 +109,6 @@
   "credits.project.title": "Ce projet",
   "credits.project.body_before": "Le code source est sous",
   "credits.project.body_after": ". Ce projet n'est pas affilié à Anego Studios.",
-
   "privacy.title": "Confidentialité",
   "privacy.analytics.title": "Analytics",
   "privacy.analytics.body_before": "Ce site utilise",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "pour mémoriser la langue et le thème choisis.",
   "privacy.compliance.title": "Conformité",
   "privacy.compliance.body": "Comme aucune donnée personnelle n'est collectée, ce site peut fonctionner sans bannière de consentement aux cookies au regard du RGPD, du CCPA et de la directive ePrivacy.",
-
   "metal.copper.label": "Cuivre",
   "metal.copper.short": "Cu",
   "metal.tin.label": "Étain",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "Nickel",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "Bronze-étain",
   "alloy.tin-bronze.notes": "Outils et armes courants",
   "alloy.bismuth-bronze.name": "Bronze-bismuth",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "Métal décoratif",
   "alloy.electrum.name": "Électrum",
   "alloy.electrum.notes": "Métal décoratif",
-
-  "app.translation_notice": ""
+  "app.translation_notice": "",
+  "header.domain.metallurgy": "Métallurgie",
+  "header.nav.planner": "Planificateur",
+  "header.nav.metallurgy_tools": "Outils de métallurgie",
+  "planner.title": "Planificateur de métallurgie",
+  "planner.description": "Planifiez à partir de votre inventaire, transformez des alliages en fournées réelles de creuset et comparez les compromis de rareté avant de dépenser des métaux rares.",
+  "planner.discovery.label": "Mode découverte",
+  "planner.mode.label": "Méthode",
+  "planner.mode.balanced": "Équilibré",
+  "planner.mode.economical": "Économique",
+  "planner.mode.preserve_copper": "Préserver le cuivre",
+  "planner.mode.max_output": "Production max",
+  "planner.inventory.title": "Planification basée sur l'inventaire",
+  "planner.inventory.description": "Entrez vos pépites actuelles par métal. Le planificateur ne recherche que ce que vous pouvez réellement exécuter avec les contraintes réelles du creuset.",
+  "planner.inventory.clear": "Vider l'inventaire",
+  "planner.inventory.metal_aria": "{metal} en pépites dans l'inventaire",
+  "planner.inventory.total_nuggets": "{n} pépites en stock",
+  "planner.inventory.total_ingots": "{n} équivalents-lingots",
+  "planner.target.title": "Plan de recette",
+  "planner.target.description": "Choisissez une recette, fixez un objectif, et le planificateur construira des fournées exécutables respectant les quatre emplacements du creuset.",
+  "planner.target.ingots_aria": "Nombre de lingots demandé",
+  "planner.target.recipe": "Alliage sélectionné",
+  "planner.target.max_craftable": "Maximum réalisable : {n} lingots",
+  "planner.target.limiting_metal": "Métal limitant : {metal}",
+  "planner.target.none": "Aucun",
+  "planner.target.breakpoints": "Paliers",
+  "planner.target.minimum_valid": "Plus petit lot valide avec ce stock : {n}",
+  "planner.target.previous_valid": "Objectif valide le plus proche à votre niveau ou en dessous : {n}",
+  "planner.target.next_valid": "Palier valide suivant au-dessus de votre demande : {n}",
+  "planner.target.next_valid_none": "Aucun palier valide plus élevé avec le stock actuel",
+  "planner.target.invalid_target": "{n} lingots n'est pas un palier valide pour cet inventaire. Plus proche palier valide à votre niveau ou en dessous : {previous}. Palier valide suivant : {next}.",
+  "planner.plan.summary_title": "Résumé du plan",
+  "planner.plan.total_ingots": "{n} lingots planifiés",
+  "planner.plan.total_runs": "{n} fournées de creuset",
+  "planner.plan.leftovers": "Restes après ce plan : {inventory}",
+  "planner.plan.tradeoff_title": "Aperçu du compromis",
+  "planner.plan.consumed": "Consomme : {inventory}",
+  "planner.plan.remaining": "Garde : {inventory}",
+  "planner.run.title": "Fournée {n}",
+  "planner.run.subtitle": "{ingots} lingots avec {consumed}",
+  "planner.run.open_in_calculator": "Ouvrir dans le calculateur",
+  "planner.run.crucible_load": "Charge du creuset",
+  "planner.run.remaining_inventory": "Inventaire après cette fournée",
+  "planner.run.slot_nuggets": "{n} pépites",
+  "planner.find.empty": "Ajoutez un inventaire pour voir quels alliages sont actuellement réalisables.",
+  "planner.find.open_plan": "Ouvrir le plan de recette",
+  "planner.find.hide_plan": "Masquer le plan de recette",
+  "planner.find.max_output": "Réalisable maintenant : {n} lingots",
+  "planner.find.limiting_metal": "Métal limitant : {metal}",
+  "planner.find.run_summary": "Résumé des fournées",
+  "header": {
+    "domain": {
+      "metallurgy": "Métallurgie"
+    },
+    "nav": {
+      "planner": "Planificateur",
+      "metallurgy_tools": "Outils de métallurgie"
+    }
+  },
+  "planner": {
+    "title": "Planificateur de métallurgie",
+    "description": "Planifiez à partir de votre inventaire, transformez vos alliages en vraies fournées de creuset et comparez les compromis de rareté avant de dépenser des métaux rares.",
+    "discovery": {
+      "label": "Mode découverte"
+    },
+    "mode": {
+      "label": "Méthode",
+      "balanced": "Équilibré",
+      "economical": "Économique",
+      "preserve_copper": "Préserver le cuivre",
+      "max_output": "Production maximale"
+    },
+    "inventory": {
+      "title": "Planification pilotée par l'inventaire",
+      "description": "Saisissez vos pépites actuelles par métal. Le planificateur ne recherche que ce que vous pouvez réellement exécuter avec les contraintes du creuset.",
+      "clear": "Vider l'inventaire",
+      "metal_aria": "Pépites de {metal} dans l'inventaire",
+      "total_nuggets": "{n} pépites en stock",
+      "total_ingots": "{n} équivalents-lingots"
+    },
+    "target": {
+      "title": "Plan d'alliage ciblé",
+      "description": "Choisissez une recette, fixez un objectif et le planificateur construira des fournées exécutables qui restent dans quatre emplacements de creuset.",
+      "ingots_aria": "Nombre de lingots demandé",
+      "recipe": "Alliage sélectionné",
+      "max_craftable": "Maximum réalisable : {n} lingots",
+      "limiting_metal": "Métal limitant : {metal}",
+      "none": "Aucun",
+      "breakpoints": "Paliers",
+      "minimum_valid": "Plus petit lot valide avec ce stock : {n}",
+      "previous_valid": "Cible valide la plus proche à ou sous votre demande : {n}",
+      "next_valid": "Palier valide suivant au-dessus de votre demande : {n}",
+      "next_valid_none": "Aucun palier valide supérieur avec le stock actuel",
+      "invalid_target": "{n} lingots ne constituent pas un palier valide pour cet inventaire. Le palier valide le plus proche à ou sous votre demande est : {previous}. Le palier valide suivant est : {next}."
+    },
+    "plan": {
+      "summary_title": "Résumé du plan",
+      "total_ingots": "{n} lingots planifiés",
+      "total_runs": "{n} fournées de creuset",
+      "leftovers": "Restes après ce plan : {inventory}",
+      "tradeoff_title": "Aperçu des compromis",
+      "consumed": "Consomme : {inventory}",
+      "remaining": "Conserve : {inventory}"
+    },
+    "run": {
+      "title": "Fournée {n}",
+      "subtitle": "{ingots} lingots à partir de {consumed}",
+      "open_in_calculator": "Ouvrir dans le calculateur",
+      "crucible_load": "Charge du creuset",
+      "remaining_inventory": "Inventaire après cette fournée",
+      "slot_nuggets": "{n} pépites"
+    },
+    "find": {
+      "empty": "Ajoutez un inventaire pour voir quels alliages sont actuellement réalisables.",
+      "open_plan": "Ouvrir le plan de recette",
+      "hide_plan": "Masquer le plan de recette",
+      "max_output": "Réalisable maintenant : {n} lingots",
+      "limiting_metal": "Métal limitant : {metal}",
+      "run_summary": "Résumé des fournées"
+    }
+  }
 }

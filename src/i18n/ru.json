@@ -5,10 +5,8 @@
   "common.nuggets": "самородков",
   "common.unit": "единица",
   "common.units": "единиц",
-
   "theme.toggle_to_dark": "Переключить на тёмную тему",
   "theme.toggle_to_light": "Переключить на светлую тему",
-
   "header.title": "Калькулятор сплавов Vintage Story",
   "header.subtitle": "Рассчитайте правильные составы сплавов для вашего тигля. Данные взяты из вики Vintage Story.",
   "header.logo_alt": "Калькулятор сплавов Vintage Story",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "Свернуть навигацию",
   "header.share.copy": "Скопировать ссылку",
   "header.share.copied": "Ссылка скопирована!",
-
   "crucible.title": "Содержимое тигля",
   "crucible.description": "Добавьте металлы в тигель. Каждый слот может содержать от 0 до 128 самородков одного типа металла.",
   "crucible.clear_all": "Очистить всё",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "Количество самородков для слота {n}",
   "crucible.slot.input_aria": "Ввод самородков для слота {n}",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "Текущий состав",
   "composition.empty": "Тигель пуст",
   "composition.total_amount": "Общее количество",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "Диаграмма состава: {segments}",
   "composition.bar_chart_segment": "{metal} {percent} %",
   "composition.segment_title": "{metal}: {percent} %",
-
   "result.title": "Результат сплава",
   "result.current_product": "Текущий продукт",
   "result.empty": "Добавьте металлы, чтобы увидеть результат",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove} ({units} {unitsLabel}), чтобы получить ровно {ingots}.",
   "result.excess_remove_or_add": "{remove} ({units} {unitsLabel}) или {add}, чтобы получить {ingots}.",
   "result.valid_mix_hint": "{summary}, чтобы создать верную смесь {alloy}.",
-
   "reference.title": "Справочник сплавов",
   "reference.search_placeholder": "Поиск сплавов...",
   "reference.filter_by_metal": "Фильтр по металлу",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Смотреть в вики",
   "reference.wiki_aria": "Смотреть {alloy} в вики",
   "reference.component_range_title": "{metal}: {min}–{max} %",
-
   "footer.copyright": "Ресурсы и данные © Anego Studios / Vintage Story",
   "footer.credits": "Авторы",
   "footer.privacy": "Конфиденциальность",
   "footer.license": "Лицензия MIT",
   "footer.github": "GitHub",
-
   "credits.title": "Авторы и лицензии",
   "credits.assets.title": "Ресурсы игры и данные",
   "credits.assets.body_before": "Все игровые изображения, логотипы и данные рецептов сплавов являются интеллектуальной собственностью",
@@ -117,7 +109,6 @@
   "credits.project.title": "Этот проект",
   "credits.project.body_before": "Исходный код распространяется под лицензией",
   "credits.project.body_after": ". Проект не связан с Anego Studios.",
-
   "privacy.title": "Конфиденциальность",
   "privacy.analytics.title": "Аналитика",
   "privacy.analytics.body_before": "Этот сайт использует",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": " для сохранения выбранных языка и темы.",
   "privacy.compliance.title": "Соответствие требованиям",
   "privacy.compliance.body": "Поскольку персональные данные не собираются, сайт может работать без баннера согласия на использование cookie в соответствии с GDPR, CCPA и директивой ePrivacy.",
-
   "metal.copper.label": "Медь",
   "metal.copper.short": "Cu",
   "metal.tin.label": "Олово",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "Никель",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "Оловянная бронза",
   "alloy.tin-bronze.notes": "Стандартные инструменты и оружие",
   "alloy.bismuth-bronze.name": "Висмутовая бронза",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "Декоративный металл",
   "alloy.electrum.name": "Электрум",
   "alloy.electrum.notes": "Декоративный металл",
-
-  "app.translation_notice": "Этот перевод создан автоматически и может содержать ошибки. / This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "Этот перевод создан автоматически и может содержать ошибки. / This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "Металлургия",
+  "header.nav.planner": "Планировщик",
+  "header.nav.metallurgy_tools": "Инструменты металлургии",
+  "planner.title": "Планировщик металлургии",
+  "planner.description": "Планируйте по своему инвентарю, превращайте сплавы в реальные тигельные плавки и сравнивайте затраты редких металлов до того, как тратить их.",
+  "planner.discovery.label": "Режим поиска",
+  "planner.mode.label": "Метод",
+  "planner.mode.balanced": "Сбалансированный",
+  "planner.mode.economical": "Экономный",
+  "planner.mode.preserve_copper": "Беречь медь",
+  "planner.mode.max_output": "Макс. выход",
+  "planner.inventory.title": "Планирование по инвентарю",
+  "planner.inventory.description": "Введите текущее количество самородков по металлам. Планировщик ищет только то, что действительно можно выполнить с реальными ограничениями тигля.",
+  "planner.inventory.clear": "Очистить инвентарь",
+  "planner.inventory.metal_aria": "Самородки {metal} в инвентаре",
+  "planner.inventory.total_nuggets": "В запасе {n} самородков",
+  "planner.inventory.total_ingots": "{n} эквивалентов слитков",
+  "planner.target.title": "План рецепта",
+  "planner.target.description": "Выберите рецепт, задайте цель, и планировщик построит выполнимые плавки, укладывающиеся в четыре слота тигля.",
+  "planner.target.ingots_aria": "Запрошенное количество слитков",
+  "planner.target.recipe": "Выбранный сплав",
+  "planner.target.max_craftable": "Максимум можно сделать: {n} слитков",
+  "planner.target.limiting_metal": "Ограничивающий металл: {metal}",
+  "planner.target.none": "Нет",
+  "planner.target.breakpoints": "Пороговые значения",
+  "planner.target.minimum_valid": "Минимальная допустимая партия при текущем запасе: {n}",
+  "planner.target.previous_valid": "Ближайшая допустимая цель на вашем уровне или ниже: {n}",
+  "planner.target.next_valid": "Следующий допустимый порог выше вашего запроса: {n}",
+  "planner.target.next_valid_none": "С текущим запасом более высокого допустимого порога нет",
+  "planner.target.invalid_target": "{n} слитков — недопустимый порог для этого инвентаря. Ближайшая допустимая цель на вашем уровне или ниже: {previous}. Следующий допустимый порог: {next}.",
+  "planner.plan.summary_title": "Сводка плана",
+  "planner.plan.total_ingots": "Запланировано {n} слитков",
+  "planner.plan.total_runs": "{n} плавок в тигле",
+  "planner.plan.leftovers": "Остатки после этого плана: {inventory}",
+  "planner.plan.tradeoff_title": "Сводка компромиссов",
+  "planner.plan.consumed": "Расходует: {inventory}",
+  "planner.plan.remaining": "Остаётся: {inventory}",
+  "planner.run.title": "Плавка {n}",
+  "planner.run.subtitle": "{ingots} слитков из {consumed}",
+  "planner.run.open_in_calculator": "Открыть в калькуляторе",
+  "planner.run.crucible_load": "Загрузка тигля",
+  "planner.run.remaining_inventory": "Инвентарь после этой плавки",
+  "planner.run.slot_nuggets": "{n} самородков",
+  "planner.find.empty": "Добавьте инвентарь, чтобы увидеть, какие сплавы сейчас можно изготовить.",
+  "planner.find.open_plan": "Открыть план рецепта",
+  "planner.find.hide_plan": "Скрыть план рецепта",
+  "planner.find.max_output": "Можно сделать сейчас: {n} слитков",
+  "planner.find.limiting_metal": "Ограничивающий металл: {metal}",
+  "planner.find.run_summary": "Сводка плавок",
+  "header": {
+    "domain": {
+      "metallurgy": "Металлургия"
+    },
+    "nav": {
+      "planner": "Планировщик",
+      "metallurgy_tools": "Инструменты металлургии"
+    }
+  },
+  "planner": {
+    "title": "Планировщик металлургии",
+    "description": "Планируйте по своему запасу, превращайте сплавы в реальные загрузки тигля и сравнивайте компромиссы по редкости, прежде чем тратить редкие металлы.",
+    "discovery": {
+      "label": "Режим подбора"
+    },
+    "mode": {
+      "label": "Метод",
+      "balanced": "Сбалансированный",
+      "economical": "Экономичный",
+      "preserve_copper": "Беречь медь",
+      "max_output": "Максимальный выход"
+    },
+    "inventory": {
+      "title": "Планирование по запасам",
+      "description": "Введите текущее количество самородков по каждому металлу. Планировщик ищет только то, что вы реально можете выполнить с настоящими ограничениями тигля.",
+      "clear": "Очистить запас",
+      "metal_aria": "Самородки {metal} в запасе",
+      "total_nuggets": "В запасе {n} самородков",
+      "total_ingots": "{n} слитковых эквивалентов"
+    },
+    "target": {
+      "title": "План целевого сплава",
+      "description": "Выберите рецепт, задайте цель, и планировщик построит выполнимые загрузки, которые укладываются в четыре слота тигля.",
+      "ingots_aria": "Запрошенное количество слитков",
+      "recipe": "Выбранный сплав",
+      "max_craftable": "Максимум можно сделать: {n} слитков",
+      "limiting_metal": "Ограничивающий металл: {metal}",
+      "none": "Нет",
+      "breakpoints": "Пороговые значения",
+      "minimum_valid": "Минимальная допустимая партия из этого запаса: {n}",
+      "previous_valid": "Ближайшая допустимая цель на уровне или ниже запроса: {n}",
+      "next_valid": "Следующий допустимый порог выше запроса: {n}",
+      "next_valid_none": "С текущим запасом нет более высокого допустимого порога",
+      "invalid_target": "{n} слитков не является допустимым порогом для этого запаса. Ближайшее допустимое значение на уровне или ниже вашего запроса: {previous}. Следующий допустимый порог: {next}."
+    },
+    "plan": {
+      "summary_title": "Сводка плана",
+      "total_ingots": "Запланировано {n} слитков",
+      "total_runs": "{n} загрузок тигля",
+      "leftovers": "Остатки после этого плана: {inventory}",
+      "tradeoff_title": "Снимок компромиссов",
+      "consumed": "Расходует: {inventory}",
+      "remaining": "Сохраняет: {inventory}"
+    },
+    "run": {
+      "title": "Загрузка {n}",
+      "subtitle": "{ingots} слитков из {consumed}",
+      "open_in_calculator": "Открыть в калькуляторе",
+      "crucible_load": "Загрузка тигля",
+      "remaining_inventory": "Запас после этой загрузки",
+      "slot_nuggets": "{n} самородков"
+    },
+    "find": {
+      "empty": "Добавьте запас, чтобы увидеть, какие сплавы сейчас можно изготовить.",
+      "open_plan": "Открыть план рецепта",
+      "hide_plan": "Скрыть план рецепта",
+      "max_output": "Можно сделать сейчас: {n} слитков",
+      "limiting_metal": "Ограничивающий металл: {metal}",
+      "run_summary": "Сводка загрузок"
+    }
+  }
 }

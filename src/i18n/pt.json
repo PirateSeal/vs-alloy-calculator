@@ -5,10 +5,8 @@
   "common.nuggets": "pepitas",
   "common.unit": "unidade",
   "common.units": "unidades",
-
   "theme.toggle_to_dark": "Mudar para tema escuro",
   "theme.toggle_to_light": "Mudar para tema claro",
-
   "header.title": "Calculadora de Ligas Vintage Story",
   "header.subtitle": "Calcule composições de ligas válidas para seu cadinho. Dados extraídos da wiki do Vintage Story.",
   "header.logo_alt": "Calculadora de ligas Vintage Story",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "Recolher navegação",
   "header.share.copy": "Copiar link de compartilhamento",
   "header.share.copied": "Link copiado!",
-
   "crucible.title": "Conteúdo do Cadinho",
   "crucible.description": "Adicione metais ao cadinho. Cada slot pode conter de 0 a 128 pepitas de um único tipo de metal.",
   "crucible.clear_all": "Limpar tudo",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "Quantidade de pepitas para o slot {n}",
   "crucible.slot.input_aria": "Entrada de pepitas para o slot {n}",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "Composição atual",
   "composition.empty": "Cadinho vazio",
   "composition.total_amount": "Quantidade total",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "Gráfico de composição: {segments}",
   "composition.bar_chart_segment": "{metal} {percent}%",
   "composition.segment_title": "{metal}: {percent}%",
-
   "result.title": "Resultado da liga",
   "result.current_product": "Produto atual",
   "result.empty": "Adicione metais ao cadinho para ver os resultados",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove} ({units} {unitsLabel}) para obter exatamente {ingots}.",
   "result.excess_remove_or_add": "{remove} ({units} {unitsLabel}) ou {add} para obter {ingots}.",
   "result.valid_mix_hint": "{summary} para criar uma mistura válida de {alloy}.",
-
   "reference.title": "Referência de ligas",
   "reference.search_placeholder": "Pesquisar ligas...",
   "reference.filter_by_metal": "Filtrar por metal",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Ver na wiki",
   "reference.wiki_aria": "Ver {alloy} na wiki",
   "reference.component_range_title": "{metal}: {min}–{max}%",
-
   "footer.copyright": "Assets e dados do jogo © Anego Studios / Vintage Story",
   "footer.credits": "Créditos",
   "footer.privacy": "Privacidade",
   "footer.license": "Licença MIT",
   "footer.github": "GitHub",
-
   "credits.title": "Créditos e Licenças",
   "credits.assets.title": "Assets e dados do jogo",
   "credits.assets.body_before": "Todas as imagens do jogo, logos e dados de receitas de ligas permanecem propriedade intelectual de",
@@ -117,7 +109,6 @@
   "credits.project.title": "Este projeto",
   "credits.project.body_before": "O código-fonte está licenciado sob a",
   "credits.project.body_after": ". Este projeto não é afiliado à Anego Studios.",
-
   "privacy.title": "Privacidade",
   "privacy.analytics.title": "Análise",
   "privacy.analytics.body_before": "Este site usa",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "para lembrar o idioma e o tema selecionados.",
   "privacy.compliance.title": "Conformidade",
   "privacy.compliance.body": "Como nenhum dado pessoal é coletado, este site pode operar sem um banner de consentimento de cookies sob o GDPR, CCPA e a Diretiva ePrivacy.",
-
   "metal.copper.label": "Cobre",
   "metal.copper.short": "Cu",
   "metal.tin.label": "Estanho",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "Níquel",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "Bronze de estanho",
   "alloy.tin-bronze.notes": "Ferramentas e armas comuns",
   "alloy.bismuth-bronze.name": "Bronze de bismuto",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "Metal decorativo",
   "alloy.electrum.name": "Electro",
   "alloy.electrum.notes": "Metal decorativo",
-
-  "app.translation_notice": "Esta tradução foi gerada automaticamente e pode não ser totalmente precisa. / This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "Esta tradução foi gerada automaticamente e pode não ser totalmente precisa. / This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "Metalurgia",
+  "header.nav.planner": "Planejador",
+  "header.nav.metallurgy_tools": "Ferramentas de metalurgia",
+  "planner.title": "Planejador de metalurgia",
+  "planner.description": "Planeje a partir do seu inventário, transforme ligas em cargas reais de cadinho e compare os custos de escassez antes de gastar metais raros.",
+  "planner.discovery.label": "Modo descoberta",
+  "planner.mode.label": "Método",
+  "planner.mode.balanced": "Equilibrado",
+  "planner.mode.economical": "Econômico",
+  "planner.mode.preserve_copper": "Preservar cobre",
+  "planner.mode.max_output": "Produção máxima",
+  "planner.inventory.title": "Planejamento baseado no inventário",
+  "planner.inventory.description": "Informe suas pepitas atuais por metal. O planejador procura apenas o que você realmente consegue executar dentro das restrições reais do cadinho.",
+  "planner.inventory.clear": "Limpar inventário",
+  "planner.inventory.metal_aria": "Pepitas de {metal} no inventário",
+  "planner.inventory.total_nuggets": "{n} pepitas em estoque",
+  "planner.inventory.total_ingots": "{n} equivalentes em lingotes",
+  "planner.target.title": "Plano de receita",
+  "planner.target.description": "Escolha uma receita, defina uma meta e o planejador montará cargas executáveis que cabem nos quatro espaços do cadinho.",
+  "planner.target.ingots_aria": "Quantidade de lingotes solicitada",
+  "planner.target.recipe": "Liga selecionada",
+  "planner.target.max_craftable": "Máximo fabricável: {n} lingotes",
+  "planner.target.limiting_metal": "Metal limitante: {metal}",
+  "planner.target.none": "Nenhum",
+  "planner.target.breakpoints": "Pontos de corte",
+  "planner.target.minimum_valid": "Menor lote válido com este estoque: {n}",
+  "planner.target.previous_valid": "Objetivo válido mais próximo no seu pedido ou abaixo dele: {n}",
+  "planner.target.next_valid": "Próximo ponto de corte válido acima do seu pedido: {n}",
+  "planner.target.next_valid_none": "Não há um ponto de corte válido mais alto com o estoque atual",
+  "planner.target.invalid_target": "{n} lingotes não são um ponto de corte válido para este inventário. Objetivo válido mais próximo no seu pedido ou abaixo dele: {previous}. Próximo ponto de corte válido: {next}.",
+  "planner.plan.summary_title": "Resumo do plano",
+  "planner.plan.total_ingots": "{n} lingotes planejados",
+  "planner.plan.total_runs": "{n} cargas de cadinho",
+  "planner.plan.leftovers": "Sobras após este plano: {inventory}",
+  "planner.plan.tradeoff_title": "Resumo de trade-offs",
+  "planner.plan.consumed": "Consome: {inventory}",
+  "planner.plan.remaining": "Mantém: {inventory}",
+  "planner.run.title": "Carga {n}",
+  "planner.run.subtitle": "{ingots} lingotes a partir de {consumed}",
+  "planner.run.open_in_calculator": "Abrir na calculadora",
+  "planner.run.crucible_load": "Carga do cadinho",
+  "planner.run.remaining_inventory": "Inventário após esta carga",
+  "planner.run.slot_nuggets": "{n} pepitas",
+  "planner.find.empty": "Adicione inventário para ver quais ligas podem ser fabricadas agora.",
+  "planner.find.open_plan": "Abrir plano de receita",
+  "planner.find.hide_plan": "Ocultar plano de receita",
+  "planner.find.max_output": "Fabricável agora: {n} lingotes",
+  "planner.find.limiting_metal": "Metal limitante: {metal}",
+  "planner.find.run_summary": "Resumo das cargas",
+  "header": {
+    "domain": {
+      "metallurgy": "Metalurgia"
+    },
+    "nav": {
+      "planner": "Planejador",
+      "metallurgy_tools": "Ferramentas de metalurgia"
+    }
+  },
+  "planner": {
+    "title": "Planejador de metalurgia",
+    "description": "Planeje a partir do seu inventário, transforme ligas em cargas reais de cadinho e compare os compromissos de escassez antes de gastar metais raros.",
+    "discovery": {
+      "label": "Modo descoberta"
+    },
+    "mode": {
+      "label": "Método",
+      "balanced": "Equilibrado",
+      "economical": "Econômico",
+      "preserve_copper": "Preservar cobre",
+      "max_output": "Produção máxima"
+    },
+    "inventory": {
+      "title": "Planejamento guiado por inventário",
+      "description": "Informe seus nuggets atuais por metal. O planejador busca apenas o que você realmente consegue executar dentro das restrições reais do cadinho.",
+      "clear": "Limpar inventário",
+      "metal_aria": "Nuggets de {metal} no inventário",
+      "total_nuggets": "{n} nuggets em estoque",
+      "total_ingots": "{n} equivalentes em lingotes"
+    },
+    "target": {
+      "title": "Plano de liga alvo",
+      "description": "Escolha uma receita, defina uma meta e o planejador montará execuções viáveis que cabem em quatro espaços do cadinho.",
+      "ingots_aria": "Quantidade de lingotes solicitada",
+      "recipe": "Liga selecionada",
+      "max_craftable": "Máximo fabricável: {n} lingotes",
+      "limiting_metal": "Metal limitante: {metal}",
+      "none": "Nenhum",
+      "breakpoints": "Pontos de corte",
+      "minimum_valid": "Menor lote válido com este estoque: {n}",
+      "previous_valid": "Meta válida mais próxima igual ou abaixo do seu pedido: {n}",
+      "next_valid": "Próximo ponto de corte válido acima do seu pedido: {n}",
+      "next_valid_none": "Não há ponto de corte válido acima com o estoque atual",
+      "invalid_target": "{n} lingotes não é um ponto de corte válido para este inventário. O valor válido mais próximo igual ou abaixo do seu pedido é: {previous}. O próximo ponto de corte válido é: {next}."
+    },
+    "plan": {
+      "summary_title": "Resumo do plano",
+      "total_ingots": "{n} lingotes planejados",
+      "total_runs": "{n} cargas de cadinho",
+      "leftovers": "Sobras após este plano: {inventory}",
+      "tradeoff_title": "Resumo dos compromissos",
+      "consumed": "Consome: {inventory}",
+      "remaining": "Mantém: {inventory}"
+    },
+    "run": {
+      "title": "Carga {n}",
+      "subtitle": "{ingots} lingotes de {consumed}",
+      "open_in_calculator": "Abrir na calculadora",
+      "crucible_load": "Carga do cadinho",
+      "remaining_inventory": "Inventário após esta carga",
+      "slot_nuggets": "{n} nuggets"
+    },
+    "find": {
+      "empty": "Adicione inventário para ver quais ligas podem ser produzidas agora.",
+      "open_plan": "Abrir plano da receita",
+      "hide_plan": "Ocultar plano da receita",
+      "max_output": "Fabricável agora: {n} lingotes",
+      "limiting_metal": "Metal limitante: {metal}",
+      "run_summary": "Resumo das cargas"
+    }
+  }
 }

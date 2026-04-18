@@ -3,6 +3,7 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
+  Compass,
   ExternalLink,
   Globe,
   Calculator,
@@ -13,6 +14,7 @@ import {
 import { useState } from "react";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
+import type { AppDomain, MetallurgyView } from "@/types/planner";
 import { LOCALE_OPTIONS, useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
@@ -25,13 +27,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
-export type ShellTab = "calculator" | "reference" | "about";
-
 interface ShellNavigationProps {
-  activeTab: ShellTab;
+  activeDomain: AppDomain;
+  activeView: MetallurgyView;
   collapsed: boolean;
   onCollapseChange: (collapsed: boolean) => void;
-  onTabChange: (tab: ShellTab) => void;
+  onTabChange: (tab: MetallurgyView) => void;
 }
 
 function NavButton({
@@ -253,7 +254,8 @@ function LocaleRailAction({ collapsed }: { collapsed: boolean }) {
 }
 
 export function ShellNavigationRail({
-  activeTab,
+  activeDomain,
+  activeView,
   collapsed,
   onCollapseChange,
   onTabChange,
@@ -272,6 +274,13 @@ export function ShellNavigationRail({
     }
   };
 
+  const items: Array<{ tab: MetallurgyView; label: string; icon: LucideIcon }> = [
+    { tab: "calculator", label: t("header.nav.calculator"), icon: Calculator },
+    { tab: "planner", label: t("header.nav.planner"), icon: Compass },
+    { tab: "reference", label: t("header.nav.reference"), icon: BookOpen },
+    { tab: "about", label: t("header.nav.about"), icon: Info },
+  ];
+
   return (
     <aside
       className={cn(
@@ -281,27 +290,24 @@ export function ShellNavigationRail({
       aria-label={t("header.title")}
     >
       <div className="flex h-full flex-col overflow-y-auto rounded-[1.75rem] bg-card/80 p-3 shadow-md ring-1 ring-inset ring-border/20 backdrop-blur-xl">
-        {/* Brand header — flat, no inner card */}
-        <div className={cn(
-          "flex shrink-0 items-center gap-3 px-1 pb-4",
-          collapsed && "flex-col gap-2",
-        )}>
+        <div className={cn("flex shrink-0 items-center gap-3 px-1 pb-4", collapsed && "flex-col gap-2")}>
           <img
             src="/gamelogo-vintagestory-square.webp"
             alt={t("header.logo_alt")}
             className="h-10 w-10 shrink-0 rounded-2xl object-contain ring-1 ring-inset ring-border/20"
           />
-          <p className={cn("min-w-0 flex-1 text-[10px] uppercase tracking-[0.26em] text-muted-foreground/80", collapsed && "sr-only")}>
-            {t("header.title")}
-          </p>
+          <div className={cn("min-w-0 flex-1", collapsed && "sr-only")}>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-muted-foreground/80">
+              {t(`header.domain.${activeDomain}`)}
+            </p>
+            <p className="truncate text-sm font-semibold text-foreground">{t("header.title")}</p>
+          </div>
           <button
             type="button"
             onClick={() => onCollapseChange(!collapsed)}
             className={cn(
               "inline-flex shrink-0 items-center justify-center rounded-xl text-muted-foreground/70 transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-              collapsed
-                ? "h-8 w-full rounded-2xl bg-background/25 hover:bg-accent/40"
-                : "h-8 w-8",
+              collapsed ? "h-8 w-full rounded-2xl bg-background/25 hover:bg-accent/40" : "h-8 w-8",
             )}
             aria-label={t(collapsed ? "header.nav.expand" : "header.nav.collapse")}
             title={t(collapsed ? "header.nav.expand" : "header.nav.collapse")}
@@ -311,28 +317,23 @@ export function ShellNavigationRail({
         </div>
         <div className="mb-4 border-t border-border/20" />
 
+        <div className={cn("mb-3 px-1", collapsed && "sr-only")}>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-muted-foreground/80">
+            {t("header.nav.metallurgy_tools")}
+          </p>
+        </div>
+
         <nav className="space-y-2" aria-label={t("header.title")}>
-          <NavButton
-            active={activeTab === "calculator"}
-            collapsed={collapsed}
-            icon={Calculator}
-            label={t("header.nav.calculator")}
-            onClick={() => onTabChange("calculator")}
-          />
-          <NavButton
-            active={activeTab === "reference"}
-            collapsed={collapsed}
-            icon={BookOpen}
-            label={t("header.nav.reference")}
-            onClick={() => onTabChange("reference")}
-          />
-          <NavButton
-            active={activeTab === "about"}
-            collapsed={collapsed}
-            icon={Info}
-            label={t("header.nav.about")}
-            onClick={() => onTabChange("about")}
-          />
+          {items.map((item) => (
+            <NavButton
+              key={item.tab}
+              active={activeView === item.tab}
+              collapsed={collapsed}
+              icon={item.icon}
+              label={item.label}
+              onClick={() => onTabChange(item.tab)}
+            />
+          ))}
         </nav>
 
         <div className="mt-6 space-y-1.5 border-t border-border/20 pt-4">
@@ -379,9 +380,9 @@ export function ShellNavigationRail({
 }
 
 export function ShellMobileNav({
-  activeTab,
+  activeView,
   onTabChange,
-}: Pick<ShellNavigationProps, "activeTab" | "onTabChange">) {
+}: Pick<ShellNavigationProps, "activeView" | "onTabChange">) {
   const { t, locale, setLocale } = useTranslation();
   const [copied, setCopied] = useState(false);
 
@@ -396,8 +397,9 @@ export function ShellMobileNav({
     }
   };
 
-  const items: Array<{ tab: ShellTab; label: string; icon: LucideIcon }> = [
+  const items: Array<{ tab: MetallurgyView; label: string; icon: LucideIcon }> = [
     { tab: "calculator", label: t("header.nav.calculator"), icon: Calculator },
+    { tab: "planner", label: t("header.nav.planner"), icon: Compass },
     { tab: "reference", label: t("header.nav.reference"), icon: BookOpen },
     { tab: "about", label: t("header.nav.about"), icon: Info },
   ];
@@ -405,10 +407,7 @@ export function ShellMobileNav({
     "inline-flex h-10 w-10 items-center justify-center rounded-full bg-card/80 text-muted-foreground ring-1 ring-inset ring-border/20 transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
   return (
-    <nav
-      className="fixed inset-x-0 bottom-0 z-40 lg:hidden"
-      aria-label={t("header.title")}
-    >
+    <nav className="fixed inset-x-0 bottom-0 z-40 lg:hidden" aria-label={t("header.title")}>
       <div className="border-t border-border/20 bg-background/92 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-2 backdrop-blur-xl">
         <div className="mx-auto mb-2 flex w-full max-w-3xl items-center justify-center gap-2">
           <button
@@ -421,11 +420,7 @@ export function ShellMobileNav({
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button
-                type="button"
-                aria-label={t("header.locale.label")}
-                className={mobileActionClassName}
-              >
+              <button type="button" aria-label={t("header.locale.label")} className={mobileActionClassName}>
                 <Languages className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
@@ -452,10 +447,10 @@ export function ShellMobileNav({
           </DropdownMenu>
           <ThemeToggle />
         </div>
-        <div className="mx-auto grid w-full max-w-3xl grid-cols-3 gap-2">
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-2">
           {items.map((item) => {
             const Icon = item.icon;
-            const isActive = activeTab === item.tab;
+            const isActive = activeView === item.tab;
 
             return (
               <button
@@ -464,14 +459,14 @@ export function ShellMobileNav({
                 onClick={() => onTabChange(item.tab)}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   isActive
                     ? "bg-primary/14 text-primary shadow-[inset_0_0_0_1px_rgba(239,189,141,0.18)]"
                     : "bg-card/70 text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                 )}
               >
                 <Icon className="h-4 w-4" aria-hidden="true" />
-                <span>{item.label}</span>
+                <span className="truncate">{item.label}</span>
               </button>
             );
           })}

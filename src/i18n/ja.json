@@ -5,10 +5,8 @@
   "common.nuggets": "ナゲット",
   "common.unit": "単位",
   "common.units": "単位",
-
   "theme.toggle_to_dark": "ダークテーマに切り替え",
   "theme.toggle_to_light": "ライトテーマに切り替え",
-
   "header.title": "Vintage Story 合金計算機",
   "header.subtitle": "坩堝に使える合金の配合を計算します。データは Vintage Story Wiki より。",
   "header.logo_alt": "Vintage Story 合金計算機",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "ナビゲーションを折りたたむ",
   "header.share.copy": "リンクをコピー",
   "header.share.copied": "コピーしました！",
-
   "crucible.title": "坩堝の中身",
   "crucible.description": "坩堝に金属を追加してください。各スロットには同じ種類の金属ナゲットを最大 128 個入れられます。",
   "crucible.clear_all": "すべてクリア",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "スロット {n} のナゲット数",
   "crucible.slot.input_aria": "スロット {n} のナゲット入力",
   "crucible.slot.metal_option": "{label}（{short}）",
-
   "composition.title": "現在の配合",
   "composition.empty": "坩堝が空です",
   "composition.total_amount": "合計数量",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "配合バーチャート：{segments}",
   "composition.bar_chart_segment": "{metal} {percent}%",
   "composition.segment_title": "{metal}：{percent}%",
-
   "result.title": "合金の結果",
   "result.current_product": "現在の生成物",
   "result.empty": "金属を追加すると合金の結果が表示されます",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "ちょうど {ingots} を作るには {remove}（{units} {unitsLabel}）。",
   "result.excess_remove_or_add": "{ingots} を作るには {remove}（{units} {unitsLabel}）または {add}。",
   "result.valid_mix_hint": "有効な {alloy} の配合を作るには {summary}。",
-
   "reference.title": "合金リファレンス",
   "reference.search_placeholder": "合金を検索...",
   "reference.filter_by_metal": "金属でフィルター",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Wiki で見る",
   "reference.wiki_aria": "Wiki で {alloy} を見る",
   "reference.component_range_title": "{metal}：{min}–{max}%",
-
   "footer.copyright": "ゲームアセットおよびデータ © Anego Studios / Vintage Story",
   "footer.credits": "クレジット",
   "footer.privacy": "プライバシー",
   "footer.license": "MIT ライセンス",
   "footer.github": "GitHub",
-
   "credits.title": "クレジットとライセンス",
   "credits.assets.title": "ゲームアセットとデータ",
   "credits.assets.body_before": "すべてのゲーム画像、ロゴ、および合金レシピデータは",
@@ -117,7 +109,6 @@
   "credits.project.title": "このプロジェクト",
   "credits.project.body_before": "ソースコードは",
   "credits.project.body_after": "の下で公開されています。このプロジェクトは Anego Studios とは無関係です。",
-
   "privacy.title": "プライバシー",
   "privacy.analytics.title": "アナリティクス",
   "privacy.analytics.body_before": "このサイトでは",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "で、選択した言語とテーマを記憶するためのみに使用します。",
   "privacy.compliance.title": "コンプライアンス",
   "privacy.compliance.body": "個人データを収集しないため、GDPR・CCPA・ePrivacy 指令のもとで Cookie 同意バナーなしで運営できます。",
-
   "metal.copper.label": "銅",
   "metal.copper.short": "Cu",
   "metal.tin.label": "スズ",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "ニッケル",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "錫青銅",
   "alloy.tin-bronze.notes": "一般的な道具と武器",
   "alloy.bismuth-bronze.name": "ビスマス青銅",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "装飾金属",
   "alloy.electrum.name": "エレクトラム",
   "alloy.electrum.notes": "装飾金属",
-
-  "app.translation_notice": "この翻訳は機械生成されており、完全に正確ではない場合があります。/ This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "この翻訳は機械生成されており、完全に正確ではない場合があります。/ This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "冶金",
+  "header.nav.planner": "プランナー",
+  "header.nav.metallurgy_tools": "冶金ツール",
+  "planner.title": "冶金プランナー",
+  "planner.description": "手持ちの在庫から計画し、合金を実際のるつぼ投入回数に落とし込み、希少金属を使う前にトレードオフを比較できます。",
+  "planner.discovery.label": "発見モード",
+  "planner.mode.label": "方法",
+  "planner.mode.balanced": "バランス",
+  "planner.mode.economical": "節約",
+  "planner.mode.preserve_copper": "銅を温存",
+  "planner.mode.max_output": "最大出力",
+  "planner.inventory.title": "在庫ベースの計画",
+  "planner.inventory.description": "金属ごとの現在のナゲット数を入力してください。プランナーは、実際のるつぼ制約の中で本当に実行できるものだけを探します。",
+  "planner.inventory.clear": "在庫をクリア",
+  "planner.inventory.metal_aria": "在庫内の{metal}ナゲット数",
+  "planner.inventory.total_nuggets": "在庫 {n} ナゲット",
+  "planner.inventory.total_ingots": "{n} インゴット相当",
+  "planner.target.title": "レシピ計画",
+  "planner.target.description": "レシピを選んで目標を設定すると、プランナーが4つのるつぼスロット内で実行可能な投入計画を作成します。",
+  "planner.target.ingots_aria": "希望するインゴット数",
+  "planner.target.recipe": "選択中の合金",
+  "planner.target.max_craftable": "最大作成可能数: {n} インゴット",
+  "planner.target.limiting_metal": "制限金属: {metal}",
+  "planner.target.none": "なし",
+  "planner.target.breakpoints": "ブレークポイント",
+  "planner.target.minimum_valid": "この在庫での最小有効バッチ: {n}",
+  "planner.target.previous_valid": "要求以下で最も近い有効目標: {n}",
+  "planner.target.next_valid": "要求を上回る次の有効ブレークポイント: {n}",
+  "planner.target.next_valid_none": "現在の在庫ではこれ以上高い有効ブレークポイントはありません",
+  "planner.target.invalid_target": "{n} インゴットはこの在庫では有効なブレークポイントではありません。要求以下で最も近い有効目標: {previous}。次の有効ブレークポイント: {next}。",
+  "planner.plan.summary_title": "計画サマリー",
+  "planner.plan.total_ingots": "{n} インゴットを計画",
+  "planner.plan.total_runs": "{n} 回のるつぼ投入",
+  "planner.plan.leftovers": "この計画後の残り: {inventory}",
+  "planner.plan.tradeoff_title": "トレードオフ概要",
+  "planner.plan.consumed": "消費: {inventory}",
+  "planner.plan.remaining": "残る: {inventory}",
+  "planner.run.title": "投入 {n}",
+  "planner.run.subtitle": "{consumed} から {ingots} インゴット",
+  "planner.run.open_in_calculator": "計算機で開く",
+  "planner.run.crucible_load": "るつぼ投入内容",
+  "planner.run.remaining_inventory": "この投入後の在庫",
+  "planner.run.slot_nuggets": "{n} ナゲット",
+  "planner.find.empty": "在庫を追加すると、現在作成可能な合金が表示されます。",
+  "planner.find.open_plan": "レシピ計画を開く",
+  "planner.find.hide_plan": "レシピ計画を隠す",
+  "planner.find.max_output": "今すぐ作成可能: {n} インゴット",
+  "planner.find.limiting_metal": "制限金属: {metal}",
+  "planner.find.run_summary": "投入サマリー",
+  "header": {
+    "domain": {
+      "metallurgy": "冶金"
+    },
+    "nav": {
+      "planner": "プランナー",
+      "metallurgy_tools": "冶金ツール"
+    }
+  },
+  "planner": {
+    "title": "冶金プランナー",
+    "description": "所持在庫から計画を立て、合金を実際のるつぼ投入に落とし込み、希少金属を使う前に希少性のトレードオフを比較します。",
+    "discovery": {
+      "label": "発見モード"
+    },
+    "mode": {
+      "label": "方式",
+      "balanced": "バランス",
+      "economical": "節約重視",
+      "preserve_copper": "銅を温存",
+      "max_output": "最大出力"
+    },
+    "inventory": {
+      "title": "在庫ベースの計画",
+      "description": "現在のナゲット数を金属ごとに入力してください。プランナーは、実際のるつぼ制約の中で本当に実行できる内容だけを探索します。",
+      "clear": "在庫をクリア",
+      "metal_aria": "在庫内の{metal}ナゲット",
+      "total_nuggets": "在庫 {n} ナゲット",
+      "total_ingots": "{n} インゴット相当"
+    },
+    "target": {
+      "title": "目標合金プラン",
+      "description": "レシピを選び、目標数を設定すると、プランナーがるつぼ4スロット以内で実行可能な投入計画を作成します。",
+      "ingots_aria": "希望インゴット数",
+      "recipe": "選択した合金",
+      "max_craftable": "最大作成可能数: {n} インゴット",
+      "limiting_metal": "制約となる金属: {metal}",
+      "none": "なし",
+      "breakpoints": "有効な区切り",
+      "minimum_valid": "この在庫で作れる最小の有効バッチ: {n}",
+      "previous_valid": "要求以下で最も近い有効目標: {n}",
+      "next_valid": "要求を上回る次の有効区切り: {n}",
+      "next_valid_none": "現在の在庫ではこれより上の有効区切りはありません",
+      "invalid_target": "{n} インゴットはこの在庫では有効な区切りではありません。要求以下で最も近い有効値は {previous}、次の有効区切りは {next} です。"
+    },
+    "plan": {
+      "summary_title": "計画の概要",
+      "total_ingots": "計画済み {n} インゴット",
+      "total_runs": "{n} 回のるつぼ投入",
+      "leftovers": "この計画後の残り: {inventory}",
+      "tradeoff_title": "トレードオフ概要",
+      "consumed": "消費: {inventory}",
+      "remaining": "残り: {inventory}"
+    },
+    "run": {
+      "title": "投入 {n}",
+      "subtitle": "{consumed} から {ingots} インゴット",
+      "open_in_calculator": "計算機で開く",
+      "crucible_load": "るつぼ投入内容",
+      "remaining_inventory": "この投入後の在庫",
+      "slot_nuggets": "{n} ナゲット"
+    },
+    "find": {
+      "empty": "在庫を追加すると、現在作成可能な合金が表示されます。",
+      "open_plan": "レシピ計画を開く",
+      "hide_plan": "レシピ計画を閉じる",
+      "max_output": "今すぐ作成可能: {n} インゴット",
+      "limiting_metal": "制約となる金属: {metal}",
+      "run_summary": "投入概要"
+    }
+  }
 }

@@ -5,10 +5,8 @@
   "common.nuggets": "samorodków",
   "common.unit": "jednostka",
   "common.units": "jednostek",
-
   "theme.toggle_to_dark": "Przełącz na ciemny motyw",
   "theme.toggle_to_light": "Przełącz na jasny motyw",
-
   "header.title": "Kalkulator Stopów Vintage Story",
   "header.subtitle": "Oblicz prawidłowe składy stopów dla swojego tygla. Dane ze wiki Vintage Story.",
   "header.logo_alt": "Kalkulator stopów Vintage Story",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "Zwiń nawigację",
   "header.share.copy": "Kopiuj link",
   "header.share.copied": "Link skopiowany!",
-
   "crucible.title": "Zawartość tygla",
   "crucible.description": "Dodaj metale do tygla. Każde miejsce może pomieścić od 0 do 128 samorodków jednego rodzaju metalu.",
   "crucible.clear_all": "Wyczyść wszystko",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "Liczba samorodków dla miejsca {n}",
   "crucible.slot.input_aria": "Wprowadź samorodki dla miejsca {n}",
   "crucible.slot.metal_option": "{label} ({short})",
-
   "composition.title": "Aktualna kompozycja",
   "composition.empty": "Pusty tygiel",
   "composition.total_amount": "Łączna ilość",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "Wykres kompozycji: {segments}",
   "composition.bar_chart_segment": "{metal} {percent}%",
   "composition.segment_title": "{metal}: {percent}%",
-
   "result.title": "Wynik stopu",
   "result.current_product": "Aktualny produkt",
   "result.empty": "Dodaj metale do tygla, aby zobaczyć wyniki",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove} ({units} {unitsLabel}), aby otrzymać dokładnie {ingots}.",
   "result.excess_remove_or_add": "{remove} ({units} {unitsLabel}) lub {add}, aby otrzymać {ingots}.",
   "result.valid_mix_hint": "{summary}, aby stworzyć prawidłową mieszaninę {alloy}.",
-
   "reference.title": "Informacje o stopach",
   "reference.search_placeholder": "Szukaj stopów...",
   "reference.filter_by_metal": "Filtruj według metalu",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "Zobacz na wiki",
   "reference.wiki_aria": "Zobacz {alloy} na wiki",
   "reference.component_range_title": "{metal}: {min}–{max}%",
-
   "footer.copyright": "Zasoby i dane gry © Anego Studios / Vintage Story",
   "footer.credits": "Twórcy",
   "footer.privacy": "Prywatność",
   "footer.license": "Licencja MIT",
   "footer.github": "GitHub",
-
   "credits.title": "Twórcy i licencje",
   "credits.assets.title": "Zasoby i dane gry",
   "credits.assets.body_before": "Wszystkie grafiki, logo i dane receptur stopów pozostają własnością intelektualną",
@@ -117,7 +109,6 @@
   "credits.project.title": "Ten projekt",
   "credits.project.body_before": "Kod źródłowy jest objęty licencją",
   "credits.project.body_after": ". Ten projekt nie jest powiązany z Anego Studios.",
-
   "privacy.title": "Prywatność",
   "privacy.analytics.title": "Analityka",
   "privacy.analytics.body_before": "Ta strona używa",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "do zapamiętania wybranego języka i motywu.",
   "privacy.compliance.title": "Zgodność",
   "privacy.compliance.body": "Ponieważ nie są zbierane żadne dane osobowe, strona może działać bez banera zgody na pliki cookie zgodnie z RODO, CCPA i dyrektywą ePrivacy.",
-
   "metal.copper.label": "Miedź",
   "metal.copper.short": "Cu",
   "metal.tin.label": "Cyna",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "Nikiel",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "Brąz cynowy",
   "alloy.tin-bronze.notes": "Standardowe narzędzia i broń",
   "alloy.bismuth-bronze.name": "Brąz bizmutowy",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "Metal dekoracyjny",
   "alloy.electrum.name": "Elektrum",
   "alloy.electrum.notes": "Metal dekoracyjny",
-
-  "app.translation_notice": "To tłumaczenie zostało wygenerowane automatycznie i może zawierać błędy. / This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "To tłumaczenie zostało wygenerowane automatycznie i może zawierać błędy. / This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "Metalurgia",
+  "header.nav.planner": "Planer",
+  "header.nav.metallurgy_tools": "Narzędzia metalurgii",
+  "planner.title": "Planer metalurgii",
+  "planner.description": "Planuj na podstawie swojego ekwipunku, zamieniaj stopy na realne wsady tygla i porównuj kompromisy dotyczące rzadkich metali, zanim je zużyjesz.",
+  "planner.discovery.label": "Tryb odkrywania",
+  "planner.mode.label": "Metoda",
+  "planner.mode.balanced": "Zrównoważona",
+  "planner.mode.economical": "Ekonomiczna",
+  "planner.mode.preserve_copper": "Oszczędzaj miedź",
+  "planner.mode.max_output": "Maksymalna produkcja",
+  "planner.inventory.title": "Planowanie na podstawie ekwipunku",
+  "planner.inventory.description": "Wpisz aktualną liczbę samorodków dla każdego metalu. Planer wyszukuje tylko to, co naprawdę da się wykonać w ramach rzeczywistych ograniczeń tygla.",
+  "planner.inventory.clear": "Wyczyść ekwipunek",
+  "planner.inventory.metal_aria": "Samorodki metalu {metal} w ekwipunku",
+  "planner.inventory.total_nuggets": "{n} samorodków w zapasie",
+  "planner.inventory.total_ingots": "{n} ekwiwalentów sztabek",
+  "planner.target.title": "Plan receptury",
+  "planner.target.description": "Wybierz recepturę i ustaw cel, a planer zbuduje wykonalne wsady mieszczące się w czterech slotach tygla.",
+  "planner.target.ingots_aria": "Żądana liczba sztabek",
+  "planner.target.recipe": "Wybrany stop",
+  "planner.target.max_craftable": "Maksymalnie możliwe: {n} sztabek",
+  "planner.target.limiting_metal": "Metal ograniczający: {metal}",
+  "planner.target.none": "Brak",
+  "planner.target.breakpoints": "Progi",
+  "planner.target.minimum_valid": "Najmniejsza poprawna partia z tego zapasu: {n}",
+  "planner.target.previous_valid": "Najbliższy poprawny cel na lub poniżej twojego żądania: {n}",
+  "planner.target.next_valid": "Następny poprawny próg powyżej twojego żądania: {n}",
+  "planner.target.next_valid_none": "Przy obecnym zapasie nie ma wyższego poprawnego progu",
+  "planner.target.invalid_target": "{n} sztabek nie jest poprawnym progiem dla tego ekwipunku. Najbliższy poprawny cel na lub poniżej twojego żądania: {previous}. Następny poprawny próg: {next}.",
+  "planner.plan.summary_title": "Podsumowanie planu",
+  "planner.plan.total_ingots": "Zaplanowano {n} sztabek",
+  "planner.plan.total_runs": "{n} wsadów tygla",
+  "planner.plan.leftovers": "Pozostałości po tym planie: {inventory}",
+  "planner.plan.tradeoff_title": "Przegląd kompromisów",
+  "planner.plan.consumed": "Zużywa: {inventory}",
+  "planner.plan.remaining": "Zachowuje: {inventory}",
+  "planner.run.title": "Wsad {n}",
+  "planner.run.subtitle": "{ingots} sztabek z {consumed}",
+  "planner.run.open_in_calculator": "Otwórz w kalkulatorze",
+  "planner.run.crucible_load": "Załadunek tygla",
+  "planner.run.remaining_inventory": "Ekwipunek po tym wsadzie",
+  "planner.run.slot_nuggets": "{n} samorodków",
+  "planner.find.empty": "Dodaj ekwipunek, aby zobaczyć, które stopy możesz teraz wytworzyć.",
+  "planner.find.open_plan": "Otwórz plan receptury",
+  "planner.find.hide_plan": "Ukryj plan receptury",
+  "planner.find.max_output": "Możliwe teraz: {n} sztabek",
+  "planner.find.limiting_metal": "Metal ograniczający: {metal}",
+  "planner.find.run_summary": "Podsumowanie wsadów",
+  "header": {
+    "domain": {
+      "metallurgy": "Metalurgia"
+    },
+    "nav": {
+      "planner": "Planer",
+      "metallurgy_tools": "Narzędzia metalurgiczne"
+    }
+  },
+  "planner": {
+    "title": "Planer metalurgii",
+    "description": "Planuj na podstawie swojego ekwipunku, zamieniaj stopy na realne wsady do tygla i porównuj koszty rzadkości, zanim wydasz rzadkie metale.",
+    "discovery": {
+      "label": "Tryb odkrywania"
+    },
+    "mode": {
+      "label": "Metoda",
+      "balanced": "Zrównoważona",
+      "economical": "Ekonomiczna",
+      "preserve_copper": "Oszczędzaj miedź",
+      "max_output": "Maksymalny wynik"
+    },
+    "inventory": {
+      "title": "Planowanie oparte na ekwipunku",
+      "description": "Wprowadź aktualną liczbę bryłek dla każdego metalu. Planer wyszukuje tylko to, co faktycznie da się wykonać w ramach realnych ograniczeń tygla.",
+      "clear": "Wyczyść ekwipunek",
+      "metal_aria": "Bryłki metalu {metal} w ekwipunku",
+      "total_nuggets": "{n} bryłek w zapasie",
+      "total_ingots": "{n} odpowiedników sztabek"
+    },
+    "target": {
+      "title": "Plan docelowego stopu",
+      "description": "Wybierz recepturę, ustaw cel, a planer zbuduje wykonalne wsady mieszczące się w czterech slotach tygla.",
+      "ingots_aria": "Żądana liczba sztabek",
+      "recipe": "Wybrany stop",
+      "max_craftable": "Maksymalnie wykonalne: {n} sztabek",
+      "limiting_metal": "Metal ograniczający: {metal}",
+      "none": "Brak",
+      "breakpoints": "Progi",
+      "minimum_valid": "Najmniejsza poprawna partia z tego zapasu: {n}",
+      "previous_valid": "Najbliższy poprawny cel na lub poniżej żądania: {n}",
+      "next_valid": "Następny poprawny próg powyżej żądania: {n}",
+      "next_valid_none": "Przy obecnym zapasie nie ma wyższego poprawnego progu",
+      "invalid_target": "{n} sztabek nie jest poprawnym progiem dla tego ekwipunku. Najbliższa poprawna wartość na lub poniżej żądania to: {previous}. Następny poprawny próg to: {next}."
+    },
+    "plan": {
+      "summary_title": "Podsumowanie planu",
+      "total_ingots": "{n} zaplanowanych sztabek",
+      "total_runs": "{n} wsadów tygla",
+      "leftovers": "Pozostałości po tym planie: {inventory}",
+      "tradeoff_title": "Przegląd kompromisów",
+      "consumed": "Zużywa: {inventory}",
+      "remaining": "Zachowuje: {inventory}"
+    },
+    "run": {
+      "title": "Wsad {n}",
+      "subtitle": "{ingots} sztabek z {consumed}",
+      "open_in_calculator": "Otwórz w kalkulatorze",
+      "crucible_load": "Wsad tygla",
+      "remaining_inventory": "Ekwipunek po tym wsadzie",
+      "slot_nuggets": "{n} bryłek"
+    },
+    "find": {
+      "empty": "Dodaj ekwipunek, aby zobaczyć, które stopy są obecnie możliwe do wykonania.",
+      "open_plan": "Otwórz plan receptury",
+      "hide_plan": "Ukryj plan receptury",
+      "max_output": "Możliwe teraz: {n} sztabek",
+      "limiting_metal": "Metal ograniczający: {metal}",
+      "run_summary": "Podsumowanie wsadów"
+    }
+  }
 }

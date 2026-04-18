@@ -5,10 +5,8 @@
   "common.nuggets": "矿块",
   "common.unit": "单位",
   "common.units": "单位",
-
   "theme.toggle_to_dark": "切换到深色主题",
   "theme.toggle_to_light": "切换到浅色主题",
-
   "header.title": "Vintage Story 合金计算器",
   "header.subtitle": "为您的坩埚计算有效的合金配比。数据来源于 Vintage Story 维基。",
   "header.logo_alt": "Vintage Story 合金计算器",
@@ -24,7 +22,6 @@
   "header.nav.collapse": "折叠导航",
   "header.share.copy": "复制分享链接",
   "header.share.copied": "链接已复制！",
-
   "crucible.title": "坩埚内容",
   "crucible.description": "向坩埚中添加金属。每个槽位最多可容纳 128 个同类金属矿块。",
   "crucible.clear_all": "全部清空",
@@ -39,7 +36,6 @@
   "crucible.slot.slider_aria": "槽位 {n} 的矿块数量",
   "crucible.slot.input_aria": "槽位 {n} 的矿块输入",
   "crucible.slot.metal_option": "{label}（{short}）",
-
   "composition.title": "当前成分",
   "composition.empty": "坩埚为空",
   "composition.total_amount": "总数量",
@@ -49,7 +45,6 @@
   "composition.bar_chart_aria": "成分条形图：{segments}",
   "composition.bar_chart_segment": "{metal} {percent}%",
   "composition.segment_title": "{metal}：{percent}%",
-
   "result.title": "合金结果",
   "result.current_product": "当前产物",
   "result.empty": "向坩埚添加金属以查看合金结果",
@@ -81,7 +76,6 @@
   "result.excess_remove_only": "{remove}（{units} {unitsLabel}），恰好制成 {ingots}。",
   "result.excess_remove_or_add": "{remove}（{units} {unitsLabel}）或 {add}，制成 {ingots}。",
   "result.valid_mix_hint": "{summary}，以创建有效的 {alloy} 混合物。",
-
   "reference.title": "合金参考",
   "reference.search_placeholder": "搜索合金...",
   "reference.filter_by_metal": "按金属筛选",
@@ -96,13 +90,11 @@
   "reference.view_on_wiki": "在维基上查看",
   "reference.wiki_aria": "在维基上查看 {alloy}",
   "reference.component_range_title": "{metal}：{min}–{max}%",
-
   "footer.copyright": "游戏资源及数据 © Anego Studios / Vintage Story",
   "footer.credits": "致谢",
   "footer.privacy": "隐私",
   "footer.license": "MIT 许可证",
   "footer.github": "GitHub",
-
   "credits.title": "致谢与许可证",
   "credits.assets.title": "游戏资源与数据",
   "credits.assets.body_before": "所有游戏图像、徽标和合金配方数据均为",
@@ -117,7 +109,6 @@
   "credits.project.title": "本项目",
   "credits.project.body_before": "源代码遵循",
   "credits.project.body_after": "。本项目与 Anego Studios 无关。",
-
   "privacy.title": "隐私",
   "privacy.analytics.title": "数据分析",
   "privacy.analytics.body_before": "本站使用",
@@ -127,7 +118,6 @@
   "privacy.storage.body_after": "，用于记住您选择的语言和主题。",
   "privacy.compliance.title": "合规性",
   "privacy.compliance.body": "由于不收集任何个人数据，本站在 GDPR、CCPA 和 ePrivacy 指令下无需显示 Cookie 同意横幅。",
-
   "metal.copper.label": "铜",
   "metal.copper.short": "Cu",
   "metal.tin.label": "锡",
@@ -144,7 +134,6 @@
   "metal.lead.short": "Pb",
   "metal.nickel.label": "镍",
   "metal.nickel.short": "Ni",
-
   "alloy.tin-bronze.name": "锡青铜",
   "alloy.tin-bronze.notes": "常见工具和武器",
   "alloy.bismuth-bronze.name": "铋青铜",
@@ -163,6 +152,125 @@
   "alloy.cupronickel.notes": "装饰金属",
   "alloy.electrum.name": "琥珀金",
   "alloy.electrum.notes": "装饰金属",
-
-  "app.translation_notice": "此翻译由机器生成，可能不完全准确。/ This translation was machine-generated and may not be fully accurate."
+  "app.translation_notice": "此翻译由机器生成，可能不完全准确。/ This translation was machine-generated and may not be fully accurate.",
+  "header.domain.metallurgy": "冶金",
+  "header.nav.planner": "规划器",
+  "header.nav.metallurgy_tools": "冶金工具",
+  "planner.title": "冶金规划器",
+  "planner.description": "根据你的库存进行规划，把合金拆解为真实可执行的坩埚批次，并在消耗稀有金属前比较不同取舍。",
+  "planner.discovery.label": "发现模式",
+  "planner.mode.label": "方法",
+  "planner.mode.balanced": "平衡",
+  "planner.mode.economical": "经济",
+  "planner.mode.preserve_copper": "保留铜",
+  "planner.mode.max_output": "最大产量",
+  "planner.inventory.title": "基于库存的规划",
+  "planner.inventory.description": "按金属输入你当前拥有的矿粒数量。规划器只会搜索在真实坩埚限制下你确实可以执行的方案。",
+  "planner.inventory.clear": "清空库存",
+  "planner.inventory.metal_aria": "库存中的 {metal} 矿粒",
+  "planner.inventory.total_nuggets": "库存中有 {n} 个矿粒",
+  "planner.inventory.total_ingots": "{n} 个锭当量",
+  "planner.target.title": "配方计划",
+  "planner.target.description": "选择一个配方并设定目标，规划器会生成可执行且不超过四个坩埚槽位的批次。",
+  "planner.target.ingots_aria": "请求的锭数量",
+  "planner.target.recipe": "已选合金",
+  "planner.target.max_craftable": "最多可制作：{n} 个锭",
+  "planner.target.limiting_metal": "限制金属：{metal}",
+  "planner.target.none": "无",
+  "planner.target.breakpoints": "断点",
+  "planner.target.minimum_valid": "当前库存下最小有效批次：{n}",
+  "planner.target.previous_valid": "小于或等于你请求的最近有效目标：{n}",
+  "planner.target.next_valid": "高于你请求的下一个有效断点：{n}",
+  "planner.target.next_valid_none": "以当前库存无法达到更高的有效断点",
+  "planner.target.invalid_target": "{n} 个锭不是该库存下的有效断点。小于或等于你请求的最近有效目标：{previous}。下一个有效断点：{next}。",
+  "planner.plan.summary_title": "计划摘要",
+  "planner.plan.total_ingots": "计划 {n} 个锭",
+  "planner.plan.total_runs": "{n} 次坩埚批次",
+  "planner.plan.leftovers": "该计划后的剩余：{inventory}",
+  "planner.plan.tradeoff_title": "取舍概览",
+  "planner.plan.consumed": "消耗：{inventory}",
+  "planner.plan.remaining": "保留：{inventory}",
+  "planner.run.title": "批次 {n}",
+  "planner.run.subtitle": "用 {consumed} 产出 {ingots} 个锭",
+  "planner.run.open_in_calculator": "在计算器中打开",
+  "planner.run.crucible_load": "坩埚装载",
+  "planner.run.remaining_inventory": "该批次后的库存",
+  "planner.run.slot_nuggets": "{n} 个矿粒",
+  "planner.find.empty": "添加库存后即可查看当前可制作的合金。",
+  "planner.find.open_plan": "打开配方计划",
+  "planner.find.hide_plan": "隐藏配方计划",
+  "planner.find.max_output": "当前可制作：{n} 个锭",
+  "planner.find.limiting_metal": "限制金属：{metal}",
+  "planner.find.run_summary": "批次摘要",
+  "header": {
+    "domain": {
+      "metallurgy": "冶金"
+    },
+    "nav": {
+      "planner": "规划器",
+      "metallurgy_tools": "冶金工具"
+    }
+  },
+  "planner": {
+    "title": "冶金规划器",
+    "description": "根据你的库存制定计划，把合金拆成真实可执行的坩埚批次，并在消耗稀有金属前比较稀缺性取舍。",
+    "discovery": {
+      "label": "发现模式"
+    },
+    "mode": {
+      "label": "方式",
+      "balanced": "平衡",
+      "economical": "经济",
+      "preserve_copper": "保留铜",
+      "max_output": "最大产出"
+    },
+    "inventory": {
+      "title": "基于库存的规划",
+      "description": "按金属输入你当前拥有的颗粒数量。规划器只会搜索在真实坩埚限制下你确实能执行的方案。",
+      "clear": "清空库存",
+      "metal_aria": "库存中的{metal}颗粒",
+      "total_nuggets": "库存中有 {n} 颗粒",
+      "total_ingots": "{n} 个锭当量"
+    },
+    "target": {
+      "title": "目标合金计划",
+      "description": "选择一个配方，设置目标数量，规划器会构建可执行且不超过四个坩埚槽位的批次。",
+      "ingots_aria": "请求的锭数量",
+      "recipe": "所选合金",
+      "max_craftable": "最多可制作：{n} 个锭",
+      "limiting_metal": "限制金属：{metal}",
+      "none": "无",
+      "breakpoints": "断点",
+      "minimum_valid": "当前库存下最小有效批次：{n}",
+      "previous_valid": "不高于请求值的最近有效目标：{n}",
+      "next_valid": "高于请求值的下一个有效断点：{n}",
+      "next_valid_none": "以当前库存没有更高的有效断点",
+      "invalid_target": "{n} 个锭不是该库存下的有效断点。不高于你请求值的最近有效值是：{previous}。下一个有效断点是：{next}。"
+    },
+    "plan": {
+      "summary_title": "计划摘要",
+      "total_ingots": "计划 {n} 个锭",
+      "total_runs": "{n} 次坩埚批次",
+      "leftovers": "该计划后的剩余：{inventory}",
+      "tradeoff_title": "取舍摘要",
+      "consumed": "消耗：{inventory}",
+      "remaining": "保留：{inventory}"
+    },
+    "run": {
+      "title": "批次 {n}",
+      "subtitle": "用 {consumed} 产出 {ingots} 个锭",
+      "open_in_calculator": "在计算器中打开",
+      "crucible_load": "坩埚装料",
+      "remaining_inventory": "该批次后的库存",
+      "slot_nuggets": "{n} 颗粒"
+    },
+    "find": {
+      "empty": "添加库存后即可查看当前可制作的合金。",
+      "open_plan": "打开配方计划",
+      "hide_plan": "隐藏配方计划",
+      "max_output": "当前可制作：{n} 个锭",
+      "limiting_metal": "限制金属：{metal}",
+      "run_summary": "批次摘要"
+    }
+  }
 }

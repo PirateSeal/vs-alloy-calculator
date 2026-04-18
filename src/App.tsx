@@ -1,9 +1,10 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { DEFAULT_LOCALE, applySeoToDocument, getLocaleFromPath, stripLocalePrefix } from "@/i18n";
+import { DEFAULT_LOCALE, applySeoToDocument, getLocaleFromPath } from "@/i18n";
 import { METALS, ALLOY_RECIPES } from "./data/alloys";
-import type { AlloyRecipe, MetalId } from "./types/alloys";
+import type { AlloyRecipe } from "./types/alloys";
 import type { CrucibleState } from "./types/crucible";
+import type { AppDomain, MetallurgyView, PlannerState } from "./types/planner";
 import { I18nProvider } from "./i18n";
 import {
   aggregateCrucible,
@@ -11,125 +12,93 @@ import {
   createEmptyCrucible,
   createPresetForAlloy,
 } from "./lib/alloyLogic";
+import {
+  buildCalculatorSearch,
+  buildPlannerSearch,
+  createDefaultPlannerState,
+  getMetallurgyViewFromPath,
+  getPathnameForMetallurgyView,
+  parseCalculatorStateFromSearch,
+  parsePlannerStateFromSearch,
+} from "./lib/appStateRouting";
 import { track } from "./lib/analytics";
 import { Header } from "./components/Header";
 import { SeoLandingContent } from "./components/SeoLandingContent";
+import { PlannerView } from "./components/PlannerView";
 import { CalculatorControls } from "./components/CalculatorControls";
 import { CruciblePanel } from "./components/CruciblePanel";
 import { CompositionCard } from "./components/CompositionCard";
 import { ResultCard } from "./components/ResultCard";
 import { Footer } from "./components/Footer";
 import { TranslationNotice } from "./components/TranslationNotice";
-import { ShellMobileNav, ShellNavigationRail, type ShellTab } from "./components/ShellNavigation";
+import { ShellMobileNav, ShellNavigationRail } from "./components/ShellNavigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const AlloyReferenceTable = lazy(() =>
   import("./components/AlloyReferenceTable").then((module) => ({ default: module.AlloyReferenceTable })),
 );
 
-const VALID_METAL_IDS = new Set<string>(METALS.map((metal) => metal.id));
-const VALID_RECIPE_IDS = new Set<string>(ALLOY_RECIPES.map((recipe) => recipe.id));
-const TAB_PATHS: Record<ShellTab, string> = {
-  calculator: "/",
-  reference: "/reference/",
-  about: "/about/",
-};
-
-function normalizeTabPath(pathname: string): string {
-  const stripped = stripLocalePrefix(pathname);
-  if (stripped === "/") {
-    return "/";
-  }
-
-  return stripped.endsWith("/") ? stripped : `${stripped}/`;
+interface InitialAppState {
+  view: MetallurgyView;
+  crucible: CrucibleState;
+  recipe: AlloyRecipe | null;
+  planner: PlannerState;
 }
 
-function getTabFromPath(pathname: string): ShellTab {
-  const normalized = normalizeTabPath(pathname);
+function getInitialAppState(): InitialAppState {
+  const view = getMetallurgyViewFromPath(window.location.pathname);
+  const calculatorState = parseCalculatorStateFromSearch(window.location.search);
+  const plannerState = parsePlannerStateFromSearch(window.location.search);
 
-  if (normalized === "/reference/") {
-    return "reference";
-  }
-
-  if (normalized === "/about/") {
-    return "about";
-  }
-
-  return "calculator";
+  return {
+    view,
+    crucible: view === "calculator" ? calculatorState.crucible : createEmptyCrucible(),
+    recipe: view === "calculator" ? calculatorState.recipe : null,
+    planner: view === "planner" ? plannerState : createDefaultPlannerState(),
+  };
 }
-
-function getPathnameForTab(pathname: string, tab: ShellTab): string {
-  const locale = getLocaleFromPath(pathname);
-
-  if (!locale) {
-    return TAB_PATHS[tab];
-  }
-
-  return TAB_PATHS[tab] === "/" ? `/${locale}/` : `/${locale}${TAB_PATHS[tab]}`;
-}
-
-function parseStateFromURL(): { crucible: CrucibleState; recipe: AlloyRecipe | null } {
-  const params = new URLSearchParams(window.location.search);
-  const base = createEmptyCrucible();
-  let hasAny = false;
-
-  for (let i = 0; i < 4; i++) {
-    const param = params.get(`s${i}`);
-    if (!param) continue;
-    const [metalId, nuggetsStr] = param.split(":");
-    const nuggets = parseInt(nuggetsStr, 10);
-    if (VALID_METAL_IDS.has(metalId) && !Number.isNaN(nuggets) && nuggets >= 0 && nuggets <= 128) {
-      base.slots[i] = { id: i, metalId: metalId as MetalId, nuggets };
-      hasAny = true;
-    }
-  }
-
-  const recipeId = params.get("r");
-  const recipe =
-    recipeId && VALID_RECIPE_IDS.has(recipeId)
-      ? ALLOY_RECIPES.find((recipe) => recipe.id === recipeId) ?? null
-      : null;
-
-  return { crucible: hasAny ? base : createEmptyCrucible(), recipe };
-}
-
-const { crucible: initialCrucible, recipe: initialRecipe } = parseStateFromURL();
 
 function App() {
-  const [crucible, setCrucible] = useState<CrucibleState>(initialCrucible);
-  const [selectedRecipe, setSelectedRecipe] = useState<AlloyRecipe | null>(initialRecipe);
-  const [activeTab, setActiveTab] = useState<ShellTab>(() => getTabFromPath(window.location.pathname));
+  const [initialState] = useState<InitialAppState>(getInitialAppState);
+  const activeDomain: AppDomain = "metallurgy";
+  const [crucible, setCrucible] = useState<CrucibleState>(initialState.crucible);
+  const [selectedRecipe, setSelectedRecipe] = useState<AlloyRecipe | null>(initialState.recipe);
+  const [plannerState, setPlannerState] = useState<PlannerState>(initialState.planner);
+  const [activeView, setActiveView] = useState<MetallurgyView>(initialState.view);
   const [railCollapsed, setRailCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.localStorage.getItem("shell-rail-collapsed") === "true";
   });
 
   useEffect(() => {
-    if (activeTab !== "calculator") {
-      const nextUrl = `${window.location.pathname}${window.location.hash}`;
-      history.replaceState(null, "", nextUrl);
-      return;
+    let search = "";
+    if (activeView === "calculator") {
+      search = buildCalculatorSearch(crucible, selectedRecipe);
+    } else if (activeView === "planner") {
+      search = buildPlannerSearch(plannerState);
     }
 
-    const params = new URLSearchParams();
-    for (const slot of crucible.slots) {
-      if (slot.metalId && slot.nuggets > 0) {
-        params.set(`s${slot.id}`, `${slot.metalId}:${slot.nuggets}`);
-      }
-    }
-    if (selectedRecipe) {
-      params.set("r", selectedRecipe.id);
-    }
-    const search = params.toString();
     const nextUrl = search
       ? `${window.location.pathname}?${search}${window.location.hash}`
       : `${window.location.pathname}${window.location.hash}`;
     history.replaceState(null, "", nextUrl);
-  }, [activeTab, crucible, selectedRecipe]);
+  }, [activeView, crucible, plannerState, selectedRecipe]);
 
   useEffect(() => {
     const handlePopState = () => {
-      setActiveTab(getTabFromPath(window.location.pathname));
+      const nextView = getMetallurgyViewFromPath(window.location.pathname);
+      setActiveView(nextView);
+
+      if (nextView === "calculator") {
+        const calculatorState = parseCalculatorStateFromSearch(window.location.search);
+        setCrucible(calculatorState.crucible);
+        setSelectedRecipe(calculatorState.recipe);
+      }
+
+      if (nextView === "planner") {
+        setPlannerState(parsePlannerStateFromSearch(window.location.search));
+      }
+
       applySeoToDocument(getLocaleFromPath(window.location.pathname) ?? DEFAULT_LOCALE);
     };
 
@@ -142,7 +111,6 @@ function App() {
   }, [railCollapsed]);
 
   const amounts = useMemo(() => aggregateCrucible(crucible), [crucible]);
-
   const evaluation = useMemo(() => evaluateAlloys(amounts, ALLOY_RECIPES), [amounts]);
   const resultCardKey = `${evaluation.totalUnits === 0 ? "empty" : "filled"}-${evaluation.bestMatch?.recipe.id ?? selectedRecipe?.id ?? "none"}-${evaluation.bestMatch?.isExact ? "exact" : "other"}`;
   const compositionCardKey = `${evaluation.totalUnits === 0 ? "empty" : "filled"}-${evaluation.bestMatch?.recipe.id ?? "none"}`;
@@ -153,48 +121,47 @@ function App() {
     setCrucible(presetCrucible);
   };
 
-  const handleCrucibleChange = (newCrucible: typeof crucible) => {
-    setCrucible(newCrucible);
-  };
+  const handleTabChange = (view: MetallurgyView) => {
+    setActiveView(view);
+    const nextPathname = getPathnameForMetallurgyView(window.location.pathname, view);
+    const search =
+      view === "calculator"
+        ? buildCalculatorSearch(crucible, selectedRecipe)
+        : view === "planner"
+          ? buildPlannerSearch(plannerState)
+          : "";
 
-  const handleRecipeSelect = (recipe: AlloyRecipe | null) => {
-    setSelectedRecipe(recipe);
-  };
-
-  const handleTabChange = (tab: ShellTab) => {
-    setActiveTab(tab);
-    const nextPathname = getPathnameForTab(window.location.pathname, tab);
-    const search = tab === "calculator" ? window.location.search : "";
-    history.pushState(null, "", `${nextPathname}${search}${window.location.hash}`);
+    history.pushState(null, "", `${nextPathname}${search ? `?${search}` : ""}${window.location.hash}`);
     applySeoToDocument(getLocaleFromPath(nextPathname) ?? DEFAULT_LOCALE);
-    track("tab-switched", { tab });
+    track("tab-switched", { tab: view, domain: activeDomain });
   };
 
   return (
     <I18nProvider>
       <div className="min-h-dvh bg-background text-foreground">
         <ShellNavigationRail
-          activeTab={activeTab}
+          activeView={activeView}
+          activeDomain={activeDomain}
           collapsed={railCollapsed}
           onCollapseChange={setRailCollapsed}
           onTabChange={handleTabChange}
         />
 
-        {/* Main content — offset by the fixed sidebar width on lg+ */}
-        <div className={cn(
-          "flex min-h-dvh min-w-0 flex-col overflow-x-clip transition-[padding-left] duration-300",
-          railCollapsed ? "lg:pl-[6rem]" : "lg:pl-[18rem]",
-        )}>
-          {/* Header: visible only on mobile where there is no navigation rail */}
+        <div
+          className={cn(
+            "flex min-h-dvh min-w-0 flex-col overflow-x-clip transition-[padding-left] duration-300",
+            railCollapsed ? "lg:pl-[6rem]" : "lg:pl-[18rem]",
+          )}
+        >
           <div className="lg:hidden">
-            <Header activeTab={activeTab} />
+            <Header activeTab={activeView} />
           </div>
           <TranslationNotice />
           <main
             className="mx-auto w-full max-w-[1680px] flex-1 px-4 pb-36 pt-4 sm:px-6 lg:px-8 lg:pb-8 lg:pt-5"
             role="main"
           >
-            {activeTab === "calculator" ? (
+            {activeView === "calculator" ? (
               <div className="grid w-full gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] xl:items-start">
                 <section className="flex min-w-0 flex-col gap-4">
                   <div className="order-2 animate-surface-in animate-delay-1 xl:order-1">
@@ -203,14 +170,14 @@ function App() {
                       recipes={ALLOY_RECIPES}
                       selectedRecipe={selectedRecipe}
                       onLoadPreset={handleLoadPreset}
-                      onRecipeSelect={handleRecipeSelect}
-                      onCrucibleChange={handleCrucibleChange}
+                      onRecipeSelect={setSelectedRecipe}
+                      onCrucibleChange={setCrucible}
                     />
                   </div>
                   <div className="order-1 animate-surface-in animate-delay-2 xl:order-2">
                     <CruciblePanel
                       crucible={crucible}
-                      onCrucibleChange={handleCrucibleChange}
+                      onCrucibleChange={setCrucible}
                       allMetals={METALS}
                       recipes={ALLOY_RECIPES}
                     />
@@ -221,9 +188,9 @@ function App() {
                     key={resultCardKey}
                     evaluation={evaluation}
                     crucible={crucible}
-                    onRecipeSelect={handleRecipeSelect}
+                    onRecipeSelect={setSelectedRecipe}
                     selectedRecipe={selectedRecipe}
-                    onCrucibleChange={handleCrucibleChange}
+                    onCrucibleChange={setCrucible}
                   />
                   <CompositionCard
                     key={compositionCardKey}
@@ -234,7 +201,9 @@ function App() {
                   />
                 </aside>
               </div>
-            ) : activeTab === "about" ? (
+            ) : activeView === "planner" ? (
+              <PlannerView recipes={ALLOY_RECIPES} state={plannerState} onStateChange={setPlannerState} />
+            ) : activeView === "about" ? (
               <SeoLandingContent />
             ) : (
               <Suspense
@@ -257,7 +226,7 @@ function App() {
           <Footer />
         </div>
 
-        <ShellMobileNav activeTab={activeTab} onTabChange={handleTabChange} />
+        <ShellMobileNav activeView={activeView} onTabChange={handleTabChange} />
       </div>
     </I18nProvider>
   );

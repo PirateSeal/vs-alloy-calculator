@@ -62,4 +62,16 @@ describe("localized SEO documents", () => {
       "https://vs-calculator.tcousin.com/fr/about/",
     );
   });
+
+  it("creates localized planner metadata and canonical URLs", () => {
+    const seo = getSeoContent("fr", "/planner/");
+
+    expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/fr/planner/");
+    expect(seo.title).toContain("Planificateur de metallurgie");
+    expect(seo.description).toContain("planification metallurgique basee sur l'inventaire");
+    expect(seo.description).not.toContain("Includes inventory-driven metallurgy planning");
+    expect(seo.alternates.find((alternate) => alternate.hrefLang === "en")?.href).toBe(
+      "https://vs-calculator.tcousin.com/planner/",
+    );
+  });
 });

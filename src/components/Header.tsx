@@ -1,8 +1,8 @@
 import { useTranslation } from "@/i18n";
-import type { ShellTab } from "./ShellNavigation";
+import type { MetallurgyView } from "@/types/planner";
 
 interface HeaderProps {
-  activeTab: ShellTab;
+  activeTab: MetallurgyView;
 }
 
 export function Header({ activeTab }: HeaderProps) {

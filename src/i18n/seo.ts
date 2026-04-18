@@ -43,6 +43,32 @@ const COMMON_SUPPORTED_ALLOYS = [
   "electrum",
 ] as const;
 
+const PLANNER_ROUTE_TITLES: Record<Locale, string> = {
+  en: "Metallurgy Planner",
+  fr: "Planificateur de metallurgie",
+  de: "Metallurgie-Planer",
+  es: "Planificador de metalurgia",
+  ru: "Planirovshchik metallurgii",
+  zh: "Yejin guihuaqi",
+  ja: "Yakin puranna",
+  ko: "Yageum peullaeneo",
+  pl: "Planer metalurgii",
+  pt: "Planejador de metalurgia",
+};
+
+const PLANNER_ROUTE_DESCRIPTION_SUFFIXES: Record<Locale, string> = {
+  en: "Includes inventory-driven metallurgy planning, multi-run crucible execution, and scarce-metal decision support.",
+  fr: "Inclut la planification metallurgique basee sur l'inventaire, l'execution de plusieurs coulees de creuset et l'aide a la decision pour les metaux rares.",
+  de: "Enthaelt inventarbasierte Metallurgie-Planung, mehrere Tiegel-Durchgaenge und Entscheidungshilfen fuer seltene Metalle.",
+  es: "Incluye planificacion metalurgica basada en inventario, ejecucion de varias tandas de crisol y ayuda para decidir sobre metales escasos.",
+  ru: "Vklyuchaet planirovanie metallurgii po zapasam, neskolko zagruzok tiglya i podskazki po ekonomii redkikh metallov.",
+  zh: "Baohan jiyu kucun de yejin guihua, duoci ganguo piping zhixing he xique jinshu juece zhichi.",
+  ja: "Zaiko benesu no yakin keikaku, fukusu no rutsubo batchi jikko, kisho kinzoku no handan shien o fukumimasu.",
+  ko: "Jaego giban yageum gyehoeg, yeoreo beonui dogani jageob, huigwi geumsok uisa gyeoljeong jiwoneul pohamhapnida.",
+  pl: "Zawiera planowanie metalurgii na podstawie ekwipunku, wiele wsadow tygla i pomoc przy decyzjach dotyczacych rzadkich metali.",
+  pt: "Inclui planejamento metalurgico guiado por inventario, varias cargas de cadinho e apoio a decisoes sobre metais raros.",
+};
+
 const SEO_CONTENT: Record<Locale, SeoContent> = {
   en: {
     title: "Vintage Story Alloy Calculator | Bronze, Bismuth Bronze & Black Bronze Ratios",
@@ -480,9 +506,13 @@ export function getCanonicalUrl(locale: Locale): string {
   return new URL(getLocalePath(locale), `${SITE_URL}/`).toString();
 }
 
-function getPageTitle(title: string, pathname: string): string {
+function getPageTitle(locale: Locale, title: string, pathname: string): string {
   if (pathname === "/about/") {
     return `${title} | Guide & FAQ`;
+  }
+
+  if (pathname === "/planner/") {
+    return `${title} | ${PLANNER_ROUTE_TITLES[locale]}`;
   }
 
   if (pathname === "/reference/") {
@@ -492,9 +522,13 @@ function getPageTitle(title: string, pathname: string): string {
   return title;
 }
 
-function getPageDescription(content: SeoContent, pathname: string): string {
+function getPageDescription(locale: Locale, content: SeoContent, pathname: string): string {
   if (pathname === "/about/") {
     return content.heroDescription;
+  }
+
+  if (pathname === "/planner/") {
+    return `${content.description} ${PLANNER_ROUTE_DESCRIPTION_SUFFIXES[locale]}`;
   }
 
   if (pathname === "/reference/") {
@@ -524,8 +558,8 @@ export function getAlternateLinks(pathname: string = "/") {
 export function getSeoContent(locale: Locale, pathname: string = "/") {
   const content = SEO_CONTENT[locale];
   const normalizedPath = pathname === "/" ? "/" : pathname.endsWith("/") ? pathname : `${pathname}/`;
-  const description = getPageDescription(content, normalizedPath);
-  const title = getPageTitle(content.title, normalizedPath);
+  const description = getPageDescription(locale, content, normalizedPath);
+  const title = getPageTitle(locale, content.title, normalizedPath);
   const canonicalUrl = getCanonicalUrlForPath(locale, normalizedPath);
 
   const schema = [

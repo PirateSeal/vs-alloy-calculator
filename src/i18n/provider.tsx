@@ -17,7 +17,38 @@ import { buildLocalizedUrl, isLocale, resolveLocale } from "./routing";
 import { setAnalyticsLocale } from "@/lib/analytics";
 
 type Translations = Record<string, string>;
-const LOCALES: Record<Locale, Translations> = { en, fr, de, es, ru, zh, ja, ko, pl, pt };
+interface TranslationTree {
+  [key: string]: string | TranslationTree;
+}
+
+function flattenTranslations(
+  translations: TranslationTree,
+  prefix = "",
+  flat: Translations = {},
+): Translations {
+  for (const [key, value] of Object.entries(translations)) {
+    const nextKey = prefix ? `${prefix}.${key}` : key;
+    if (typeof value === "string") {
+      flat[nextKey] = value;
+      continue;
+    }
+    flattenTranslations(value, nextKey, flat);
+  }
+  return flat;
+}
+
+const LOCALES: Record<Locale, Translations> = {
+  en: flattenTranslations(en as TranslationTree),
+  fr: flattenTranslations(fr as TranslationTree),
+  de: flattenTranslations(de as TranslationTree),
+  es: flattenTranslations(es as TranslationTree),
+  ru: flattenTranslations(ru as TranslationTree),
+  zh: flattenTranslations(zh as TranslationTree),
+  ja: flattenTranslations(ja as TranslationTree),
+  ko: flattenTranslations(ko as TranslationTree),
+  pl: flattenTranslations(pl as TranslationTree),
+  pt: flattenTranslations(pt as TranslationTree),
+};
 
 function getSavedLocale(): Locale | null {
   const saved = localStorage.getItem("locale");
