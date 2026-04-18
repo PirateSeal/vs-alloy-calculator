@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { useTranslation } from "@/i18n";
+import { ArrowDown, ArrowUp, Check, ChevronDown, FlaskConical } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { METALS } from "@/data/alloys";
-import type { MetalAmount, AlloyMatchDetail } from "@/lib/alloyLogic";
+import { useTranslation } from "@/i18n";
 import { getRarityScore } from "@/lib/metalRarity";
-import CountUp from "@/components/ui/count-up";
-import { ArrowUp, ArrowDown, Check, ChevronDown } from "lucide-react";
+import type { AlloyMatchDetail, MetalAmount } from "@/lib/alloyLogic";
 
 interface CompositionCardProps {
   amounts: MetalAmount[];
@@ -21,23 +21,26 @@ export function CompositionCard({
   bestMatch,
 }: CompositionCardProps) {
   const { t, getMetalLabel, getMetalShortLabel, getRecipeName } = useTranslation();
-  const metalMap = useMemo(() => new Map(METALS.map((m) => [m.id, m])), []);
   const [isExpanded, setIsExpanded] = useState(true);
-
+  const [showValidSweetSpots, setShowValidSweetSpots] = useState(false);
+  const metalMap = useMemo(() => new Map(METALS.map((metal) => [metal.id, metal])), []);
   const totalRarityCost = useMemo(
-    () => amounts.reduce((total, amount) => total + (amount.nuggets * getRarityScore(amount.metalId)), 0),
+    () => amounts.reduce((total, amount) => total + amount.nuggets * getRarityScore(amount.metalId), 0),
     [amounts],
   );
+  const sweetSpotsExpanded = bestMatch?.isExact ? showValidSweetSpots : true;
 
-  // Empty state
   if (totalUnits === 0) {
     return (
-      <Card className="bg-card">
-        <CardHeader>
-          <CardTitle>{t("composition.title")}</CardTitle>
+      <Card className="overflow-hidden rounded-[1.75rem] border border-border/35 bg-card/90 shadow-sm">
+        <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-4">
+          <div className="flex items-center gap-2">
+            <FlaskConical className="h-5 w-5 text-primary" aria-hidden="true" />
+            <CardTitle className="text-lg">{t("composition.title")}</CardTitle>
+          </div>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-center py-8">
+        <CardContent className="p-5">
+          <p className="rounded-2xl bg-background/30 px-4 py-6 text-center text-sm text-muted-foreground ring-1 ring-inset ring-border/25">
             {t("composition.empty")}
           </p>
         </CardContent>
@@ -45,173 +48,248 @@ export function CompositionCard({
     );
   }
 
+  const contentId = "composition-panel";
+  const chartLabel = amounts
+    .map((amount) => {
+      const metal = metalMap.get(amount.metalId);
+      return t("composition.bar_chart_segment", {
+        metal: metal ? getMetalLabel(metal.id) : amount.metalId,
+        percent: amount.percent.toFixed(1),
+      });
+    })
+    .join(", ");
+
   return (
-    <Card className="bg-card">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{t("composition.title")}</CardTitle>
+    <Card className="animate-surface-in animate-delay-3 overflow-hidden rounded-[1.75rem] border border-border/35 bg-card/90 shadow-sm">
+      <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <FlaskConical className="h-5 w-5 text-primary" aria-hidden="true" />
+            <div className="space-y-1">
+              <CardTitle className="text-lg">{t("composition.title")}</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                {t("composition.total_amount")}:{" "}
+                <span className="font-mono text-foreground tabular-nums">
+                  {totalNuggets}
+                </span>{" "}
+                {t(totalNuggets === 1 ? "common.nugget" : "common.nuggets")}
+              </p>
+            </div>
+          </div>
           <button
-            className="sm:hidden rounded p-1 hover:bg-muted transition-colors"
-            onClick={() => setIsExpanded(!isExpanded)}
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-background/60 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:hidden"
+            onClick={() => setIsExpanded((current) => !current)}
             aria-expanded={isExpanded}
+            aria-controls={contentId}
             aria-label={t("composition.title")}
           >
-            <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "" : "-rotate-90"}`} />
+            <ChevronDown
+              className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "" : "-rotate-90"}`}
+              aria-hidden="true"
+            />
           </button>
         </div>
       </CardHeader>
-      {isExpanded && <CardContent className="space-y-4">
-        {/* Total summary */}
-        <div className="grid grid-cols-2 gap-4 text-base" role="status" aria-live="polite">
-          <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">{t("composition.total_amount")}</span>
-            <span className="font-semibold">
-              <CountUp to={totalNuggets} duration={0.2} /> {t(totalNuggets === 1 ? "common.nugget" : "common.nuggets")} (
-              <CountUp to={totalUnits} duration={0.2} /> {t(totalUnits === 1 ? "common.unit" : "common.units")})
-            </span>
+
+      <CardContent
+        id={contentId}
+        className={`space-y-4 p-5 ${isExpanded ? "block" : "hidden sm:block"}`}
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl bg-background/30 p-4 ring-1 ring-inset ring-border/25">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("composition.total_amount")}
+            </p>
+            <p className="mt-2 text-lg font-semibold text-foreground">
+              <span className="font-mono tabular-nums">{totalNuggets}</span>{" "}
+              {t(totalNuggets === 1 ? "common.nugget" : "common.nuggets")}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              <span className="font-mono tabular-nums text-foreground">{totalUnits}</span>{" "}
+              {t(totalUnits === 1 ? "common.unit" : "common.units")}
+            </p>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm text-muted-foreground">{t("composition.rarity_cost")}</span>
-            <span className="font-semibold font-mono">
-              <CountUp to={parseFloat(totalRarityCost.toFixed(1))} duration={0.2} />
-            </span>
+
+          <div className="rounded-2xl bg-background/30 p-4 ring-1 ring-inset ring-border/25">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              {t("composition.rarity_cost")}
+            </p>
+            <p className="mt-2 font-mono text-lg font-semibold text-foreground tabular-nums">
+              {totalRarityCost.toFixed(1)}
+            </p>
+            {bestMatch ? (
+              <p className="text-sm text-muted-foreground">{getRecipeName(bestMatch.recipe.id)}</p>
+            ) : null}
           </div>
         </div>
 
-        {/* Stacked bar chart */}
-        <div className="mt-4 space-y-3">
+        <section className="space-y-3" aria-label={t("composition.title")}>
           <div
-            className="flex h-10 rounded-md overflow-hidden border border-border"
+            className="flex h-4 overflow-hidden rounded-full bg-background/65 ring-1 ring-inset ring-border/30"
             role="img"
-            aria-label={t("composition.bar_chart_aria", { segments: amounts.map(a => {
-              const metal = metalMap.get(a.metalId);
-              return t("composition.bar_chart_segment", {
-                metal: metal ? getMetalLabel(metal.id) : a.metalId,
-                percent: a.percent.toFixed(1),
-              });
-            }).join(", ") })}
+            aria-label={t("composition.bar_chart_aria", { segments: chartLabel })}
           >
-            {amounts.map((amount) => {
+            {amounts.map((amount, index) => {
               const metal = metalMap.get(amount.metalId);
+
               if (!metal) return null;
 
               return (
                 <div
                   key={amount.metalId}
-                  className="flex items-center justify-center text-sm font-medium text-white transition-all hover:opacity-80"
+                  className={index === 0 ? "" : "border-l-2 border-background/80"}
                   style={{
-                    backgroundColor: metal.color,
                     width: `${amount.percent}%`,
+                    backgroundColor: metal.color,
                   }}
                   title={t("composition.segment_title", {
                     metal: getMetalLabel(metal.id),
                     percent: amount.percent.toFixed(1),
                   })}
                   aria-hidden="true"
-                >
-                  {amount.percent >= 10 && (
-                    <span className="drop-shadow-md">{getMetalShortLabel(metal.id)}</span>
-                  )}
-                </div>
+                />
               );
             })}
           </div>
 
-          {/* Sweet spot zones - only show if we have a bestMatch */}
-          {bestMatch && (
-            <div className="space-y-2">
-              <div className="text-xs font-medium text-muted-foreground mb-2">
+          <div className="flex flex-wrap gap-1.5">
+            {amounts.map((amount) => {
+              const metal = metalMap.get(amount.metalId);
+
+              return (
+                <Badge
+                  key={amount.metalId}
+                  variant="secondary"
+                  className="h-7 rounded-full border border-border/45 px-2.5 text-[11px] font-semibold"
+                  style={
+                    metal
+                      ? {
+                          backgroundColor: `${metal.color}18`,
+                          color: metal.color,
+                        }
+                      : undefined
+                  }
+                >
+                  <span
+                    className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full"
+                    style={metal ? { backgroundColor: metal.color } : undefined}
+                    aria-hidden="true"
+                  />
+                  {metal ? getMetalShortLabel(metal.id) : amount.metalId} {amount.percent.toFixed(1)}%
+                </Badge>
+              );
+            })}
+          </div>
+        </section>
+
+        {bestMatch ? (
+          <section className="space-y-3 border-t border-border/30 pt-4" aria-label={t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 {t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}
+              </h3>
+              <div className="flex items-center gap-2">
+                {bestMatch.isExact && (
+                  <Badge variant="secondary" className="h-7 rounded-full border border-success/30 bg-success/10 px-2.5 text-[11px] font-semibold text-success">
+                    <Check className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+                    {t("composition.status_valid")}
+                  </Badge>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setShowValidSweetSpots((current) => !current)}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/50 text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-expanded={sweetSpotsExpanded}
+                  aria-label={t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}
+                >
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform duration-200 ${sweetSpotsExpanded ? "" : "-rotate-90"}`}
+                    aria-hidden="true"
+                  />
+                </button>
               </div>
+            </div>
+
+            {sweetSpotsExpanded ? (
+            <div className="space-y-2">
               {bestMatch.recipe.components.map((component) => {
                 const metal = metalMap.get(component.metalId);
-                const actualAmount = amounts.find((a) => a.metalId === component.metalId);
+                const actualAmount = amounts.find((amount) => amount.metalId === component.metalId);
                 const actualPercent = actualAmount?.percent || 0;
-
-                // Check if within range
                 const isValid = actualPercent >= component.minPercent && actualPercent <= component.maxPercent;
                 const isTooLow = actualPercent < component.minPercent;
 
                 return (
-                  <div key={component.metalId} className="flex items-center gap-2 text-sm">
-                    {/* Metal indicator */}
-                    <div className="flex items-center gap-2 min-w-[100px]">
-                      <img
-                        src={metal?.nuggetImage}
-                        alt=""
-                        className="w-5 h-5 object-contain"
-                        aria-hidden="true"
-                      />
-                      <span className="font-medium">{metal ? getMetalLabel(metal.id) : component.metalId}</span>
+                  <div
+                    key={component.metalId}
+                    className="space-y-2 rounded-2xl bg-background/25 p-3 ring-1 ring-inset ring-border/25"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <img
+                          src={metal?.nuggetImage}
+                          alt=""
+                          className="h-5 w-5 object-contain"
+                          aria-hidden="true"
+                        />
+                        <span className="min-w-0 truncate text-sm font-medium">
+                          {metal ? getMetalLabel(metal.id) : component.metalId}
+                        </span>
+                      </div>
+                      <span className="font-mono text-xs text-muted-foreground tabular-nums">
+                        {actualPercent.toFixed(1)}%
+                      </span>
                     </div>
 
-                    {/* Visual range indicator */}
-                    <div className="flex-1 relative h-6 bg-muted rounded-md overflow-hidden">
-                      {/* Sweet spot zone */}
+                    <div className="relative h-7 overflow-hidden rounded-full bg-background/70 ring-1 ring-inset ring-border/35">
                       <div
-                        className="absolute h-full bg-green-500/20 border-x-2 border-green-500"
+                        className="absolute h-full rounded-full bg-success/45 ring-1 ring-inset ring-success/80"
                         style={{
                           left: `${component.minPercent}%`,
                           width: `${component.maxPercent - component.minPercent}%`,
                         }}
                       />
-
-                      {/* Current position marker */}
                       <div
-                        className="absolute top-0 bottom-0 w-0.5 transition-all"
+                        className="absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background"
                         style={{
-                          left: `${Math.min(100, actualPercent)}%`,
-                          backgroundColor: isValid ? '#22c55e' : isTooLow ? '#ef4444' : '#f97316',
+                          left: `${Math.min(100, Math.max(0, actualPercent))}%`,
+                          backgroundColor: isValid ? "#22c55e" : isTooLow ? "#ef4444" : "#f97316",
                         }}
-                      >
-                        <div
-                          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3 h-3 rounded-full border-2 border-background"
-                          style={{
-                            backgroundColor: isValid ? '#22c55e' : isTooLow ? '#ef4444' : '#f97316',
-                          }}
-                        />
-                      </div>
-
-                      {/* Range labels */}
-                      <div className="absolute inset-0 flex items-center justify-between px-1 text-xs font-mono text-muted-foreground pointer-events-none">
-                        <span>0%</span>
-                        <span>100%</span>
-                      </div>
+                      />
                     </div>
 
-                    {/* Status indicator with arrow */}
-                    <div className="flex items-center gap-1 min-w-[100px]">
-                      {isValid ? (
-                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                          <Check className="h-4 w-4" />
-                          <span className="text-xs font-medium">{t("composition.status_valid")}</span>
-                        </div>
-                      ) : isTooLow ? (
-                        <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
-                          <ArrowUp className="h-4 w-4" />
-                          <span className="text-xs font-medium">
-                            +{(component.minPercent - actualPercent).toFixed(1)}%
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
-                          <ArrowDown className="h-4 w-4" />
-                          <span className="text-xs font-medium">
-                            -{(actualPercent - component.maxPercent).toFixed(1)}%
-                          </span>
-                        </div>
-                      )}
-                      <span className="text-xs text-muted-foreground">
-                        ({component.minPercent}-{component.maxPercent}%)
+                    <div className="flex items-center justify-between gap-2 text-xs">
+                      <span
+                        className={
+                          isValid
+                            ? "inline-flex items-center gap-1 font-medium text-success"
+                            : isTooLow
+                              ? "inline-flex items-center gap-1 font-medium text-destructive"
+                              : "inline-flex items-center gap-1 font-medium text-primary"
+                        }
+                      >
+                        {isValid ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+                        {!isValid && isTooLow ? <ArrowUp className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+                        {!isValid && !isTooLow ? <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+                        {isValid
+                          ? t("composition.status_valid")
+                          : isTooLow
+                            ? `+${(component.minPercent - actualPercent).toFixed(1)}%`
+                            : `-${(actualPercent - component.maxPercent).toFixed(1)}%`}
+                      </span>
+                      <span className="text-muted-foreground">
+                        {component.minPercent}-{component.maxPercent}%
                       </span>
                     </div>
                   </div>
                 );
               })}
             </div>
-          )}
-        </div>
-      </CardContent>}
+            ) : null}
+          </section>
+        ) : null}
+      </CardContent>
     </Card>
   );
 }

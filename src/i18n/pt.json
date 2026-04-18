@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Site do Vintage Story",
   "header.nav.wiki": "Wiki do Vintage Story",
   "header.nav.github": "Ver no GitHub",
+  "header.nav.expand": "Expandir navegação",
+  "header.nav.collapse": "Recolher navegação",
   "header.share.copy": "Copiar link de compartilhamento",
   "header.share.copied": "Link copiado!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent}%",
 
   "result.title": "Resultado da liga",
+  "result.current_product": "Produto atual",
   "result.empty": "Adicione metais ao cadinho para ver os resultados",
   "result.no_match": "Nenhuma liga conhecida para esta composição",
   "result.valid_badge": "Liga válida",

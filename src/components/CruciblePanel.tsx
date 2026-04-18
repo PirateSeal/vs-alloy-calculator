@@ -1,10 +1,10 @@
 import type { CrucibleState } from "../types/crucible";
 import type { Metal, AlloyRecipe } from "../types/alloys";
 import { createEmptyCrucible, getAvailableMetals } from "../lib/alloyLogic";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CrucibleSlotRow } from "./CrucibleSlotRow";
-import { Trash2 } from "lucide-react";
+import { FlameKindling, RotateCcw } from "lucide-react";
 import { useTranslation } from "@/i18n";
 
 
@@ -17,6 +17,9 @@ interface CruciblePanelProps {
 
 export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }: CruciblePanelProps) {
   const { t } = useTranslation();
+  const occupiedSlots = crucible.slots.filter((slot) => slot.metalId).length;
+  const filledNuggets = crucible.slots.reduce((total, slot) => total + slot.nuggets, 0);
+
   const handleSlotChange = (slotId: number, patch: Partial<typeof crucible.slots[0]>) => {
     const newSlots = crucible.slots.map(slot =>
       slot.id === slotId ? { ...slot, ...patch } : slot
@@ -49,30 +52,43 @@ export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }
   };
 
   return (
-    <Card className="bg-card">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="space-y-1.5">
-            <CardTitle>{t("crucible.title")}</CardTitle>
-            <CardDescription>{t("crucible.description")}</CardDescription>
+    <Card className="overflow-hidden rounded-[1.75rem] border border-border/35 bg-card/90 shadow-sm">
+      <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <FlameKindling className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+            <CardTitle className="text-lg sm:text-xl">{t("crucible.title")}</CardTitle>
           </div>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleClear}
-            aria-label={t("crucible.clear_all")}
-            className="flex items-center gap-2"
-          >
-            <Trash2 className="h-4 w-4" />
-            {t("crucible.clear_all")}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-background/50 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-border/30">
+              {occupiedSlots}/{crucible.slots.length} slots
+            </span>
+            <span className="inline-flex items-center rounded-full bg-background/50 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-border/30 font-mono tabular-nums">
+              {filledNuggets} {t(filledNuggets === 1 ? "common.nugget" : "common.nuggets")}
+            </span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleClear}
+              aria-label={t("crucible.clear_all")}
+              className="h-9 rounded-full border-border/60 bg-background/70 px-3 text-xs"
+            >
+              <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+              {t("crucible.clear_all")}
+            </Button>
+          </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3" role="group" aria-label={t("crucible.aria_group")}>
+      <CardContent className="pt-5">
+        <div
+          className="stagger-surface-children grid grid-cols-1 items-start gap-4 sm:grid-cols-2 xl:gap-5"
+          role="group"
+          aria-label={t("crucible.aria_group")}
+        >
           {crucible.slots.map(slot => (
             <CrucibleSlotRow
-              key={slot.id}
+              key={`${slot.id}-${slot.metalId ? "filled" : "empty"}`}
               slot={slot}
               availableMetals={getAvailableMetalsForSlot(slot.id)}
               onChange={handleSlotChange}

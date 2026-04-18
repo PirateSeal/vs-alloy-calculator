@@ -1,13 +1,12 @@
 import type { CrucibleSlot } from "../types/crucible";
 import type { Metal, MetalId } from "../types/alloys";
-import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Slider } from "./ui/slider";
-import { NumberInput } from "./ui/number-input";
 import { Button } from "./ui/button";
+import { NumberInput } from "./ui/number-input";
 import { clamp } from "../lib/alloyLogic";
 import { track } from "../lib/analytics";
-import { Trash2 } from "lucide-react";
+import { Flame, Trash2 } from "lucide-react";
 import { useTranslation } from "@/i18n";
 
 interface CrucibleSlotRowProps {
@@ -44,96 +43,124 @@ export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChang
   };
 
   const selectedMetal = availableMetals.find(m => m.id === slot.metalId);
+  const hasMetal = Boolean(selectedMetal && slot.metalId);
 
   return (
-    <div className="space-y-2 rounded-lg border border-border bg-card/50 p-3 overflow-hidden">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor={`slot-${slot.id}-metal`} className="text-xs font-medium">
-            {t("crucible.slot.label", { n: slot.id + 1 })}
-          </Label>
-          <span className="text-[10px] text-muted-foreground transition-all duration-300">
-            {t("crucible.slot.nuggets_units", {
-              nuggets: slot.nuggets,
-              nuggetLabel: t(slot.nuggets === 1 ? "common.nugget" : "common.nuggets"),
-              units,
-              unitLabel: t("common.units"),
-            })}
-          </span>
-        </div>
-
-        {/* Clear slot button - only show if slot has metal */}
-        {slot.metalId && onClearSlot && (
+    <div className={`animate-surface-in-soft group flex flex-col gap-3 rounded-[1.35rem] p-4 ring-1 ring-inset transition-colors duration-200 focus-within:ring-primary/50 ${
+      hasMetal
+        ? "bg-background/35 ring-border/35"
+        : "bg-background/20 ring-border/25"
+    }`}>
+      {/* Slot label + clear */}
+      <div className="flex items-center justify-between gap-3">
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
+          {t("crucible.slot.label", { n: slot.id + 1 })}
+        </span>
+        {hasMetal && onClearSlot && (
           <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => { onClearSlot(slot.id); track("slot-cleared", { slot: slot.id }); }}
-            className="h-6 w-6 p-0 flex-shrink-0"
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => {
+              onClearSlot(slot.id);
+              track("slot-cleared", { slot: slot.id });
+            }}
+            className="h-7 w-7 rounded-full"
             aria-label={t("crucible.slot.clear_aria", { n: slot.id + 1 })}
           >
-            <Trash2 className="h-3 w-3" />
+            <Trash2 className="h-3 w-3" aria-hidden="true" />
           </Button>
         )}
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor={`slot-${slot.id}-metal`} className="text-[10px] text-muted-foreground">
-          {t("crucible.slot.metal_type")}
-        </Label>
-        <Select
-          value={slot.metalId || "empty"}
-          onValueChange={handleMetalChange}
+      {/* Metal selector — flat, no inner card */}
+      <Select value={slot.metalId || "empty"} onValueChange={handleMetalChange}>
+        <SelectTrigger
+          id={`slot-${slot.id}-metal`}
+          aria-label={t("crucible.slot.metal_aria", { n: slot.id + 1 })}
+          className="h-12 rounded-xl border-border/40 bg-background/50 text-sm"
         >
-          <SelectTrigger id={`slot-${slot.id}-metal`} aria-label={t("crucible.slot.metal_aria", { n: slot.id + 1 })} className="h-10 text-sm">
-            <SelectValue placeholder={t("crucible.slot.empty")}>
-              {selectedMetal && (
-                <div className="flex items-center gap-2">
-                  <img
-                    src={selectedMetal.nuggetImage}
-                    alt=""
-                    className="w-5 h-5 object-contain"
-                    aria-hidden="true"
-                  />
-                  <span>{t("crucible.slot.metal_option", { label: getMetalLabel(selectedMetal.id), short: getMetalShortLabel(selectedMetal.id) })}</span>
-                </div>
-              )}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="empty">{t("crucible.slot.empty")}</SelectItem>
-            {availableMetals.map(metal => (
-              <SelectItem key={metal.id} value={metal.id}>
-                <div className="flex items-center gap-2">
-                  <img
-                    src={metal.nuggetImage}
-                    alt=""
-                    className="w-5 h-5 object-contain"
-                    aria-hidden="true"
-                  />
-                  <span>{t("crucible.slot.metal_option", { label: getMetalLabel(metal.id), short: getMetalShortLabel(metal.id) })}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <SelectValue>
+            {selectedMetal ? (
+              <div className="flex min-w-0 items-center gap-2">
+                <img
+                  src={selectedMetal.nuggetImage}
+                  alt=""
+                  className="h-5 w-5 object-contain"
+                  aria-hidden="true"
+                />
+                <span className="truncate">
+                  {t("crucible.slot.metal_option", {
+                    label: getMetalLabel(selectedMetal.id),
+                    short: getMetalShortLabel(selectedMetal.id),
+                  })}
+                </span>
+              </div>
+            ) : (
+              <div className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                <Flame className="h-4 w-4 shrink-0" aria-hidden="true" />
+                <span className="truncate">{t("crucible.slot.empty")}</span>
+              </div>
+            )}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="empty">{t("crucible.slot.empty")}</SelectItem>
+          {availableMetals.map((metal) => (
+            <SelectItem key={metal.id} value={metal.id}>
+              <div className="flex items-center gap-2">
+                <img
+                  src={metal.nuggetImage}
+                  alt=""
+                  className="h-5 w-5 object-contain"
+                  aria-hidden="true"
+                />
+                <span>
+                  {t("crucible.slot.metal_option", {
+                    label: getMetalLabel(metal.id),
+                    short: getMetalShortLabel(metal.id),
+                  })}
+                </span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-      <div
-        className={`space-y-1.5 transition-all duration-300 ease-out overflow-hidden ${
-          slot.metalId
-            ? 'max-h-24 opacity-100 translate-y-0'
-            : 'max-h-0 opacity-0 -translate-y-2'
-        }`}
-      >
-        <Label htmlFor={`slot-${slot.id}-slider`} className="text-[10px] text-muted-foreground">
-          {t("crucible.slot.nugget_amount")}
-        </Label>
-        <div className="flex items-center gap-2">
+      {/* Nugget controls — flat, no inner card */}
+      {hasMetal && (
+        <>
+          {/* Count + units */}
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                {t("crucible.slot.nugget_amount")}
+              </span>
+              <div className="mt-2 font-mono text-2xl font-bold tabular-nums text-primary">
+                {slot.nuggets}
+                <span className="ml-1.5 text-[11px] font-normal text-muted-foreground">
+                  = {units} {t(units === 1 ? "common.unit" : "common.units")}
+                </span>
+              </div>
+            </div>
+            <div className="w-full max-w-[8.5rem]">
+              <NumberInput
+                value={slot.nuggets}
+                onChange={handleNuggetsChange}
+                min={0}
+                max={128}
+                step={1}
+                aria-label={t("crucible.slot.input_aria", { n: slot.id + 1 })}
+                className="h-11 w-full rounded-xl border-border/45 bg-background/55 shadow-none"
+              />
+            </div>
+          </div>
+
+          {/* Slider */}
           <div
-            className="flex-[8] flex items-center min-h-[44px]"
+            className="flex min-h-[44px] items-center"
             style={{
               // @ts-expect-error - CSS custom property
-              '--slider-color': selectedMetal?.color
+              "--slider-color": selectedMetal?.color,
             }}
           >
             <Slider
@@ -144,22 +171,26 @@ export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChang
               value={[slot.nuggets]}
               onValueChange={(values) => handleNuggetsChange(values[0])}
               aria-label={t("crucible.slot.slider_aria", { n: slot.id + 1 })}
-              className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)] [&_[role=slider]]:h-5 [&_[role=slider]]:w-5 touch-none"
-              disabled={!slot.metalId}
+              className="w-full touch-none [&_[role=slider]]:h-5 [&_[role=slider]]:w-5 [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
             />
           </div>
-          <NumberInput
-            id={`slot-${slot.id}-input`}
-            min={0}
-            max={128}
-            value={slot.nuggets}
-            onChange={handleNuggetsChange}
-            aria-label={t("crucible.slot.input_aria", { n: slot.id + 1 })}
-            className="flex-[2] h-8"
-            disabled={!slot.metalId}
-          />
-        </div>
-      </div>
+
+          {/* Quick action buttons */}
+          <div className="grid grid-cols-4 gap-1.5">
+            {([-10, -1, 1, 10] as const).map((delta) => (
+              <button
+                key={delta}
+                type="button"
+                onClick={() => handleNuggetsChange(slot.nuggets + delta)}
+                className="h-8 rounded-xl bg-background/40 text-xs font-bold text-muted-foreground ring-1 ring-inset ring-border/25 transition-colors hover:bg-primary/15 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+                aria-label={`${delta > 0 ? "Add" : "Remove"} ${Math.abs(delta)} nuggets`}
+              >
+                {delta > 0 ? `+${delta}` : delta}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

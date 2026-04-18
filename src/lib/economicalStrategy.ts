@@ -96,6 +96,7 @@ function createEconomicalRecipe(
   targetIngots: number
 ): MetalAmount[] | null {
   const targetUnits = targetIngots * 100;
+  const targetNuggets = targetIngots * 20;
   const components = recipe.components;
 
   // Handle single component
@@ -113,86 +114,85 @@ function createEconomicalRecipe(
     return getRarityScore(a.metalId) - getRarityScore(b.metalId);
   });
 
-  const amounts: MetalAmount[] = [];
-  let allocatedUnits = 0;
+  const ranges = sortedComponents.map((component) => ({
+    component,
+    minNuggets: Math.ceil((((component.minPercent - 0.01) / 100) * targetUnits - 0.000001) / 5),
+    maxNuggets: Math.floor((((component.maxPercent + 0.01) / 100) * targetUnits + 0.000001) / 5),
+  }));
 
-  // Calculate minimum units needed for all remaining components
-  const getMinUnitsForRemaining = (startIndex: number): number => {
-    let minUnits = 0;
-    for (let j = startIndex; j < sortedComponents.length; j++) {
-      minUnits += (sortedComponents[j].minPercent / 100) * targetUnits;
+  let bestAmounts: MetalAmount[] | null = null;
+  let bestRarityCost = Number.POSITIVE_INFINITY;
+  let bestSlotsUsed = Number.POSITIVE_INFINITY;
+
+  const getRemainingRange = (startIndex: number) => {
+    let minRemaining = 0;
+    let maxRemaining = 0;
+
+    for (let i = startIndex; i < ranges.length; i++) {
+      minRemaining += ranges[i].minNuggets;
+      maxRemaining += ranges[i].maxNuggets;
     }
-    return minUnits;
+
+    return { minRemaining, maxRemaining };
   };
 
-  // Allocate nuggets for all components except the last
-  // Bias toward maximum percentage for common metals, minimum for rare metals
-  // But ensure we leave enough room for remaining components
-  for (let i = 0; i < sortedComponents.length - 1; i++) {
-    const component = sortedComponents[i];
-    const rarityScore = getRarityScore(component.metalId);
+  const solve = (
+    index: number,
+    currentNuggets: number,
+    currentAmounts: MetalAmount[],
+  ) => {
+    if (index === ranges.length) {
+      if (currentNuggets !== targetNuggets || !fitsInFourSlots(currentAmounts)) {
+        return;
+      }
 
-    // Calculate how much we can allocate without violating constraints
-    const remainingUnits = targetUnits - allocatedUnits;
-    const minUnitsForRemaining = getMinUnitsForRemaining(i + 1);
-    const maxAvailableUnits = remainingUnits - minUnitsForRemaining;
+      const rarityCost = calculateRarityCost(currentAmounts);
+      const slotsUsed = currentAmounts.reduce(
+        (total, amount) => total + Math.ceil(amount.nuggets / 128),
+        0,
+      );
 
-    // For common metals (low rarity), try to use maximum percentage
-    // For rare metals (high rarity), use minimum percentage
-    const targetPercent =
-      rarityScore <= 2.0 ? component.maxPercent : component.minPercent;
+      if (
+        rarityCost < bestRarityCost ||
+        (rarityCost === bestRarityCost && slotsUsed < bestSlotsUsed)
+      ) {
+        bestAmounts = currentAmounts;
+        bestRarityCost = rarityCost;
+        bestSlotsUsed = slotsUsed;
+      }
+      return;
+    }
 
-    const targetUnitsForComponent = Math.round(
-      (targetPercent / 100) * targetUnits
-    );
+    const { component, minNuggets, maxNuggets } = ranges[index];
+    const { minRemaining, maxRemaining } = getRemainingRange(index + 1);
+    const globalMin = Math.max(minNuggets, targetNuggets - currentNuggets - maxRemaining);
+    const globalMax = Math.min(maxNuggets, targetNuggets - currentNuggets - minRemaining);
 
-    // Convert to nuggets
-    let nuggets = Math.round(targetUnitsForComponent / 5);
+    for (let nuggets = globalMin; nuggets <= globalMax; nuggets++) {
+      const percent = ((nuggets * 5) / targetUnits) * 100;
+      if (percent < component.minPercent - 0.01 || percent > component.maxPercent + 0.01) {
+        continue;
+      }
 
-    // Ensure we stay within percentage bounds
-    const minNuggets = Math.ceil(
-      (component.minPercent / 100) * targetUnits / 5
-    );
-    const maxNuggets = Math.floor(
-      (component.maxPercent / 100) * targetUnits / 5
-    );
+      const nextAmounts = [
+        ...currentAmounts,
+        {
+          metalId: component.metalId,
+          nuggets,
+        },
+      ];
 
-    // Also ensure we don't exceed what's available
-    const maxAvailableNuggets = Math.floor(maxAvailableUnits / 5);
+      if (!fitsInFourSlots(nextAmounts)) {
+        continue;
+      }
 
-    nuggets = Math.max(
-      minNuggets,
-      Math.min(maxNuggets, Math.min(nuggets, maxAvailableNuggets))
-    );
+      solve(index + 1, currentNuggets + nuggets, nextAmounts);
+    }
+  };
 
-    amounts.push({
-      metalId: component.metalId,
-      nuggets,
-    });
+  solve(0, 0, []);
 
-    allocatedUnits += nuggets * 5;
-  }
-
-  // Allocate remaining units to last component
-  const lastComponent = sortedComponents[sortedComponents.length - 1];
-  const remainingUnits = targetUnits - allocatedUnits;
-  const lastNuggets = remainingUnits / 5;
-
-  // Validate last component is within percentage bounds
-  const lastPercent = (remainingUnits / targetUnits) * 100;
-  if (
-    lastPercent < lastComponent.minPercent - 0.01 ||
-    lastPercent > lastComponent.maxPercent + 0.01
-  ) {
-    return null; // Cannot satisfy percentage constraints
-  }
-
-  amounts.push({
-    metalId: lastComponent.metalId,
-    nuggets: lastNuggets,
-  });
-
-  return amounts;
+  return bestAmounts;
 }
 
 /**

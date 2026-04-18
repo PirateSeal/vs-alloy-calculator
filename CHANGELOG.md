@@ -5,6 +5,25 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-04-18
+
+### Added
+- **Mockup-aligned calculator shell** — Rebuilt the main workspace around a collapsible left navigation rail, a dedicated calculator workspace, and a right-side Current Product/result rail while preserving the existing alloy logic, shareable URL state, and i18n behavior.
+- **UI motion system** — Added reduced-motion-safe entrance animations for the navigation shell, calculator panels, result rail, translation notices, and reference rows so surfaces settle in instead of appearing abruptly.
+- **Agent documentation** — Added `agent.md` plus `docs/agent/*` to document the codebase structure, current redesign direction, and plan implementation status for future contributors.
+
+### Changed
+- **Calculator workflow refined** — Extracted preset controls into a dedicated control bar, restored direct nugget number entry alongside sliders and quick-step buttons, and tightened desktop spacing so the main calculator path is denser and faster to use.
+- **Result rail polished** — Empty crucible state now uses a shorter, subdued crucible hero; valid results keep the full Current Product treatment; sweet-spot guidance collapses by default for already-valid alloys to reduce unnecessary scroll.
+- **Reference experience redesigned** — The reference tab now lives inside the same visual system as the calculator, with searchable/filterable card rows, stronger composition presentation, and smoother transitions between states.
+- **Navigation hierarchy clarified** — Utility actions and outbound links in the left rail were demoted visually so `Calculator` and `Reference` remain the dominant navigation targets.
+- **Theme and surface language updated** — Applied the forge/copper `alchemist_s_crucible` palette across the shell, inputs, cards, and overlays while keeping Nunito as the primary UI typeface.
+
+### Fixed
+- **Desktop calculator gap** — Removed the large empty gap that appeared between the preset controls and crucible inputs in the desktop layout.
+- **State-change animation replay** — `Clear all`, empty-to-filled transitions, and preset loading now retrigger card/slot entrance motion instead of only animating on the first page mount.
+- **Empty-state density** — The right rail no longer consumes full result-card height when no alloy is present, reducing dead space while keeping the crucible artwork visible.
+
 ## [1.7.2] - 2026-04-17
 
 ### Security

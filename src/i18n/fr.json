@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Site Vintage Story",
   "header.nav.wiki": "Wiki Vintage Story",
   "header.nav.github": "Voir sur GitHub",
+  "header.nav.expand": "Développer la navigation",
+  "header.nav.collapse": "Réduire la navigation",
   "header.share.copy": "Copier le lien",
   "header.share.copied": "Lien copié !",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal} : {percent} %",
 
   "result.title": "Résultat d'alliage",
+  "result.current_product": "Produit actuel",
   "result.empty": "Ajoutez des métaux pour voir les résultats",
   "result.no_match": "Aucun alliage connu pour cette composition",
   "result.valid_badge": "Alliage valide",

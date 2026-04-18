@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Strona Vintage Story",
   "header.nav.wiki": "Wiki Vintage Story",
   "header.nav.github": "Zobacz na GitHub",
+  "header.nav.expand": "Rozwiń nawigację",
+  "header.nav.collapse": "Zwiń nawigację",
   "header.share.copy": "Kopiuj link",
   "header.share.copied": "Link skopiowany!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent}%",
 
   "result.title": "Wynik stopu",
+  "result.current_product": "Aktualny produkt",
   "result.empty": "Dodaj metale do tygla, aby zobaczyć wyniki",
   "result.no_match": "Brak pasującego stopu dla tej kompozycji",
   "result.valid_badge": "Prawidłowy stop",

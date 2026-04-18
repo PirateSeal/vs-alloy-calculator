@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Vintage Story Website",
   "header.nav.wiki": "Vintage Story Wiki",
   "header.nav.github": "Auf GitHub ansehen",
+  "header.nav.expand": "Navigation erweitern",
+  "header.nav.collapse": "Navigation reduzieren",
   "header.share.copy": "Link kopieren",
   "header.share.copied": "Link kopiert!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent} %",
 
   "result.title": "Legierungsergebnis",
+  "result.current_product": "Aktuelles Produkt",
   "result.empty": "Füge Metalle hinzu, um Ergebnisse zu sehen",
   "result.no_match": "Keine bekannte Legierung für diese Zusammensetzung",
   "result.valid_badge": "Gültige Legierung",

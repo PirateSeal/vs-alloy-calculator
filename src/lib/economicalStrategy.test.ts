@@ -107,6 +107,42 @@ describe("Economical Strategy", () => {
       }
     });
 
+    it("should find a slot-aware black bronze mix for 18 ingots", () => {
+      const blackBronze = ALLOY_RECIPES.find((recipe) => recipe.id === "black-bronze");
+      expect(blackBronze).toBeDefined();
+
+      const result = optimizeEconomical(blackBronze!, 18);
+
+      expect(result.success).toBe(true);
+      expect(result.ingotCount).toBe(18);
+      expect(result.crucible).not.toBeNull();
+
+      if (result.crucible) {
+        expect(result.crucible.slots).toHaveLength(4);
+        expect(result.crucible.slots.every((slot) => slot.nuggets <= 128)).toBe(true);
+
+        const metalTotals = new Map<MetalId, number>();
+        for (const slot of result.crucible.slots) {
+          if (slot.metalId) {
+            metalTotals.set(slot.metalId, (metalTotals.get(slot.metalId) || 0) + slot.nuggets);
+          }
+        }
+
+        const totalNuggets = Array.from(metalTotals.values()).reduce((sum, nuggets) => sum + nuggets, 0);
+        expect(totalNuggets).toBe(360);
+        expect(metalTotals.get("copper")).toBe(256);
+        expect(metalTotals.get("silver")).toBeGreaterThan(0);
+        expect(metalTotals.get("gold")).toBeGreaterThan(0);
+
+        for (const component of blackBronze!.components) {
+          const nuggets = metalTotals.get(component.metalId) || 0;
+          const percent = (nuggets / totalNuggets) * 100;
+          expect(percent).toBeGreaterThanOrEqual(component.minPercent - 0.01);
+          expect(percent).toBeLessThanOrEqual(component.maxPercent + 0.01);
+        }
+      }
+    });
+
     it("should return error when target ingot amount is not achievable", () => {
       // Create a recipe with very tight constraints that can't fit many ingots
       const tightRecipe: AlloyRecipe = {

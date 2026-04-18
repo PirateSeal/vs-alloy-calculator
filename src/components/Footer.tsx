@@ -6,23 +6,31 @@ export function Footer() {
   const { t } = useTranslation();
 
   return (
-    <footer className="bg-card border-t shrink-0" role="contentinfo">
-      <div className="container mx-auto px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
-        <span>
-          {t("footer.copyright")}
-          <span className="ml-3 opacity-50">v{__APP_VERSION__}</span>
+    <footer className="animate-surface-in animate-delay-3 shrink-0 bg-background/70 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2" role="contentinfo">
+      <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-2 px-4 py-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span>{t("footer.copyright")}</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] opacity-70">
+            v{__APP_VERSION__}
+          </span>
         </span>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:justify-end">
           <CreditsDialog
             trigger={
-              <button className="hover:text-foreground transition-colors cursor-pointer">
+              <button
+                type="button"
+                className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
                 {t("footer.credits")}
               </button>
             }
           />
           <PrivacyNote
             trigger={
-              <button className="hover:text-foreground transition-colors cursor-pointer">
+              <button
+                type="button"
+                className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              >
                 {t("footer.privacy")}
               </button>
             }
@@ -31,7 +39,7 @@ export function Footer() {
             href="https://github.com/PirateSeal/vs-alloy-calculator/blob/master/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("footer.license")}
           </a>
@@ -39,7 +47,7 @@ export function Footer() {
             href="https://github.com/PirateSeal/vs-alloy-calculator"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-foreground transition-colors"
+            className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("footer.github")}
           </a>

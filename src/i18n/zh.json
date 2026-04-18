@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Vintage Story 官网",
   "header.nav.wiki": "Vintage Story 维基",
   "header.nav.github": "在 GitHub 上查看",
+  "header.nav.expand": "展开导航",
+  "header.nav.collapse": "折叠导航",
   "header.share.copy": "复制分享链接",
   "header.share.copied": "链接已复制！",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}：{percent}%",
 
   "result.title": "合金结果",
+  "result.current_product": "当前产物",
   "result.empty": "向坩埚添加金属以查看合金结果",
   "result.no_match": "此成分无法匹配已知合金",
   "result.valid_badge": "有效合金",

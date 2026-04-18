@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Vintage Story Website",
   "header.nav.wiki": "Vintage Story Wiki",
   "header.nav.github": "View on GitHub",
+  "header.nav.expand": "Expand navigation",
+  "header.nav.collapse": "Collapse navigation",
   "header.share.copy": "Copy share link",
   "header.share.copied": "Link copied!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent}%",
 
   "result.title": "Alloy Result",
+  "result.current_product": "Current Product",
   "result.empty": "Add metals to the crucible to see alloy results",
   "result.no_match": "No known alloy from this composition",
   "result.valid_badge": "Valid alloy",

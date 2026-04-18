@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Сайт Vintage Story",
   "header.nav.wiki": "Вики Vintage Story",
   "header.nav.github": "Смотреть на GitHub",
+  "header.nav.expand": "Развернуть навигацию",
+  "header.nav.collapse": "Свернуть навигацию",
   "header.share.copy": "Скопировать ссылку",
   "header.share.copied": "Ссылка скопирована!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent} %",
 
   "result.title": "Результат сплава",
+  "result.current_product": "Текущий продукт",
   "result.empty": "Добавьте металлы, чтобы увидеть результат",
   "result.no_match": "Нет известного сплава для данного состава",
   "result.valid_badge": "Верный сплав",

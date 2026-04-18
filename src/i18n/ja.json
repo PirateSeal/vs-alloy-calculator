@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Vintage Story 公式サイト",
   "header.nav.wiki": "Vintage Story Wiki",
   "header.nav.github": "GitHub で見る",
+  "header.nav.expand": "ナビゲーションを展開",
+  "header.nav.collapse": "ナビゲーションを折りたたむ",
   "header.share.copy": "リンクをコピー",
   "header.share.copied": "コピーしました！",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}：{percent}%",
 
   "result.title": "合金の結果",
+  "result.current_product": "現在の生成物",
   "result.empty": "金属を追加すると合金の結果が表示されます",
   "result.no_match": "この配合に一致する既知の合金はありません",
   "result.valid_badge": "有効な合金",

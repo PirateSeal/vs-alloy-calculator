@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Vintage Story 공식 사이트",
   "header.nav.wiki": "Vintage Story 위키",
   "header.nav.github": "GitHub에서 보기",
+  "header.nav.expand": "탐색 확장",
+  "header.nav.collapse": "탐색 접기",
   "header.share.copy": "공유 링크 복사",
   "header.share.copied": "링크가 복사되었습니다!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent}%",
 
   "result.title": "합금 결과",
+  "result.current_product": "현재 결과물",
   "result.empty": "도가니에 금속을 추가하면 합금 결과가 표시됩니다",
   "result.no_match": "이 구성에 맞는 알려진 합금이 없습니다",
   "result.valid_badge": "유효한 합금",

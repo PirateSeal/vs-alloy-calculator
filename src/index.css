@@ -6,67 +6,104 @@
 @theme {
   --font-family-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
   --font-family-mono: "JetBrains Mono", ui-monospace, monospace;
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.15 0 0);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.15 0 0);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.15 0 0);
-  --color-primary: oklch(0.55 0.12 70);
-  --color-primary-foreground: oklch(0.98 0 0);
-  --color-secondary: oklch(0.96 0 0);
-  --color-secondary-foreground: oklch(0.25 0 0);
-  --color-muted: oklch(0.96 0 0);
-  --color-muted-foreground: oklch(0.55 0 0);
-  --color-accent: oklch(0.96 0 0);
-  --color-accent-foreground: oklch(0.25 0 0);
-  --color-destructive: oklch(0.65 0.25 25);
-  --color-destructive-foreground: oklch(0.98 0 0);
-  --color-border: oklch(0.90 0 0);
-  --color-input: oklch(0.90 0 0);
-  --color-ring: oklch(0.15 0 0);
+  --color-background: #f1e7db;
+  --color-foreground: #1c1714;
+  --color-card: #fbf2e9;
+  --color-card-foreground: #1c1714;
+  --color-popover: #fff8f0;
+  --color-popover-foreground: #1c1714;
+  --color-primary: #8f673e;
+  --color-primary-foreground: #fff7ef;
+  --color-secondary: #e7dbcf;
+  --color-secondary-foreground: #1c1714;
+  --color-muted: #ece0d4;
+  --color-muted-foreground: #6d5d52;
+  --color-accent: #d9c8b5;
+  --color-accent-foreground: #1c1714;
+  --color-success: #4f7a45;
+  --color-success-foreground: #fff7ef;
+  --color-destructive: #9b554c;
+  --color-destructive-foreground: #fff7ef;
+  --color-border: #d7c8b8;
+  --color-input: #d0c0b0;
+  --color-ring: #8f673e;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
 }
 
 @layer base {
   .dark {
-    --color-background: oklch(0.20 0 0);
-    --color-foreground: oklch(0.95 0 0);
-    --color-card: oklch(0.25 0 0);
-    --color-card-foreground: oklch(0.95 0 0);
-    --color-popover: oklch(0.22 0 0);
-    --color-popover-foreground: oklch(0.95 0 0);
-    --color-primary: oklch(0.65 0.12 70);
-    --color-primary-foreground: oklch(0.20 0 0);
-    --color-secondary: oklch(0.30 0 0);
-    --color-secondary-foreground: oklch(0.95 0 0);
-    --color-muted: oklch(0.30 0 0);
-    --color-muted-foreground: oklch(0.70 0 0);
-    --color-accent: oklch(0.30 0 0);
-    --color-accent-foreground: oklch(0.95 0 0);
-    --color-destructive: oklch(0.50 0.20 25);
-    --color-destructive-foreground: oklch(0.95 0 0);
-    --color-border: oklch(0.35 0 0);
-    --color-input: oklch(0.30 0 0);
-    --color-ring: oklch(0.80 0 0);
+    --color-background: #131313;
+    --color-foreground: #e5e2e1;
+    --color-card: #1c1b1b;
+    --color-card-foreground: #e5e2e1;
+    --color-popover: #20201f;
+    --color-popover-foreground: #e5e2e1;
+    --color-primary: #efbd8d;
+    --color-primary-foreground: #131313;
+    --color-secondary: #2a2a2a;
+    --color-secondary-foreground: #e5e2e1;
+    --color-muted: #20201f;
+    --color-muted-foreground: #d4c4b7;
+    --color-accent: #2a2a2a;
+    --color-accent-foreground: #efbd8d;
+    --color-success: #aed09f;
+    --color-success-foreground: #131313;
+    --color-destructive: #a05b4f;
+    --color-destructive-foreground: #131313;
+    --color-border: #2f2a27;
+    --color-input: #35302c;
+    --color-ring: #efbd8d;
   }
 
   * {
     border-color: var(--color-border);
-    @apply outline-ring/50;
+  }
+
+  html {
+    color-scheme: light;
+    /* Reserve scrollbar gutter so Radix Dialog's scroll-lock doesn't cause layout shift */
+    scrollbar-gutter: stable;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  /* Prevent Radix/react-remove-scroll from injecting padding-right that shifts the layout */
+  body[data-scroll-locked] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Suppress all transitions while the theme class is being applied */
+  .theme-switching,
+  .theme-switching * {
+    transition: none !important;
   }
 
   body {
+    min-height: 100dvh;
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-family-sans);
     transition: background-color 0.3s ease, color 0.3s ease;
+    background-image:
+      radial-gradient(circle at top, rgba(239, 189, 141, 0.09), transparent 28%),
+      radial-gradient(circle at 82% 0%, rgba(174, 208, 159, 0.08), transparent 22%),
+      radial-gradient(circle at bottom left, rgba(143, 103, 62, 0.08), transparent 24%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.12));
+    background-attachment: local;
+    overflow-x: clip;
   }
 
-  /* Apply monospace font to numbers and values */
+  html,
+  #root {
+    overflow-x: clip;
+  }
+
   input[type="number"],
   .font-mono,
   [data-value],
@@ -75,7 +112,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* White circular background for metal images in dark mode */
   .dark img[src*="Nugget"],
   .dark img[src*="Ingot"] {
     background-color: white;
@@ -83,12 +119,10 @@
     padding: 2px;
   }
 
-  /* Theme transition on interactive and themed elements only */
   button,
   a,
   input,
   select,
-  [role="tab"],
   [role="slider"],
   .bg-card,
   .bg-background,
@@ -96,13 +130,24 @@
     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
   }
 
-  /* Enhanced focus indicators for accessibility */
   *:focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
   }
 
-  /* Ensure number input spinners are visible and styled */
+  .dark body {
+    background-image:
+      radial-gradient(circle at top, rgba(239, 189, 141, 0.12), transparent 28%),
+      radial-gradient(circle at 82% 0%, rgba(174, 208, 159, 0.09), transparent 22%),
+      radial-gradient(circle at bottom left, rgba(143, 103, 62, 0.08), transparent 24%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.2));
+  }
+
+  ::selection {
+    background: rgba(239, 189, 141, 0.35);
+    color: var(--color-foreground);
+  }
+
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     opacity: 1;
@@ -115,7 +160,6 @@
     background-color: var(--color-muted);
   }
 
-  /* Slider custom styling with dynamic metal colors */
   [role="slider"] {
     transition: border-color 0.3s ease, transform 0.2s ease;
   }
@@ -126,5 +170,92 @@
 
   span[data-orientation] > span:last-child {
     transition: background-color 0.3s ease;
+  }
+}
+
+@layer utilities {
+  @keyframes surface-enter {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.985);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes surface-enter-soft {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-surface-in {
+    animation: surface-enter 540ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+
+  .animate-surface-in-soft {
+    animation: surface-enter-soft 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+
+  .animate-delay-1 {
+    animation-delay: 70ms;
+  }
+
+  .animate-delay-2 {
+    animation-delay: 140ms;
+  }
+
+  .animate-delay-3 {
+    animation-delay: 210ms;
+  }
+
+  .stagger-surface-children > * {
+    animation: surface-enter-soft 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+
+  .stagger-surface-children > *:nth-child(1) {
+    animation-delay: 40ms;
+  }
+
+  .stagger-surface-children > *:nth-child(2) {
+    animation-delay: 90ms;
+  }
+
+  .stagger-surface-children > *:nth-child(3) {
+    animation-delay: 140ms;
+  }
+
+  .stagger-surface-children > *:nth-child(4) {
+    animation-delay: 190ms;
+  }
+
+  .stagger-surface-children > *:nth-child(5) {
+    animation-delay: 240ms;
+  }
+
+  .stagger-surface-children > *:nth-child(6) {
+    animation-delay: 290ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-surface-in,
+    .animate-surface-in-soft,
+    .stagger-surface-children > * {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 }

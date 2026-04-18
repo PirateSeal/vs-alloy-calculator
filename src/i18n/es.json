@@ -19,6 +19,8 @@
   "header.nav.vs_website": "Sitio de Vintage Story",
   "header.nav.wiki": "Wiki de Vintage Story",
   "header.nav.github": "Ver en GitHub",
+  "header.nav.expand": "Expandir navegación",
+  "header.nav.collapse": "Contraer navegación",
   "header.share.copy": "Copiar enlace",
   "header.share.copied": "¡Enlace copiado!",
 
@@ -48,6 +50,7 @@
   "composition.segment_title": "{metal}: {percent} %",
 
   "result.title": "Resultado de aleación",
+  "result.current_product": "Producto actual",
   "result.empty": "Añade metales al crisol para ver los resultados",
   "result.no_match": "Ninguna aleación conocida para esta composición",
   "result.valid_badge": "Aleación válida",
