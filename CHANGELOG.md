@@ -5,6 +5,11 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.1] - 2026-04-18
+
+### Changed
+- **Sitemap expanded again** — Added localized `/reference/` URLs to the sitemap so Google and Bing can discover the searchable alloy reference pages alongside the homepage and dedicated About pages.
+
 ## [1.9.0] - 2026-04-18
 
 ### Added
