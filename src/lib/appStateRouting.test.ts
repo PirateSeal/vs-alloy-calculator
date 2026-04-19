@@ -11,16 +11,15 @@ import {
 } from "@/features/metallurgy/routing/appStateRouting";
 
 describe("appStateRouting", () => {
-  it("parses the planner route from localized and root paths", () => {
-    expect(getMetallurgyViewFromPath("/planner/")).toBe("planner");
-    expect(getMetallurgyViewFromPath("/fr/planner/")).toBe("planner");
-    expect(getMetallurgyViewFromPath("/de/reference/")).toBe("reference");
-    expect(getMetallurgyViewFromPath("/")).toBe("calculator");
+  it("parses the namespaced metallurgy routes", () => {
+    expect(getMetallurgyViewFromPath("/metallurgy/planner/")).toBe("planner");
+    expect(getMetallurgyViewFromPath("/fr/metallurgy/planner/")).toBe("planner");
+    expect(getMetallurgyViewFromPath("/metallurgy/")).toBe("calculator");
   });
 
-  it("builds localized planner paths without losing the active locale", () => {
-    expect(getPathnameForMetallurgyView("/fr/", "planner")).toBe("/fr/planner/");
-    expect(getPathnameForMetallurgyView("/de/planner/", "calculator")).toBe("/de/");
+  it("builds localized metallurgy paths without losing the active locale", () => {
+    expect(getPathnameForMetallurgyView("/fr/", "planner")).toBe("/fr/metallurgy/planner/");
+    expect(getPathnameForMetallurgyView("/de/metallurgy/planner/", "calculator")).toBe("/de/metallurgy/");
   });
 
   it("round-trips calculator search state", () => {

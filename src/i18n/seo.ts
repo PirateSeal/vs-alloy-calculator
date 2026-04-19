@@ -1,10 +1,54 @@
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, getLocalePath } from "./routing";
 import type { Locale } from "./types";
 import { METALLURGY_VIEW_PATHS } from "../features/metallurgy/routing/routes";
+import { getCanonicalAppPath, LEATHER_ROUTE_PATH, OVERVIEW_ROUTE_PATH, REFERENCE_ROUTE_PATH } from "../routing/routes";
 
 export const SITE_URL = "https://vs-calculator.tcousin.com";
 const SITE_NAME = "Vintage Story Alloy Calculator";
 const SITE_IMAGE_URL = new URL("/Grid_Copper_anvil.png", `${SITE_URL}/`).toString();
+const LEATHER_ROUTE_TITLE = "Vintage Story Leather Planner";
+const LEATHER_ROUTE_DESCRIPTION =
+  "Plan raw hides, soaking liquid, tannin logs, water, and barrel steps for the full Vintage Story leatherworking pipeline.";
+const LEATHER_FEATURE_LIST = [
+  "Vintage Story leatherworking planner",
+  "Hide-to-leather material planning",
+  "Barrel and tannin workflow breakdown",
+  "Lime and powdered borax shopping list",
+];
+const OVERVIEW_ROUTE_TITLE = "Vintage Story Alloy Calculator";
+const OVERVIEW_ROUTE_DESCRIPTION =
+  "Plan metallurgy alloys, leatherworking hides, pelt curing, and reference lookups for Vintage Story from one shared toolkit.";
+const OVERVIEW_FEATURE_LIST = [
+  "Metallurgy calculator and planner",
+  "Leatherworking and pelt-curing planner",
+  "Shared metallurgy and leatherwork reference",
+  "Vintage Story production planning toolkit",
+];
+const OVERVIEW_FAQ_ITEMS: SeoFaqItem[] = [
+  {
+    question: "What can this Vintage Story toolset help me plan?",
+    answer:
+      "It covers both metallurgy and leatherwork: alloy ratios, crucible batches, hide tanning, pelt curing, tanning liquid, barrel usage, and material shopping lists.",
+  },
+  {
+    question: "Does the reference cover both metallurgy and leatherwork now?",
+    answer:
+      "Yes. The shared reference page groups metallurgy and leatherwork information in one place so you can switch between alloy data and hide-processing rules without leaving the reference surface.",
+  },
+  {
+    question: "Can I still deep-link directly to the metallurgy tools?",
+    answer:
+      "Yes. Calculator and planner URLs remain shareable under the /metallurgy/ path, while leatherwork remains under /leather/.",
+  },
+];
+const REFERENCE_ROUTE_TITLE = "Vintage Story Reference";
+const REFERENCE_ROUTE_DESCRIPTION =
+  "Browse shared metallurgy and leatherwork reference data for Vintage Story, including alloy ranges, hide workflow rules, solvents, tannin, and bear-hide notes.";
+const REFERENCE_FEATURE_LIST = [
+  "Alloy recipe and smelting reference",
+  "Leatherwork hide, solvent, and tannin reference",
+  "Shared reference tabs for metallurgy and leatherwork",
+];
 
 export interface SeoFaqItem {
   question: string;
@@ -507,44 +551,61 @@ export function getCanonicalUrl(locale: Locale): string {
   return new URL(getLocalePath(locale), `${SITE_URL}/`).toString();
 }
 
+function isAboutPath(pathname: string): boolean {
+  return getCanonicalAppPath(pathname) === OVERVIEW_ROUTE_PATH;
+}
+
+function isReferencePath(pathname: string): boolean {
+  return getCanonicalAppPath(pathname) === REFERENCE_ROUTE_PATH;
+}
+
 function getPageTitle(locale: Locale, title: string, pathname: string): string {
-  if (pathname === METALLURGY_VIEW_PATHS.about) {
-    return `${title} | Guide & FAQ`;
+  if (pathname === LEATHER_ROUTE_PATH) {
+    return `${LEATHER_ROUTE_TITLE} | Hide, Tannin & Barrel Workflow`;
+  }
+
+  if (isAboutPath(pathname)) {
+    return `${OVERVIEW_ROUTE_TITLE} | Overview, Leatherwork & Reference`;
+  }
+
+  if (isReferencePath(pathname)) {
+    return `${REFERENCE_ROUTE_TITLE} | Metallurgy & Leatherwork`;
   }
 
   if (pathname === METALLURGY_VIEW_PATHS.planner) {
     return `${title} | ${PLANNER_ROUTE_TITLES[locale]}`;
   }
 
-  if (pathname === METALLURGY_VIEW_PATHS.reference) {
-    return `${title} | Alloy Reference`;
-  }
-
   return title;
 }
 
 function getPageDescription(locale: Locale, content: SeoContent, pathname: string): string {
-  if (pathname === METALLURGY_VIEW_PATHS.about) {
-    return content.heroDescription;
+  if (pathname === LEATHER_ROUTE_PATH) {
+    return LEATHER_ROUTE_DESCRIPTION;
+  }
+
+  if (isAboutPath(pathname)) {
+    return OVERVIEW_ROUTE_DESCRIPTION;
+  }
+
+  if (isReferencePath(pathname)) {
+    return REFERENCE_ROUTE_DESCRIPTION;
   }
 
   if (pathname === METALLURGY_VIEW_PATHS.planner) {
     return `${content.description} ${PLANNER_ROUTE_DESCRIPTION_SUFFIXES[locale]}`;
   }
 
-  if (pathname === METALLURGY_VIEW_PATHS.reference) {
-    return `${content.description} Includes a searchable alloy reference with composition ranges and smelting temperatures.`;
-  }
-
   return content.description;
 }
 
 function shouldIncludeFaqSchema(pathname: string): boolean {
-  return pathname === METALLURGY_VIEW_PATHS.about;
+  return isAboutPath(pathname);
 }
 
 export function getCanonicalUrlForPath(locale: Locale, pathname: string = "/"): string {
-  return new URL(getLocalePath(locale, pathname), `${SITE_URL}/`).toString();
+  const canonicalPath = getCanonicalAppPath(pathname);
+  return new URL(getLocalePath(locale, canonicalPath), `${SITE_URL}/`).toString();
 }
 
 export function getAlternateLinks(pathname: string = "/") {
@@ -566,6 +627,14 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
   const description = getPageDescription(locale, content, normalizedPath);
   const title = getPageTitle(locale, content.title, normalizedPath);
   const canonicalUrl = getCanonicalUrlForPath(locale, normalizedPath);
+  const featureList = normalizedPath === LEATHER_ROUTE_PATH
+    ? LEATHER_FEATURE_LIST
+    : isReferencePath(normalizedPath)
+      ? REFERENCE_FEATURE_LIST
+      : isAboutPath(normalizedPath)
+        ? OVERVIEW_FEATURE_LIST
+        : content.featureList;
+  const faqItems = isAboutPath(normalizedPath) ? OVERVIEW_FAQ_ITEMS : content.faqItems;
 
   const schema: Array<Record<string, unknown>> = [
     {
@@ -584,7 +653,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
         price: "0",
         priceCurrency: "USD",
       },
-      featureList: content.featureList,
+      featureList: featureList,
     },
   ];
 
@@ -593,7 +662,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
       "@context": "https://schema.org",
       "@type": "FAQPage",
       inLanguage: locale,
-      mainEntity: content.faqItems.map((item) => ({
+      mainEntity: faqItems.map((item) => ({
         "@type": "Question",
         name: item.question,
         acceptedAnswer: {
@@ -612,6 +681,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
     socialImageUrl: SITE_IMAGE_URL,
     canonicalUrl,
     alternates: getAlternateLinks(normalizedPath),
+    faqItems,
     schema: JSON.stringify(schema, null, 2),
   };
 }

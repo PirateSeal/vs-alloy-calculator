@@ -15,7 +15,7 @@ describe("useMetallurgyStore", () => {
 
   it("hydrates calculator state from localized URLs", () => {
     useMetallurgyStore.getState().hydrateFromLocation(
-      "/fr/",
+      "/fr/metallurgy/",
       "?s0=copper:90&s1=tin:10&r=tin-bronze",
     );
 
@@ -40,7 +40,7 @@ describe("useMetallurgyStore", () => {
     });
 
     useMetallurgyStore.getState().hydrateFromLocation(
-      "/planner/",
+      "/metallurgy/planner/",
       "?mode=preserve-copper&recipe=bismuth-bronze&target=12&inv_copper=400&inv_zinc=140&inv_bismuth=90",
     );
 
@@ -53,7 +53,7 @@ describe("useMetallurgyStore", () => {
     expect(state.selectedRecipeId).toBe("tin-bronze");
   });
 
-  it("preserves inactive slices when hydrating non-URL-backed views", () => {
+  it("preserves planner state when hydrating calculator URLs", () => {
     const plannerState = {
       ...createDefaultPlannerState(),
       recipeId: "tin-bronze",
@@ -73,8 +73,8 @@ describe("useMetallurgyStore", () => {
     useMetallurgyStore.setState({
       calculatorCrucible: {
         slots: [
-          { id: 0, metalId: "copper", nuggets: 90 },
-          { id: 1, metalId: "tin", nuggets: 10 },
+          { id: 0, metalId: "copper", nuggets: 32 },
+          { id: 1, metalId: "tin", nuggets: 8 },
           { id: 2, metalId: null, nuggets: 0 },
           { id: 3, metalId: null, nuggets: 0 },
         ],
@@ -83,10 +83,13 @@ describe("useMetallurgyStore", () => {
       plannerState,
     });
 
-    useMetallurgyStore.getState().hydrateFromLocation("/de/reference/", "");
+    useMetallurgyStore.getState().hydrateFromLocation(
+      "/de/metallurgy/",
+      "?s0=copper:90&s1=tin:10&r=tin-bronze",
+    );
 
     const state = useMetallurgyStore.getState();
-    expect(state.activeView).toBe("reference");
+    expect(state.activeView).toBe("calculator");
     expect(state.selectedRecipeId).toBe("tin-bronze");
     expect(state.calculatorCrucible.slots[1].nuggets).toBe(10);
     expect(state.plannerState).toEqual(plannerState);

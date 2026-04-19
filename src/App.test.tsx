@@ -5,6 +5,8 @@ import App from "./App";
 import { createEmptyCrucible } from "./features/metallurgy/lib/alloyLogic";
 import { createDefaultPlannerState } from "./features/metallurgy/routing/appStateRouting";
 import { useMetallurgyStore } from "./features/metallurgy/store/useMetallurgyStore";
+import { createDefaultLeatherState } from "./features/leatherwork/routing/appStateRouting";
+import { useLeatherStore } from "./features/leatherwork/store/useLeatherStore";
 
 function resetMetallurgyStore() {
   useMetallurgyStore.setState({
@@ -15,15 +17,20 @@ function resetMetallurgyStore() {
   });
 }
 
-describe("App metallurgy integration", () => {
+function resetLeatherStore() {
+  useLeatherStore.setState(createDefaultLeatherState());
+}
+
+describe("App integration", () => {
   beforeEach(() => {
     localStorage.clear();
     history.replaceState(null, "", "/");
     resetMetallurgyStore();
+    resetLeatherStore();
   });
 
   it("loads planner deep links and preserves locale-prefixed navigation", async () => {
-    history.replaceState(null, "", "/fr/planner/?recipe=tin-bronze&target=4&inv_copper=80&inv_tin=20");
+    history.replaceState(null, "", "/fr/metallurgy/planner/?recipe=tin-bronze&target=4&inv_copper=80&inv_tin=20");
     useMetallurgyStore.getState().hydrateFromLocation(window.location.pathname, window.location.search);
 
     const user = userEvent.setup();
@@ -34,11 +41,12 @@ describe("App metallurgy integration", () => {
     await user.click(screen.getAllByRole("button", { name: /Référence/i })[0]);
 
     expect(window.location.pathname).toBe("/fr/reference/");
+    expect(window.location.hash).toBe("#metallurgy");
     expect(await screen.findByRole("textbox")).toBeInTheDocument();
   });
 
   it("restores calculator view and query-backed state on popstate", async () => {
-    history.replaceState(null, "", "/?s0=copper:90&s1=tin:10&r=tin-bronze");
+    history.replaceState(null, "", "/metallurgy/?s0=copper:90&s1=tin:10&r=tin-bronze");
     useMetallurgyStore.getState().hydrateFromLocation(window.location.pathname, window.location.search);
 
     const user = userEvent.setup();
@@ -47,15 +55,41 @@ describe("App metallurgy integration", () => {
     expect(screen.getByRole("heading", { level: 2, name: /Tin Bronze/i })).toBeInTheDocument();
 
     await user.click(screen.getAllByRole("button", { name: "Planner" })[0]);
-    expect(window.location.pathname).toBe("/planner/");
+    expect(window.location.pathname).toBe("/metallurgy/planner/");
 
     await act(async () => {
-      history.pushState(null, "", "/?s0=copper:90&s1=tin:10&r=tin-bronze");
+      history.pushState(null, "", "/metallurgy/?s0=copper:90&s1=tin:10&r=tin-bronze");
       window.dispatchEvent(new PopStateEvent("popstate"));
     });
 
-    expect(window.location.pathname).toBe("/");
+    expect(window.location.pathname).toBe("/metallurgy/");
     expect(await screen.findByText(/Crucible Inputs/i)).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: /Tin Bronze/i })).toBeInTheDocument();
+  });
+
+  it("loads leather deep links and can switch back to metallurgy on localized routes", async () => {
+    history.replaceState(null, "", "/fr/leather/?mode=leather&size=large&target=8&solvent=borax");
+    useLeatherStore.getState().hydrateFromLocation(window.location.pathname, window.location.search);
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    expect(await screen.findByText(/Leatherworking Planner/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 hides -> 9 leather/i)).toBeInTheDocument();
+
+    await user.click(screen.getAllByRole("button", { name: /Calculateur/i })[0]);
+
+    expect(window.location.pathname).toBe("/fr/metallurgy/");
+    expect(screen.queryByText(/Leatherworking Planner/i)).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: /Calculateur/i })[0]).toHaveAttribute("aria-current", "page");
+  });
+
+  it("renders the about landing page at the root url", () => {
+    render(<App />);
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: /Metallurgy, leatherwork, and reference in one place/i }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Crucible Inputs/i)).not.toBeInTheDocument();
   });
 });

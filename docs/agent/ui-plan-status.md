@@ -16,6 +16,13 @@ This document tracks the current state of the shipped UI and architecture after 
 - Reference: searchable, filterable, card-based reference browser is live.
 - About: route-backed SEO/supporting content is live.
 
+## Pinned Navigation Decision
+
+- The desktop sidebar should treat domain switching and supporting pages as separate concerns.
+- `Metallurgy` and `Leatherwork` own the domain-navigation area and expose their tool dropdowns from the sidebar.
+- `Reference` and `About` stay pinned as standalone rail buttons rather than being folded into a domain dropdown.
+- This separation is intentional: domain dropdowns are for active tools, while `Reference` and `About` remain globally discoverable support surfaces.
+
 ## Routing And SEO Status
 
 - Routing remains manual and pathname/query based.

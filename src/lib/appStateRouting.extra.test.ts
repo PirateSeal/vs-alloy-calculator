@@ -5,14 +5,16 @@ import {
 } from '@/features/metallurgy/routing/appStateRouting';
 
 describe('appStateRouting view detection', () => {
-  it('detects about view from root and localized paths', () => {
-    expect(getMetallurgyViewFromPath('/about/')).toBe('about');
-    expect(getMetallurgyViewFromPath('/fr/about/')).toBe('about');
+  it('falls back to calculator for shared or unknown routes', () => {
+    expect(getMetallurgyViewFromPath('/')).toBe('calculator');
+    expect(getMetallurgyViewFromPath('/fr/')).toBe('calculator');
+    expect(getMetallurgyViewFromPath('/reference/')).toBe('calculator');
+    expect(getMetallurgyViewFromPath('/fr/reference/')).toBe('calculator');
   });
 
-  it('returns reference path without locale prefix when none present', () => {
-    expect(getPathnameForMetallurgyView('/', 'reference')).toBe('/reference/');
-    expect(getPathnameForMetallurgyView('/', 'about')).toBe('/about/');
+  it('returns namespaced metallurgy tool paths', () => {
+    expect(getPathnameForMetallurgyView('/', 'calculator')).toBe('/metallurgy/');
+    expect(getPathnameForMetallurgyView('/', 'planner')).toBe('/metallurgy/planner/');
   });
 
   it('falls back to calculator view for unknown route', () => {

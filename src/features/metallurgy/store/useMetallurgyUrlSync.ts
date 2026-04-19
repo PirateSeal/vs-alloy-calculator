@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
-import type { AppDomain, MetallurgyView } from "@/features/metallurgy/types/planner";
+import type { AppDomain } from "@/types/app";
 import { DEFAULT_LOCALE, applySeoToDocument, getLocaleFromPath } from "@/i18n";
 import { track } from "@/lib/analytics";
 import {
@@ -8,6 +8,7 @@ import {
   getPathnameForMetallurgyView,
 } from "@/features/metallurgy/routing/appStateRouting";
 import { useMetallurgyStore } from "@/features/metallurgy/store/useMetallurgyStore";
+import type { MetallurgyView } from "@/features/metallurgy/types/planner";
 
 
 const ACTIVE_DOMAIN: AppDomain = "metallurgy";
@@ -24,6 +25,10 @@ export function useMetallurgyUrlSync() {
   const setActiveView = useMetallurgyStore((state) => state.setActiveView);
   const hydrateFromLocation = useMetallurgyStore((state) => state.hydrateFromLocation);
   const skipNextReplaceRef = useRef(false);
+
+  useEffect(() => {
+    hydrateFromLocation(window.location.pathname, window.location.search);
+  }, [hydrateFromLocation]);
 
   useEffect(() => {
     const handlePopState = () => {

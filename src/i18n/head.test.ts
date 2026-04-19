@@ -77,6 +77,6 @@ describe('applySeoToDocument', () => {
     history.replaceState(null, '', '/about/');
     applySeoToDocument('en');
     const canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
-    expect(canonical?.getAttribute('href')).toContain('/about/');
+    expect(canonical?.getAttribute('href')).toBe('https://vs-calculator.tcousin.com/');
   });
 });

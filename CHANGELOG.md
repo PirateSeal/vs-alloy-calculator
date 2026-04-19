@@ -7,20 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-04-19
+
 ### Added
-- **Zustand-backed metallurgy state** — Moved calculator/planner view state out of `App.tsx` into a dedicated metallurgy store with URL hydration, URL serialization, and browser history restoration.
-- **Metallurgy feature boundary** — Consolidated metallurgy-specific components, data, routing, store code, and domain logic under `src/features/metallurgy/` so later feature work can land without growing the top-level app surface further.
+- **Leatherwork domain** — Added a full leatherworking planner under `/leather/` with URL-backed Zustand state, tanning and pelt-curing workflows, shopping lists, pipeline timing, bear-hide support, and organized hide/material/tool assets under `public/leather/`.
+- **Shared overview and reference pages** — Added an app-level `Overview` landing page at `/` plus a shared `/reference/` page with metallurgy and leatherwork tabs, including a dedicated leather reference surface for hide sizes, tannin rules, solvents, workflow timing, pelts, and bear-specific behavior.
+- **Shared app-shell routing helpers** — Added app-level route parsing/canonicalization helpers for overview, reference, metallurgy, leatherwork, localized routes, and legacy alias handling.
+- **New shadcn primitives** — Added `collapsible`, `scroll-area`, and `tabs` primitives to support the domain-aware sidebar and shared reference UI.
 
 ### Changed
-- **Route definitions unified** — Runtime metallurgy routing, route-aware SEO metadata, and sitemap generation now share the same metallurgy route manifest instead of maintaining separate route lists.
-- **Manual routing preserved during store migration** — Kept the existing pathname/query-param navigation model, including locale-prefixed URLs and metallurgy deep links, while shifting state ownership to Zustand.
-- **Import graph normalized** — Removed the temporary top-level metallurgy re-export shims; feature-local modules now use relative imports and shared code imports metallurgy directly from the feature boundary.
+- **App architecture generalized beyond metallurgy** — Promoted the app shell into a true multi-domain surface. `Overview` and `Reference` are now app-owned pages, while metallurgy is reduced to tool views only (`calculator`, `planner`).
+- **Public route model reorganized** — Root `/` now serves the shared overview, metallurgy tools live under `/metallurgy/` and `/metallurgy/planner/`, leatherwork remains under `/leather/`, and legacy `/about/`, `/metallurgy/about/`, and `/metallurgy/reference/` now resolve as aliases that canonicalize to the shared routes.
+- **Navigation model reworked** — Sidebar domain controls now separate `Metallurgy` and `Leatherwork` from globally pinned `Overview` and `Reference`, with mobile navigation kept in sync and the shell remaining mounted across domain switches for smoother transitions.
+- **SEO and static output updated** — Route-aware metadata, canonical URLs, hreflang alternates, JSON-LD output, sitemap generation, and localized static HTML entries now follow the shared app route manifest instead of metallurgy-only route ownership.
+- **Leather UI refined** — Reworked the leather planner into a more visual workflow-oriented surface, improved summary cards and shopping lists, cleaned up the leather reference layout, and aligned enter animations and shell transitions with the rest of the app.
+- **Project dependency surface updated** — Added the Radix dependencies needed for the new shadcn primitives and refreshed the lockfile accordingly.
 
 ### Fixed
 - **Locale/history synchronization** — The i18n provider now reacts to `popstate`, so browser back/forward across locale-prefixed URLs keeps the active translations aligned with the pathname.
+- **Cross-domain shell remounting** — Switching between metallurgy and leatherwork no longer tears down and rebuilds the whole app chrome, which removes the “full reload” feel during domain changes.
+- **Metallurgy route/store synchronization** — Calculator/planner switching and direct planner URLs now hydrate the metallurgy store correctly in both directions after the shared app-shell refactor.
+- **Leather reference clarity** — Removed the redundant small-animal mapping card and promoted hide sizing into a full-width primary reference section.
 
 ### Tests
-- **Metallurgy store and navigation coverage** — Added Zustand store regression coverage, app-level deep-link/history integration tests, and updated routing/i18n tests for the new feature boundary and URL sync behavior.
+- **Cross-domain route coverage expanded** — Added app-level routing tests for shared pages, canonical aliases, reference hash tab selection, and locale-preserving navigation.
+- **Feature-store and deep-link regression coverage** — Updated metallurgy, app integration, and SEO tests for the shared route ownership model and leather/metallurgy deep-link behavior.
 
 ## [1.10.2] - 2026-04-19
 
@@ -358,4 +369,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tailwind CSS and Radix UI integration
 - Build tooling configuration (Vite, PostCSS, TypeScript)
 - Path alias support for cleaner imports
-

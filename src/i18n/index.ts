@@ -11,6 +11,7 @@ export {
   buildLocalizedUrl,
   getLocaleFromPath,
   getLocalePath,
+  normalizeAppPath,
   resolveLocale,
   stripLocalePrefix,
 } from "./routing";

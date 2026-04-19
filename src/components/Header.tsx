@@ -1,8 +1,8 @@
 import { useTranslation } from "@/i18n";
-import type { MetallurgyView } from "@/features/metallurgy/types/planner";
+import type { AppNavTarget } from "@/types/app";
 
 interface HeaderProps {
-  activeTab: MetallurgyView;
+  activeTab: AppNavTarget;
 }
 
 export function Header({ activeTab }: HeaderProps) {

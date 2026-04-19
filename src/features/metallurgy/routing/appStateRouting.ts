@@ -15,6 +15,7 @@ const VALID_METAL_IDS = new Set<string>(METALS.map((metal) => metal.id));
 const VALID_RECIPE_IDS = new Set<string>(ALLOY_RECIPES.map((recipe) => recipe.id));
 
 export const VIEW_PATHS = METALLURGY_VIEW_PATHS;
+export { METALLURGY_VIEW_PATHS };
 
 const DEFAULT_SCARCITY_MODE: ScarcityMode = "balanced";
 
@@ -46,16 +47,12 @@ function normalizeViewPath(pathname: string): string {
 export function getMetallurgyViewFromPath(pathname: string): MetallurgyView {
   const normalized = normalizeViewPath(pathname);
 
+  if (normalized === VIEW_PATHS.calculator) {
+    return "calculator";
+  }
+
   if (normalized === VIEW_PATHS.planner) {
     return "planner";
-  }
-
-  if (normalized === VIEW_PATHS.reference) {
-    return "reference";
-  }
-
-  if (normalized === VIEW_PATHS.about) {
-    return "about";
   }
 
   return "calculator";

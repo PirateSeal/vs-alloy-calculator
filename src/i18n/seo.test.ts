@@ -36,9 +36,10 @@ describe("localized SEO documents", () => {
     expect(localized).toContain('<html lang="fr">');
     expect(localized).toContain('https://vs-calculator.tcousin.com/fr/');
     expect(localized).toContain('hreflang="de"');
-    expect(localized).toContain("Calculateur d'alliages Vintage Story");
+    expect(localized).toContain("Overview, Leatherwork & Reference");
+    expect(localized).toContain("Plan metallurgy alloys, leatherworking hides");
     expect(localized).toContain('"inLanguage": "fr"');
-    expect(localized).not.toContain('"@type": "FAQPage"');
+    expect(localized).toContain('"@type": "FAQPage"');
     expect(localized).toContain("https://vs-calculator.tcousin.com/Grid_Copper_anvil.png");
   });
 
@@ -48,32 +49,33 @@ describe("localized SEO documents", () => {
 
     expect(seo.socialImageUrl).toBe("https://vs-calculator.tcousin.com/Grid_Copper_anvil.png");
     expect(seo.title).toContain("Vintage Story Alloy Calculator");
-    expect(schema).toHaveLength(1);
+    expect(schema).toHaveLength(2);
     expect(schema[0]["@type"]).toBe("WebApplication");
+    expect(schema[1]["@type"]).toBe("FAQPage");
   });
 
-  it("creates route-aware metadata for dedicated about pages", () => {
+  it("creates route-aware metadata for the shared overview page and aliases", () => {
     const seo = getSeoContent("en", "/about/");
     const schema = JSON.parse(seo.schema) as Array<Record<string, unknown>>;
 
-    expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/about/");
-    expect(seo.title).toContain("Guide & FAQ");
+    expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/");
+    expect(seo.title).toContain("Overview");
     expect(seo.alternates.find((alternate) => alternate.hrefLang === "fr")?.href).toBe(
-      "https://vs-calculator.tcousin.com/fr/about/",
+      "https://vs-calculator.tcousin.com/fr/",
     );
     expect(schema).toHaveLength(2);
     expect(schema[1]["@type"]).toBe("FAQPage");
   });
 
   it("creates localized planner metadata and canonical URLs", () => {
-    const seo = getSeoContent("fr", "/planner/");
+    const seo = getSeoContent("fr", "/metallurgy/planner/");
 
-    expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/fr/planner/");
+    expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/fr/metallurgy/planner/");
     expect(seo.title).toContain("Planificateur de metallurgie");
     expect(seo.description).toContain("planification metallurgique basee sur l'inventaire");
     expect(seo.description).not.toContain("Includes inventory-driven metallurgy planning");
     expect(seo.alternates.find((alternate) => alternate.hrefLang === "en")?.href).toBe(
-      "https://vs-calculator.tcousin.com/planner/",
+      "https://vs-calculator.tcousin.com/metallurgy/planner/",
     );
   });
 });

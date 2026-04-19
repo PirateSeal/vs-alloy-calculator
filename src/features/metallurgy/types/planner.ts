@@ -2,7 +2,7 @@ import type { AlloyRecipe, MetalId } from "./alloys";
 import type { CrucibleState } from "./crucible";
 
 export type AppDomain = "metallurgy" | "leather";
-export type MetallurgyView = "calculator" | "planner" | "reference" | "about";
+export type MetallurgyView = "calculator" | "planner";
 export type ScarcityMode = "balanced" | "economical" | "preserve-copper" | "max-output";
 
 export type InventoryState = Record<MetalId, number>;

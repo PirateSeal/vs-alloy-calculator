@@ -39,7 +39,7 @@ describe("SeoLandingContent", () => {
       }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/How do I calculate a valid alloy mix in Vintage Story/i),
+      screen.getByText(/What can this Vintage Story toolset help me plan/i),
     ).toBeInTheDocument();
   });
 });
