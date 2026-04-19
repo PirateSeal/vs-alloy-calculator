@@ -4,6 +4,7 @@ import type {
   HideSize,
   LeatherWorkflow,
 } from "@/features/leatherwork/types/leather";
+import { getHideAssetPath } from "@/features/leatherwork/lib/leather";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
@@ -14,17 +15,17 @@ const HIDE_SIZE_OPTIONS: Array<{
   leatherYield: string;
   peltHint: string;
 }> = [
-  { size: "small", assetPath: "/leather/hides/raw/small.png", leatherYield: "1 leather", peltHint: "4 per fat" },
-  { size: "medium", assetPath: "/leather/hides/raw/medium.png", leatherYield: "2 leather", peltHint: "2 per fat" },
-  { size: "large", assetPath: "/leather/hides/raw/large.png", leatherYield: "3 leather", peltHint: "1 per fat" },
-  { size: "huge", assetPath: "/leather/hides/raw/huge.png", leatherYield: "5 leather", peltHint: "2 fat each" },
+  { size: "small", assetPath: getHideAssetPath("raw", "small"), leatherYield: "1 leather", peltHint: "4 per fat" },
+  { size: "medium", assetPath: getHideAssetPath("raw", "medium"), leatherYield: "2 leather", peltHint: "2 per fat" },
+  { size: "large", assetPath: getHideAssetPath("raw", "large"), leatherYield: "3 leather", peltHint: "1 per fat" },
+  { size: "huge", assetPath: getHideAssetPath("raw", "huge"), leatherYield: "5 leather", peltHint: "2 fat each" },
 ];
 
 const ANIMAL_OPTIONS: Array<{ variant: AnimalVariant; assetPath: string; note: string }> = [
-  { variant: "generic", assetPath: "/leather/hides/raw/small.png", note: "Standard small hide" },
-  { variant: "fox", assetPath: "/leather/hides/raw/small.png", note: "Scrapes to 1 small hide" },
-  { variant: "arctic-fox", assetPath: "/leather/hides/raw/small.png", note: "Scrapes to 1 small hide" },
-  { variant: "raccoon", assetPath: "/leather/hides/raw/small.png", note: "Scrapes to 1 small hide" },
+  { variant: "generic", assetPath: getHideAssetPath("raw", "small"), note: "Standard small hide" },
+  { variant: "fox", assetPath: getHideAssetPath("raw", "small"), note: "Scrapes to 1 small hide" },
+  { variant: "arctic-fox", assetPath: getHideAssetPath("raw", "small"), note: "Scrapes to 1 small hide" },
+  { variant: "raccoon", assetPath: getHideAssetPath("raw", "small"), note: "Scrapes to 1 small hide" },
 ];
 
 const BEAR_OPTIONS: Array<{
@@ -33,11 +34,11 @@ const BEAR_OPTIONS: Array<{
   leatherHint: string;
   peltHint: string;
 }> = [
-  { variant: "sun", assetPath: "/leather/hides/raw/large.png", leatherHint: "2 huge hides -> 10 leather", peltHint: "1 fat -> 1 medium pelt + head" },
-  { variant: "panda", assetPath: "/leather/hides/raw/large.png", leatherHint: "2 huge hides -> 10 leather", peltHint: "1 fat -> 1 large pelt + head" },
-  { variant: "black", assetPath: "/leather/hides/raw/huge.png", leatherHint: "2 huge hides -> 10 leather", peltHint: "2 fat -> 2 large pelts + head" },
-  { variant: "brown", assetPath: "/leather/hides/raw/huge.png", leatherHint: "3 huge hides -> 15 leather", peltHint: "2 fat -> 2 huge pelts + head" },
-  { variant: "polar", assetPath: "/leather/hides/raw/huge.png", leatherHint: "3 huge hides -> 15 leather", peltHint: "2 fat -> 3 huge pelts + head" },
+  { variant: "sun", assetPath: getHideAssetPath("raw", "large"), leatherHint: "2 huge hides -> 10 leather", peltHint: "1 fat -> 1 medium pelt + head" },
+  { variant: "panda", assetPath: getHideAssetPath("raw", "large"), leatherHint: "2 huge hides -> 10 leather", peltHint: "1 fat -> 1 large pelt + head" },
+  { variant: "black", assetPath: getHideAssetPath("raw", "huge"), leatherHint: "2 huge hides -> 10 leather", peltHint: "2 fat -> 2 large pelts + head" },
+  { variant: "brown", assetPath: getHideAssetPath("raw", "huge"), leatherHint: "3 huge hides -> 15 leather", peltHint: "2 fat -> 2 huge pelts + head" },
+  { variant: "polar", assetPath: getHideAssetPath("raw", "huge"), leatherHint: "3 huge hides -> 15 leather", peltHint: "2 fat -> 3 huge pelts + head" },
 ];
 
 function OptionTile({

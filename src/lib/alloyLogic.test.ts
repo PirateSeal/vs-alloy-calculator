@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   aggregateCrucible,
-  isWithinRange,
   clamp,
   evaluateAlloys,
   createEmptyCrucible,
@@ -10,21 +9,18 @@ import {
   createPresetForAlloy,
   detectCurrentAlloy,
   adjustCrucibleForAlloy,
-  calculateMaxIngots,
-  calculateMaxIngotsForPreset,
   calculateNuggetAdjustments,
   getAdjustmentSummary,
   applyNuggetAdjustments,
-  type MetalAmount,
   type AlloyViolation,
   type NuggetAdjustment,
 } from '@/features/metallurgy/lib/alloyLogic';
+import type { MetalAmount } from '@/features/metallurgy/types/alloys';
 import type { CrucibleState } from '@/features/metallurgy/types/crucible';
 import { ALLOY_RECIPES, METALS } from '@/features/metallurgy/data/alloys';
 
 const tinBronze = ALLOY_RECIPES.find((r) => r.id === 'tin-bronze')!;
 const bismuthBronze = ALLOY_RECIPES.find((r) => r.id === 'bismuth-bronze')!;
-const electrum = ALLOY_RECIPES.find((r) => r.id === 'electrum')!;
 const brass = ALLOY_RECIPES.find((r) => r.id === 'brass')!;
 
 function makeCrucible(
@@ -68,21 +64,6 @@ describe('alloyLogic', () => {
       const result = aggregateCrucible(crucible);
       expect(result).toHaveLength(1);
       expect(result[0].metalId).toBe('copper');
-    });
-  });
-
-  describe('isWithinRange', () => {
-    it('respects default tolerance 0.5', () => {
-      expect(isWithinRange(10, 10, 20)).toBe(true);
-      expect(isWithinRange(9.5, 10, 20)).toBe(true);
-      expect(isWithinRange(20.5, 10, 20)).toBe(true);
-      expect(isWithinRange(9.4, 10, 20)).toBe(false);
-      expect(isWithinRange(20.6, 10, 20)).toBe(false);
-    });
-
-    it('respects custom tolerance', () => {
-      expect(isWithinRange(9.99, 10, 20, 0.01)).toBe(true);
-      expect(isWithinRange(9.98, 10, 20, 0.01)).toBe(false);
     });
   });
 
@@ -288,30 +269,6 @@ describe('alloyLogic', () => {
     it('returns unchanged when changedSlotId not found', () => {
       const c = makeCrucible([{ metalId: 'copper', nuggets: 10 }]);
       expect(adjustCrucibleForAlloy(c, 99, tinBronze)).toBe(c);
-    });
-  });
-
-  describe('calculateMaxIngots', () => {
-    it('returns positive count for tin-bronze', () => {
-      expect(calculateMaxIngots(tinBronze)).toBeGreaterThan(0);
-    });
-
-    it('returns positive count for 3-component recipe', () => {
-      expect(calculateMaxIngots(bismuthBronze)).toBeGreaterThan(0);
-    });
-  });
-
-  describe('calculateMaxIngotsForPreset', () => {
-    it('returns positive count', () => {
-      expect(calculateMaxIngotsForPreset(tinBronze)).toBeGreaterThan(0);
-    });
-
-    it('returns positive count for symmetric 50/50 recipe', () => {
-      expect(calculateMaxIngotsForPreset(electrum)).toBeGreaterThan(0);
-    });
-
-    it('returns positive count for 3-component recipe', () => {
-      expect(calculateMaxIngotsForPreset(bismuthBronze)).toBeGreaterThan(0);
     });
   });
 

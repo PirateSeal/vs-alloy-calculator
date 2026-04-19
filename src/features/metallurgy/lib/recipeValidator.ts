@@ -1,6 +1,6 @@
 import type { CrucibleState } from "@/features/metallurgy/types/crucible";
-import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
-import type { MetalAmount } from "./metalRarity";
+import type { AlloyRecipe, MetalId, MetalNuggetAmount } from "@/features/metallurgy/types/alloys";
+import { PERCENTAGE_TOLERANCE } from "./constants";
 
 /**
  * Result of recipe validation
@@ -39,7 +39,7 @@ export function validateSlotCapacity(crucible: CrucibleState): boolean {
  * @returns true if all percentages are within valid ranges
  */
 export function validatePercentages(
-  amounts: MetalAmount[],
+  amounts: MetalNuggetAmount[],
   recipe: AlloyRecipe
 ): boolean {
   // Calculate total units
@@ -63,9 +63,8 @@ export function validatePercentages(
     const units = metalAmount.nuggets * 5;
     const percentage = (units / totalUnits) * 100;
 
-    // Allow 0.01% tolerance for floating point precision
-    const minValid = component.minPercent - 0.01;
-    const maxValid = component.maxPercent + 0.01;
+    const minValid = component.minPercent - PERCENTAGE_TOLERANCE;
+    const maxValid = component.maxPercent + PERCENTAGE_TOLERANCE;
 
     if (percentage < minValid || percentage > maxValid) {
       return false;
@@ -82,7 +81,7 @@ export function validatePercentages(
  * @returns true if total units = ingotCount × 100
  */
 export function validateTotalUnits(
-  amounts: MetalAmount[],
+  amounts: MetalNuggetAmount[],
   ingotCount: number
 ): boolean {
   const totalUnits = amounts.reduce(
@@ -99,7 +98,7 @@ export function validateTotalUnits(
  * @returns true if all required metals are present
  */
 export function validateComponentPresence(
-  amounts: MetalAmount[],
+  amounts: MetalNuggetAmount[],
   recipe: AlloyRecipe
 ): boolean {
   for (const component of recipe.components) {
@@ -126,8 +125,7 @@ export function validateRecipe(
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Convert crucible to metal amounts
-  const amounts: MetalAmount[] = [];
+  const amounts: MetalNuggetAmount[] = [];
   const metalTotals = new Map<MetalId, number>();
 
   for (const slot of crucible.slots) {

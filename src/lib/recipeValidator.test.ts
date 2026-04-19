@@ -9,8 +9,7 @@ import {
   validateRecipe,
 } from '@/features/metallurgy/lib/recipeValidator';
 import type { CrucibleState } from '@/features/metallurgy/types/crucible';
-import type { AlloyRecipe, MetalId } from '@/features/metallurgy/types/alloys';
-import type { MetalAmount } from '@/features/metallurgy/lib/metalRarity';
+import type { AlloyRecipe, MetalId, MetalNuggetAmount as MetalAmount } from '@/features/metallurgy/types/alloys';
 import { ALLOY_RECIPES } from '@/features/metallurgy/data/alloys';
 
 describe('Recipe Validator', () => {

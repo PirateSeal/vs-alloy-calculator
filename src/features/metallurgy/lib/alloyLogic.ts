@@ -1,12 +1,8 @@
-import type { MetalId, AlloyRecipe, Metal } from "@/features/metallurgy/types/alloys";
+import type { MetalId, AlloyRecipe, Metal, MetalAmount } from "@/features/metallurgy/types/alloys";
 import type { CrucibleState } from "@/features/metallurgy/types/crucible";
+import { CONTAMINATION_THRESHOLD, PERCENTAGE_TOLERANCE } from "./constants";
 
-export interface MetalAmount {
-  metalId: MetalId;
-  nuggets: number;
-  units: number;
-  percent: number;
-}
+export type { MetalAmount } from "@/features/metallurgy/types/alloys";
 
 export interface AlloyViolation {
   metalId: MetalId;
@@ -76,18 +72,6 @@ export function aggregateCrucible(crucible: CrucibleState): MetalAmount[] {
 }
 
 /**
- * Helper: Check if value is within range with tolerance
- */
-export function isWithinRange(
-  value: number,
-  min: number,
-  max: number,
-  tolerance: number = 0.5
-): boolean {
-  return value >= min - tolerance && value <= max + tolerance;
-}
-
-/**
  * Helper: Clamp value between min and max
  */
 export function clamp(value: number, min: number, max: number): number {
@@ -137,10 +121,7 @@ export function evaluateAlloys(
       // Calculate deviation from midpoint
       deviationSum += Math.abs(actualPercent - midpoint);
 
-      // Check if within range with small tolerance for floating point precision
-      // Tolerance of 0.01% to handle rounding errors
-      const tolerance = 0.01;
-      if (actualPercent < component.minPercent - tolerance || actualPercent > component.maxPercent + tolerance) {
+      if (actualPercent < component.minPercent - PERCENTAGE_TOLERANCE || actualPercent > component.maxPercent + PERCENTAGE_TOLERANCE) {
         violations.push({
           metalId: component.metalId,
           requiredMin: component.minPercent,
@@ -153,7 +134,7 @@ export function evaluateAlloys(
     // Check for contamination (metals not in recipe)
     const recipeMetalIds = new Set(recipe.components.map(c => c.metalId));
     for (const amount of amounts) {
-      if (!recipeMetalIds.has(amount.metalId) && amount.percent > 0.5) {
+      if (!recipeMetalIds.has(amount.metalId) && amount.percent > CONTAMINATION_THRESHOLD) {
         hasContamination = true;
         violations.push({
           metalId: amount.metalId,
@@ -385,7 +366,7 @@ export function createPresetForAlloy(recipe: AlloyRecipe, ingotAmount: number = 
     const units = alloc.nuggets * 5;
     const percent = (units / targetUnits) * 100;
 
-    if (percent < alloc.minPercent - 0.01 || percent > alloc.maxPercent + 0.01) {
+    if (percent < alloc.minPercent - PERCENTAGE_TOLERANCE || percent > alloc.maxPercent + PERCENTAGE_TOLERANCE) {
       isValid = false;
       break;
     }
@@ -577,197 +558,6 @@ export function adjustCrucibleForAlloy(
   }
 
   return newCrucible;
-}
-
-/**
- * Calculates the maximum number of ingots that can be made for a given alloy recipe
- * Uses the same logic as the original calculator
- */
-export function calculateMaxIngots(recipe: AlloyRecipe): number {
-  let maxIngots = 1;
-
-  while (true) {
-    maxIngots++;
-    const ppp = maxIngots * 100;
-
-    // Calculate units for each metal except the last
-    const unitsNeeded: number[] = [];
-    for (let m = 0; m < recipe.components.length - 1; m++) {
-      const component = recipe.components[m];
-      const midPercent = (component.minPercent + component.maxPercent) / 2;
-
-      const index = ppp * midPercent / 100;
-      let roundedUnits = 5;
-      while (roundedUnits < index) {
-        roundedUnits += 5;
-      }
-
-      const maxUnits = (ppp * component.maxPercent) / 100;
-      if (roundedUnits > maxUnits) {
-        roundedUnits -= 5;
-      }
-
-      unitsNeeded.push(roundedUnits);
-    }
-
-    // Calculate last metal
-    const sumOfOtherUnits = unitsNeeded.reduce((sum, units) => sum + units, 0);
-    const lastUnits = ppp - sumOfOtherUnits;
-    unitsNeeded.push(lastUnits);
-
-    // Check if last metal is valid
-    const lastComponent = recipe.components[recipe.components.length - 1];
-    const lastMinUnits = (ppp * lastComponent.minPercent) / 100;
-    const lastMaxUnits = (ppp * lastComponent.maxPercent) / 100;
-
-    if (lastUnits >= lastMinUnits && lastUnits <= lastMaxUnits) {
-      // Count slots needed
-      let slotsNeeded = 0;
-      for (const units of unitsNeeded) {
-        const nuggets = units / 5;
-        const fullSlots = Math.floor(nuggets / 128);
-        const hasRemainder = (nuggets % 128) > 0 || fullSlots === 0;
-        slotsNeeded += fullSlots + (hasRemainder ? 1 : 0);
-      }
-
-      if (slotsNeeded > 4) {
-        return maxIngots - 1;
-      }
-    }
-  }
-
-  return maxIngots;
-}
-
-/**
- * Calculates the maximum number of ingots achievable for a specific preset configuration
- * This accounts for the actual nugget distribution used by the optimized preset
- */
-export function calculateMaxIngotsForPreset(recipe: AlloyRecipe): number {
-  const NUGGETS_PER_INGOT = 20;
-  const UNITS_PER_INGOT = 100;
-  const MAX_NUGGETS_PER_SLOT = 128;
-  const MAX_SLOTS = 4;
-
-  // Helper to find optimal nuggets (same as in createPresetForAlloy)
-  function findOptimalNuggets(target: number, minUnits: number, maxUnits: number): number {
-    const minNuggets = Math.ceil(minUnits / 5);
-    const maxNuggets = Math.floor(maxUnits / 5);
-    const preferredMultiples = [128, 96, 64, 32, 16, 8];
-
-    for (const mult of preferredMultiples) {
-      const candidates = [
-        Math.floor(target / mult) * mult,
-        Math.ceil(target / mult) * mult,
-      ];
-
-      for (const candidate of candidates) {
-        if (candidate >= minNuggets && candidate <= maxNuggets && candidate > 0) {
-          return candidate;
-        }
-      }
-    }
-
-    return Math.max(minNuggets, Math.min(maxNuggets, Math.round(target)));
-  }
-
-  // Binary search for maximum ingots
-  let low = 1;
-  let high = 50; // Start with a reasonable upper bound
-  let maxValid = 1;
-
-  while (low <= high) {
-    const mid = Math.floor((low + high) / 2);
-    const targetNuggets = NUGGETS_PER_INGOT * mid;
-    const targetUnits = UNITS_PER_INGOT * mid;
-
-    // Try to allocate using the optimization strategy
-    let allocations: number[] = [];
-    let remainingNuggets = targetNuggets;
-    let isValid = true;
-
-    // Process all components except the last
-    for (let i = 0; i < recipe.components.length - 1; i++) {
-      const comp = recipe.components[i];
-      const midPercent = (comp.minPercent + comp.maxPercent) / 2;
-      const targetForComp = (targetNuggets * midPercent) / 100;
-      const minUnits = (targetUnits * comp.minPercent) / 100;
-      const maxUnits = (targetUnits * comp.maxPercent) / 100;
-
-      const nuggets = findOptimalNuggets(targetForComp, minUnits, maxUnits);
-      allocations.push(nuggets);
-      remainingNuggets -= nuggets;
-    }
-
-    // Last component gets remainder
-    allocations.push(remainingNuggets);
-
-    // Validate percentages
-    for (let i = 0; i < allocations.length; i++) {
-      const units = allocations[i] * 5;
-      const percent = (units / targetUnits) * 100;
-      const comp = recipe.components[i];
-
-      if (percent < comp.minPercent - 0.01 || percent > comp.maxPercent + 0.01) {
-        isValid = false;
-        break;
-      }
-    }
-
-    // If optimization failed, try simple midpoint calculation
-    if (!isValid) {
-      allocations = [];
-      remainingNuggets = targetNuggets;
-      isValid = true;
-
-      for (let i = 0; i < recipe.components.length - 1; i++) {
-        const comp = recipe.components[i];
-        const midPercent = (comp.minPercent + comp.maxPercent) / 2;
-        const nuggets = Math.round((targetNuggets * midPercent) / 100);
-        allocations.push(nuggets);
-        remainingNuggets -= nuggets;
-      }
-
-      allocations.push(remainingNuggets);
-
-      // Validate percentages again
-      for (let i = 0; i < allocations.length; i++) {
-        const units = allocations[i] * 5;
-        const percent = (units / targetUnits) * 100;
-        const comp = recipe.components[i];
-
-        if (percent < comp.minPercent - 0.01 || percent > comp.maxPercent + 0.01) {
-          isValid = false;
-          break;
-        }
-      }
-    }
-
-    // Count slots needed
-    let slotsNeeded = 0;
-    if (isValid) {
-      for (const nuggets of allocations) {
-        let remaining = nuggets;
-        while (remaining > 0) {
-          slotsNeeded++;
-          remaining -= MAX_NUGGETS_PER_SLOT;
-        }
-      }
-
-      if (slotsNeeded > MAX_SLOTS) {
-        isValid = false;
-      }
-    }
-
-    if (isValid) {
-      maxValid = mid;
-      low = mid + 1;
-    } else {
-      high = mid - 1;
-    }
-  }
-
-  return maxValid;
 }
 
 /**

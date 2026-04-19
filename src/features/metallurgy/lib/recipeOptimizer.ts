@@ -97,5 +97,3 @@ export function optimizeRecipe(input: OptimizerInput): OptimizerResult {
   }
 }
 
-// Re-export OptimizerResult for convenience
-export type { OptimizerResult } from "./maximizationStrategy";

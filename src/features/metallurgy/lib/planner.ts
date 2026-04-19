@@ -1,7 +1,7 @@
 import { METALS } from "../data/alloys";
 import { aggregateCrucible } from "../lib/alloyLogic";
 import { calculateRarityCost } from "../lib/metalRarity";
-import type { AlloyRecipe, MetalId } from "../types/alloys";
+import type { AlloyRecipe, MetalId, MetalNuggetAmount } from "../types/alloys";
 import type { CrucibleState } from "../types/crucible";
 import type {
   BatchPlan,
@@ -12,12 +12,14 @@ import type {
   RecipePlannerResult,
   ScarcityMode,
 } from "../types/planner";
+import {
+  NUGGETS_PER_INGOT,
+  PERCENTAGE_TOLERANCE,
+  UNITS_PER_INGOT,
+  UNITS_PER_NUGGET,
+} from "./constants";
+import { amountsToCrucible, countSlotsUsed } from "./shared/crucibleAllocation";
 import { validateRecipe } from "./recipeValidator";
-
-interface MetalAmount {
-  metalId: MetalId;
-  nuggets: number;
-}
 
 interface RunCandidate {
   crucible: CrucibleState;
@@ -29,7 +31,6 @@ interface RunCandidate {
   midpointDeviation: number;
 }
 
-const VALID_TOLERANCE = 0.01;
 const runCandidateCache = new Map<string, RunCandidate | null>();
 
 function emptyInventory(): InventoryState {
@@ -83,37 +84,7 @@ function calculateUpperBound(recipe: AlloyRecipe, inventory: InventoryState): nu
   return Math.floor(totalRelevantNuggets / 20);
 }
 
-function amountsToCrucible(amounts: MetalAmount[]): CrucibleState {
-  const slots = [];
-
-  for (const amount of amounts) {
-    let remaining = amount.nuggets;
-    while (remaining > 0) {
-      slots.push({
-        id: slots.length,
-        metalId: amount.metalId,
-        nuggets: Math.min(128, remaining),
-      });
-      remaining -= 128;
-    }
-  }
-
-  while (slots.length < 4) {
-    slots.push({
-      id: slots.length,
-      metalId: null,
-      nuggets: 0,
-    });
-  }
-
-  return { slots };
-}
-
-function countsSlots(amounts: MetalAmount[]): number {
-  return amounts.reduce((sum, amount) => sum + Math.ceil(amount.nuggets / 128), 0);
-}
-
-function createInventoryFromAmounts(amounts: MetalAmount[]): InventoryState {
+function createInventoryFromAmounts(amounts: MetalNuggetAmount[]): InventoryState {
   const inventory = emptyInventory();
   for (const amount of amounts) {
     inventory[amount.metalId] = amount.nuggets;
@@ -172,14 +143,14 @@ export function getRunCandidate(recipe: AlloyRecipe, targetIngots: number, mode:
     return cached;
   }
 
-  const targetUnits = targetIngots * 100;
-  const targetNuggets = targetIngots * 20;
+  const targetUnits = targetIngots * UNITS_PER_INGOT;
+  const targetNuggets = targetIngots * NUGGETS_PER_INGOT;
   const components = recipe.components;
   let bestCandidate: RunCandidate | null = null;
 
-  function solve(index: number, currentNuggets: number, currentAmounts: MetalAmount[]) {
+  function solve(index: number, currentNuggets: number, currentAmounts: MetalNuggetAmount[]) {
     if (index === components.length) {
-      if (currentNuggets !== targetNuggets || countsSlots(currentAmounts) > 4) {
+      if (currentNuggets !== targetNuggets || countSlotsUsed(currentAmounts) > 4) {
         return;
       }
 
@@ -191,10 +162,10 @@ export function getRunCandidate(recipe: AlloyRecipe, targetIngots: number, mode:
       const consumed = createInventoryFromAmounts(currentAmounts);
       const rarityCost = calculateRarityCost(currentAmounts);
       const copperUsed = consumed.copper;
-      const slotsUsed = countsSlots(currentAmounts);
+      const slotsUsed = countSlotsUsed(currentAmounts);
       const midpointDeviation = recipe.components.reduce((sum, component) => {
         const amount = currentAmounts.find((entry) => entry.metalId === component.metalId)?.nuggets ?? 0;
-        const percent = ((amount * 5) / targetUnits) * 100;
+        const percent = ((amount * UNITS_PER_NUGGET) / targetUnits) * 100;
         return sum + Math.abs(percent - ((component.minPercent + component.maxPercent) / 2));
       }, 0);
 
@@ -216,15 +187,15 @@ export function getRunCandidate(recipe: AlloyRecipe, targetIngots: number, mode:
     }
 
     const component = components[index];
-    const minNuggets = Math.ceil((((component.minPercent - VALID_TOLERANCE) / 100) * targetUnits - 0.000001) / 5);
-    const maxNuggets = Math.floor((((component.maxPercent + VALID_TOLERANCE) / 100) * targetUnits + 0.000001) / 5);
+    const minNuggets = Math.ceil((((component.minPercent - PERCENTAGE_TOLERANCE) / 100) * targetUnits - 0.000001) / UNITS_PER_NUGGET);
+    const maxNuggets = Math.floor((((component.maxPercent + PERCENTAGE_TOLERANCE) / 100) * targetUnits + 0.000001) / UNITS_PER_NUGGET);
 
     let minRemaining = 0;
     let maxRemaining = 0;
     for (let nextIndex = index + 1; nextIndex < components.length; nextIndex++) {
       const nextComponent = components[nextIndex];
-      minRemaining += Math.ceil((((nextComponent.minPercent - VALID_TOLERANCE) / 100) * targetUnits - 0.000001) / 5);
-      maxRemaining += Math.floor((((nextComponent.maxPercent + VALID_TOLERANCE) / 100) * targetUnits + 0.000001) / 5);
+      minRemaining += Math.ceil((((nextComponent.minPercent - PERCENTAGE_TOLERANCE) / 100) * targetUnits - 0.000001) / UNITS_PER_NUGGET);
+      maxRemaining += Math.floor((((nextComponent.maxPercent + PERCENTAGE_TOLERANCE) / 100) * targetUnits + 0.000001) / UNITS_PER_NUGGET);
     }
 
     const lowerBound = Math.max(minNuggets, targetNuggets - currentNuggets - maxRemaining);
@@ -232,7 +203,7 @@ export function getRunCandidate(recipe: AlloyRecipe, targetIngots: number, mode:
 
     for (let nuggets = lowerBound; nuggets <= upperBound; nuggets++) {
       const amounts = [...currentAmounts, { metalId: component.metalId, nuggets }];
-      if (countsSlots(amounts) > 4) {
+      if (countSlotsUsed(amounts) > 4) {
         continue;
       }
       solve(index + 1, currentNuggets + nuggets, amounts);

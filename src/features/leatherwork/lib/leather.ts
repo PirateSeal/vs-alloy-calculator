@@ -66,24 +66,26 @@ function titleCase(label: string): string {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-function getHideAssetPath(stage: "raw" | "soaked" | "scraped" | "prepared", size: HideSize): string {
+export type HideStage = "raw" | "soaked" | "scraped" | "prepared";
+
+export type LeatherMaterial =
+  | "acacia-log"
+  | "barrel"
+  | "borax-ore"
+  | "borax-powder"
+  | "diluted-borax"
+  | "leather"
+  | "lime"
+  | "oak-log"
+  | "strong-tannin"
+  | "weak-tannin"
+  | "knife-copper";
+
+export function getHideAssetPath(stage: HideStage, size: HideSize): string {
   return `/leather/hides/${stage}/${size}.png`;
 }
 
-function getMaterialAssetPath(
-  material:
-    | "acacia-log"
-    | "barrel"
-    | "borax-ore"
-    | "borax-powder"
-    | "diluted-borax"
-    | "leather"
-    | "lime"
-    | "oak-log"
-    | "strong-tannin"
-    | "weak-tannin"
-    | "knife-copper",
-): string {
+export function getMaterialAssetPath(material: LeatherMaterial): string {
   if (material === "barrel" || material === "knife-copper") {
     return `/leather/tools/${material}.png`;
   }
@@ -165,21 +167,18 @@ export function getPowderedBoraxRequired(totalLiters: number): number {
   return Math.ceil(totalLiters / DILUTED_BORAX_BATCH_LITERS) * DILUTED_BORAX_BATCH_COST;
 }
 
+const PELT_FAT_PER_HIDE: Record<HideSize, number> = {
+  small: 0.25,
+  medium: 0.5,
+  large: 1,
+  huge: 2,
+};
+
 function getPeltFatRequired(size: HideSize, hideCount: number, bearVariant: BearVariant | null): number {
   if (bearVariant) {
     return hideCount * BEAR_DATA[bearVariant].peltFatCost;
   }
-
-  switch (size) {
-    case "small":
-      return Math.ceil(hideCount / 4);
-    case "medium":
-      return Math.ceil(hideCount / 2);
-    case "large":
-      return hideCount;
-    case "huge":
-      return hideCount * 2;
-  }
+  return Math.ceil(hideCount * PELT_FAT_PER_HIDE[size]);
 }
 
 export function getSelectedHideProfile({
