@@ -1,31 +1,31 @@
 # UI Redesign Audit
 
-## Findings From The Current Working Tree
+## Current State
 
-The active uncommitted UI pass is substantial, not cosmetic.
+The current tree is no longer in the middle of the earlier shell redesign. The forge-themed shell and the metallurgy feature split are already landed.
 
-### Preserved And Improved
+## Preserved And Improved
 
 - The app shell has already been reorganized around a desktop left rail and a dedicated result rail.
 - Theme tokens in `src/index.css` now follow the charcoal/copper/parchment palette from `ui-improvements/palettes/alchemist_s_crucible/DESIGN.md`.
-- Calculator controls were extracted into their own component instead of being embedded inside the result surface.
-- The result area now centers the real "Current Product" concept with local crucible imagery and actual calculation output.
-- The reference screen was rebuilt into a searchable, filterable, card-style browser that better matches the new shell.
+- Calculator controls, crucible inputs, result guidance, composition display, planner, reference, and about content all live in the metallurgy feature rather than being scattered across top-level app folders.
+- The result area still centers the real "Current Product" concept with local crucible imagery and calculation output.
+- The reference screen remains a searchable, filterable, card-style browser that matches the current shell.
+- Planner, reference, and about now coexist in the same navigation model without introducing React Router.
 
-### Risks Found During Audit
+## Architectural Notes Worth Remembering
 
-- The prior pass removed `CompositionCard.tsx`, which dropped the dedicated composition summary and the old mobile collapse affordance.
-- Mobile ordering had drifted away from the plan: preset/optimizer controls were rendered before the crucible inputs instead of after the primary feedback.
-- `ResultCard.tsx` had inherited composition logic after the composition card deletion, which made the component broader and left dead code behind.
+- `src/App.tsx` no longer owns metallurgy state. Zustand does, via `src/features/metallurgy/store/useMetallurgyStore.ts`.
+- Browser history and deep-link preservation are handled in `src/features/metallurgy/store/useMetallurgyUrlSync.ts`.
+- Manual route parsing and query serialization live in `src/features/metallurgy/routing/appStateRouting.ts`.
+- Runtime route definitions, SEO metadata routing, and sitemap generation share `src/features/metallurgy/routing/routes.ts`.
+- Top-level metallurgy compatibility shims were intentionally removed. Shared code should import the feature directly.
 
-### Corrections Applied In This Pass
+## Residual Risks
 
-- Restored a dedicated [src/components/CompositionCard.tsx](C:/Users/tcous/dev/vs-alloy-calculator/src/components/CompositionCard.tsx) for composition totals, stacked bars, and sweet-spot guidance.
-- Reordered the calculator view in [src/App.tsx](C:/Users/tcous/dev/vs-alloy-calculator/src/App.tsx) so mobile now prioritizes:
-- crucible inputs
-- result/composition feedback
-- preset and optimizer controls
-- Simplified [src/components/ResultCard.tsx](C:/Users/tcous/dev/vs-alloy-calculator/src/components/ResultCard.tsx) back to result-focused responsibilities.
+- The routing model is still manual. That is intentional, but future changes need to preserve the current query-string contract and `popstate` behavior.
+- Locale-prefixed URLs and route-aware SEO are coupled to route generation; changes to route paths must be reflected through the shared route manifest rather than ad hoc edits.
+- Future cross-domain work should avoid pushing locale, theme, or shell preferences into Zustand unless there is a concrete need.
 
 ## Current Visual Direction
 
