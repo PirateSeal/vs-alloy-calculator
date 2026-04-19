@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.1] - 2026-04-19
+
+### Changed
+- **Tier 1 metallurgy refactor** — Consolidated shared crucible allocation helpers, canonicalized metallurgy amount types, extracted shared solver/constants values, and removed dead alloy helper exports to reduce duplication across the maximize, economical, and planner paths.
+- **Leatherwork helper consolidation** — Centralized hide/material asset-path builders and replaced the inline pelt-fat switch with a data-driven size map so the leather UI uses one source of truth.
+- **Agent documentation refreshed** — Updated the internal agent codebase and UI status docs to reflect the leatherwork surface, new shared metallurgy modules, and the current tiered refactor roadmap.
+
+### Removed
+- **Unused shadcn CLI dependency** — Dropped the unused `shadcn` dev dependency and refreshed the lockfile.
+- **Stale Kiro project specs** — Removed obsolete `.kiro/` MCP/settings/spec files that no longer match the current codebase.
+
 ## [1.11.0] - 2026-04-19
 
 ### Added
