@@ -6,18 +6,20 @@ import { CompositionCard } from "./components/CompositionCard";
 import { CruciblePanel } from "./components/CruciblePanel";
 import { PlannerView } from "./components/PlannerView";
 import { ResultCard } from "./components/ResultCard";
-import { useMetallurgyStore } from "./store/useMetallurgyStore";
 import { useMetallurgyUrlSync } from "./store/useMetallurgyUrlSync";
+import { useMetallurgyView } from "./store/useMetallurgyView";
 import type { AlloyRecipe } from "./types/alloys";
 
 export function MetallurgyApp() {
-  const activeView = useMetallurgyStore((state) => state.activeView);
-  const calculatorCrucible = useMetallurgyStore((state) => state.calculatorCrucible);
-  const selectedRecipeId = useMetallurgyStore((state) => state.selectedRecipeId);
-  const plannerState = useMetallurgyStore((state) => state.plannerState);
-  const setCrucible = useMetallurgyStore((state) => state.setCrucible);
-  const setSelectedRecipeId = useMetallurgyStore((state) => state.setSelectedRecipeId);
-  const setPlannerState = useMetallurgyStore((state) => state.setPlannerState);
+  const {
+    activeView,
+    calculatorCrucible,
+    selectedRecipeId,
+    plannerState,
+    setCrucible,
+    setSelectedRecipeId,
+    setPlannerState,
+  } = useMetallurgyView();
   useMetallurgyUrlSync();
 
   const selectedRecipe = useMemo(

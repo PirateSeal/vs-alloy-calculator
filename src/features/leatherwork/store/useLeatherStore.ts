@@ -1,16 +1,45 @@
 import { create } from "zustand";
 import { createDefaultLeatherState, parseLeatherStateFromSearch } from "@/features/leatherwork/routing/appStateRouting";
-import type { LeatherState } from "@/features/leatherwork/types/leather";
-
-type StateUpdater<T> = T | ((current: T) => T);
+import type {
+  BearVariant,
+  HideSize,
+  LeatherState,
+} from "@/features/leatherwork/types/leather";
 
 interface LeatherStoreState extends LeatherState {
-  setState: (update: StateUpdater<LeatherState>) => void;
+  updateInputs: (update: Partial<LeatherState>) => void;
   hydrateFromLocation: (_pathname: string, search: string) => void;
 }
 
-function resolveUpdate<T>(current: T, update: StateUpdater<T>): T {
-  return typeof update === "function" ? (update as (value: T) => T)(current) : update;
+const BEAR_SIZE_MAP: Record<BearVariant, HideSize> = {
+  sun: "large",
+  panda: "large",
+  black: "huge",
+  brown: "huge",
+  polar: "huge",
+};
+
+export function normalizeLeatherState(
+  state: LeatherState,
+  update: Partial<LeatherState>,
+): LeatherState {
+  const next = { ...state, ...update };
+
+  if (next.workflow === "pelt") {
+    next.mode = "hides";
+  }
+
+  if (next.bearVariant) {
+    next.size = BEAR_SIZE_MAP[next.bearVariant];
+    next.animalVariant = "generic";
+    return next;
+  }
+
+  if (next.size !== "small") {
+    next.animalVariant = "generic";
+  }
+
+  return next;
 }
 
 function getInitialState(): LeatherState {
@@ -23,7 +52,6 @@ function getInitialState(): LeatherState {
 
 export const useLeatherStore = create<LeatherStoreState>((set) => ({
   ...getInitialState(),
-  setState: (update) =>
-    set((state) => ({ ...state, ...resolveUpdate<LeatherState>(state, update) })),
+  updateInputs: (update) => set((state) => normalizeLeatherState(state, update)),
   hydrateFromLocation: (_pathname, search) => set(parseLeatherStateFromSearch(search)),
 }));

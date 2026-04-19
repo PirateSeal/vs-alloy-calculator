@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -201,7 +201,7 @@ interface ResultCardProps {
   onCrucibleChange: (crucible: CrucibleState) => void;
 }
 
-export function ResultCard({
+export const ResultCard = memo(function ResultCard({
   evaluation,
   crucible,
   onRecipeSelect,
@@ -431,4 +431,4 @@ export function ResultCard({
       )}
     </Card>
   );
-}
+});

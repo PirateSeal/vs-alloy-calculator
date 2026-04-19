@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
 import { optimizeRecipe } from "../lib/recipeOptimizer";
+import { getAlloyColor, getIngotImage } from "../data/recipeAssets";
 import type { EvaluationResult } from "../lib/alloyLogic";
 import type { AlloyRecipe } from "../types/alloys";
 import type { CrucibleState } from "../types/crucible";
@@ -26,26 +27,6 @@ interface CalculatorControlsProps {
   onLoadPreset: (recipe: AlloyRecipe, ingotAmount: number) => void;
   onRecipeSelect: (recipe: AlloyRecipe | null) => void;
   onCrucibleChange: (crucible: CrucibleState) => void;
-}
-
-function getIngotImage(recipeId: string) {
-  return `/metal-images/Ingot-${recipeId.replace(/-/g, "")}.png`;
-}
-
-function getAlloyColor(recipeId: string): string {
-  const colorMap: Record<string, string> = {
-    "tin-bronze": "#CD7F32",
-    "bismuth-bronze": "#D4A574",
-    "black-bronze": "#3B2F2F",
-    brass: "#B5A642",
-    molybdochalkos: "#5D6D7E",
-    "lead-solder": "#5D6D7E",
-    "silver-solder": "#C0C0C0",
-    cupronickel: "#8C9A9E",
-    electrum: "#E5D68A",
-  };
-
-  return colorMap[recipeId] || "#B87333";
 }
 
 export function CalculatorControls({
@@ -81,6 +62,14 @@ export function CalculatorControls({
   }, [selectedRecipe, currentIngotAmount, maxIngots]);
 
   const currentRecipe = recipes.find((recipe) => recipe.id === selectedRecipeId);
+
+  const sliderStyle = useMemo(
+    () =>
+      ({
+        "--slider-color": currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333",
+      }) as React.CSSProperties,
+    [currentRecipe],
+  );
 
   const handlePresetChange = (recipeId: string) => {
     const recipe = recipes.find((item) => item.id === recipeId);
@@ -215,12 +204,7 @@ export function CalculatorControls({
           <div className="flex items-center gap-2">
             <div
               className="flex min-h-[44px] flex-1 items-center"
-              style={
-                {
-                  // @ts-expect-error - CSS custom property
-                  "--slider-color": currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333",
-                }
-              }
+              style={sliderStyle}
             >
               <Slider
                 value={[ingotAmount]}

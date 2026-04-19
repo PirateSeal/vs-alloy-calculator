@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { CrucibleSlot } from "@/features/metallurgy/types/crucible";
 import type { Metal, MetalId } from "@/features/metallurgy/types/alloys";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -17,7 +18,7 @@ interface CrucibleSlotRowProps {
   onClearSlot?: (slotId: number) => void;
 }
 
-export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChange, onClearSlot }: CrucibleSlotRowProps) {
+export const CrucibleSlotRow = memo(function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChange, onClearSlot }: CrucibleSlotRowProps) {
   const { t, getMetalLabel, getMetalShortLabel } = useTranslation();
   const units = slot.nuggets * 5;
 
@@ -193,4 +194,4 @@ export function CrucibleSlotRow({ slot, availableMetals, onChange, onNuggetChang
       )}
     </div>
   );
-}
+});
