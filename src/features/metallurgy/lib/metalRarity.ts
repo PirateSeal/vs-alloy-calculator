@@ -1,4 +1,4 @@
-import type { MetalId } from "../types/alloys";
+import type { MetalId } from "@/features/metallurgy/types/alloys";
 
 /**
  * Metal rarity scores based on Vintage Story game mechanics.

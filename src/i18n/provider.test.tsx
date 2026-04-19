@@ -81,6 +81,17 @@ describe('I18nProvider', () => {
     expect(window.location.pathname.startsWith('/fr')).toBe(true);
   });
 
+  it('updates locale when popstate changes the locale prefix', () => {
+    const { result } = renderHook(() => useTranslation(), { wrapper });
+
+    act(() => {
+      history.pushState(null, '', '/fr/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+
+    expect(result.current.locale).toBe('fr');
+  });
+
   it('throws when useTranslation called outside provider', () => {
     expect(() => renderHook(() => useTranslation())).toThrow(
       /useTranslation must be used within I18nProvider/,

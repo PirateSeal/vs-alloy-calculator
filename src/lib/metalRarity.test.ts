@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { test, fc } from '@fast-check/vitest';
-import { getRarityScore, calculateRarityCost, METAL_RARITY_SCORES, type MetalAmount } from './metalRarity';
-import type { MetalId } from '../types/alloys';
+import { getRarityScore, calculateRarityCost, METAL_RARITY_SCORES, type MetalAmount } from '@/features/metallurgy/lib/metalRarity';
+import type { MetalId } from '@/features/metallurgy/types/alloys';
 
 describe('Metal Rarity System', () => {
   describe('getRarityScore', () => {

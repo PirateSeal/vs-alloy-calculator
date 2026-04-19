@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, getLocalePath } from "./routing";
 import type { Locale } from "./types";
+import { METALLURGY_VIEW_PATHS } from "../features/metallurgy/routing/routes";
 
 export const SITE_URL = "https://vs-calculator.tcousin.com";
 const SITE_NAME = "Vintage Story Alloy Calculator";
@@ -507,15 +508,15 @@ export function getCanonicalUrl(locale: Locale): string {
 }
 
 function getPageTitle(locale: Locale, title: string, pathname: string): string {
-  if (pathname === "/about/") {
+  if (pathname === METALLURGY_VIEW_PATHS.about) {
     return `${title} | Guide & FAQ`;
   }
 
-  if (pathname === "/planner/") {
+  if (pathname === METALLURGY_VIEW_PATHS.planner) {
     return `${title} | ${PLANNER_ROUTE_TITLES[locale]}`;
   }
 
-  if (pathname === "/reference/") {
+  if (pathname === METALLURGY_VIEW_PATHS.reference) {
     return `${title} | Alloy Reference`;
   }
 
@@ -523,15 +524,15 @@ function getPageTitle(locale: Locale, title: string, pathname: string): string {
 }
 
 function getPageDescription(locale: Locale, content: SeoContent, pathname: string): string {
-  if (pathname === "/about/") {
+  if (pathname === METALLURGY_VIEW_PATHS.about) {
     return content.heroDescription;
   }
 
-  if (pathname === "/planner/") {
+  if (pathname === METALLURGY_VIEW_PATHS.planner) {
     return `${content.description} ${PLANNER_ROUTE_DESCRIPTION_SUFFIXES[locale]}`;
   }
 
-  if (pathname === "/reference/") {
+  if (pathname === METALLURGY_VIEW_PATHS.reference) {
     return `${content.description} Includes a searchable alloy reference with composition ranges and smelting temperatures.`;
   }
 
@@ -539,7 +540,7 @@ function getPageDescription(locale: Locale, content: SeoContent, pathname: strin
 }
 
 function shouldIncludeFaqSchema(pathname: string): boolean {
-  return pathname === "/about/";
+  return pathname === METALLURGY_VIEW_PATHS.about;
 }
 
 export function getCanonicalUrlForPath(locale: Locale, pathname: string = "/"): string {

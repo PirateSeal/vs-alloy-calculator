@@ -9,8 +9,8 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { METALS } from "../data/alloys";
-import type { AlloyRecipe, Metal, MetalId } from "../types/alloys";
+import { METALS } from "@/features/metallurgy/data/alloys";
+import type { AlloyRecipe, Metal, MetalId } from "@/features/metallurgy/types/alloys";
 import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";

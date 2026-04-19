@@ -1,6 +1,6 @@
-import type { CrucibleState } from "../types/crucible";
-import type { Metal, AlloyRecipe } from "../types/alloys";
-import { createEmptyCrucible, getAvailableMetals } from "../lib/alloyLogic";
+import type { CrucibleState } from "@/features/metallurgy/types/crucible";
+import type { Metal, AlloyRecipe } from "@/features/metallurgy/types/alloys";
+import { createEmptyCrucible, getAvailableMetals } from "@/features/metallurgy/lib/alloyLogic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CrucibleSlotRow } from "./CrucibleSlotRow";

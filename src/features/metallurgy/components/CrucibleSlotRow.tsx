@@ -1,11 +1,11 @@
-import type { CrucibleSlot } from "../types/crucible";
-import type { Metal, MetalId } from "../types/alloys";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Slider } from "./ui/slider";
-import { Button } from "./ui/button";
-import { NumberInput } from "./ui/number-input";
-import { clamp } from "../lib/alloyLogic";
-import { track } from "../lib/analytics";
+import type { CrucibleSlot } from "@/features/metallurgy/types/crucible";
+import type { Metal, MetalId } from "@/features/metallurgy/types/alloys";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { NumberInput } from "@/components/ui/number-input";
+import { clamp } from "@/features/metallurgy/lib/alloyLogic";
+import { track } from "@/lib/analytics";
 import { Flame, Trash2 } from "lucide-react";
 import { useTranslation } from "@/i18n";
 

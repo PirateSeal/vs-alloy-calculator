@@ -1,5 +1,5 @@
 import { useTranslation } from "@/i18n";
-import type { MetallurgyView } from "@/types/planner";
+import type { MetallurgyView } from "@/features/metallurgy/types/planner";
 
 interface HeaderProps {
   activeTab: MetallurgyView;

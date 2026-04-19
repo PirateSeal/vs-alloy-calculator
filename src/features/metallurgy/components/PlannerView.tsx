@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { AlertTriangle, ArrowRight, Pickaxe, Zap } from "lucide-react";
-import { METALS } from "@/data/alloys";
+import { METALS } from "../data/alloys";
 import { getLocalePath, useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
 import {
@@ -8,9 +8,9 @@ import {
   getInventoryTotalNuggets,
   normalizeInventoryState,
   planRecipeFromInventory,
-} from "@/lib/planner";
-import type { AlloyRecipe, MetalId } from "@/types/alloys";
-import type { PlannerState, ScarcityMode } from "@/types/planner";
+} from "../lib/planner";
+import type { AlloyRecipe, MetalId } from "../types/alloys";
+import type { PlannerState, ScarcityMode } from "../types/planner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

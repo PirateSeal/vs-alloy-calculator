@@ -1,5 +1,5 @@
-import type { AlloyRecipe, MetalId } from "../types/alloys";
-import type { CrucibleState, CrucibleSlot } from "../types/crucible";
+import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
+import type { CrucibleState, CrucibleSlot } from "@/features/metallurgy/types/crucible";
 import type { MetalAmount } from "./metalRarity";
 import { calculateRarityCost, getRarityScore } from "./metalRarity";
 import { validateRecipe } from "./recipeValidator";

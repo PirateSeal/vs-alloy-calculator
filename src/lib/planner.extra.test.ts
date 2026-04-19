@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALLOY_RECIPES } from '@/data/alloys';
+import { ALLOY_RECIPES } from '@/features/metallurgy/data/alloys';
 import {
   planRecipeFromInventory,
   normalizeInventoryState,
@@ -7,8 +7,8 @@ import {
   getInventoryTotalNuggets,
   hasInventoryForCost,
   subtractInventory,
-} from './planner';
-import { createEmptyCrucible } from './alloyLogic';
+} from '@/features/metallurgy/lib/planner';
+import { createEmptyCrucible } from '@/features/metallurgy/lib/alloyLogic';
 
 const tinBronze = ALLOY_RECIPES.find((r) => r.id === 'tin-bronze')!;
 

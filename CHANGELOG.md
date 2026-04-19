@@ -5,6 +5,23 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Zustand-backed metallurgy state** — Moved calculator/planner view state out of `App.tsx` into a dedicated metallurgy store with URL hydration, URL serialization, and browser history restoration.
+- **Metallurgy feature boundary** — Consolidated metallurgy-specific components, data, routing, store code, and domain logic under `src/features/metallurgy/` so later feature work can land without growing the top-level app surface further.
+
+### Changed
+- **Route definitions unified** — Runtime metallurgy routing, route-aware SEO metadata, and sitemap generation now share the same metallurgy route manifest instead of maintaining separate route lists.
+- **Manual routing preserved during store migration** — Kept the existing pathname/query-param navigation model, including locale-prefixed URLs and metallurgy deep links, while shifting state ownership to Zustand.
+- **Import graph normalized** — Removed the temporary top-level metallurgy re-export shims; feature-local modules now use relative imports and shared code imports metallurgy directly from the feature boundary.
+
+### Fixed
+- **Locale/history synchronization** — The i18n provider now reacts to `popstate`, so browser back/forward across locale-prefixed URLs keeps the active translations aligned with the pathname.
+
+### Tests
+- **Metallurgy store and navigation coverage** — Added Zustand store regression coverage, app-level deep-link/history integration tests, and updated routing/i18n tests for the new feature boundary and URL sync behavior.
+
 ## [1.10.2] - 2026-04-19
 
 ### Changed
@@ -341,5 +358,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tailwind CSS and Radix UI integration
 - Build tooling configuration (Vite, PostCSS, TypeScript)
 - Path alias support for cleaner imports
-
 

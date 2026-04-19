@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { test, fc } from "@fast-check/vitest";
-import { maximizeIngots } from "./maximizationStrategy";
-import type { AlloyRecipe, MetalId } from "../types/alloys";
-import { ALLOY_RECIPES } from "../data/alloys";
+import { maximizeIngots } from "@/features/metallurgy/lib/maximizationStrategy";
+import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
+import { ALLOY_RECIPES } from "@/features/metallurgy/data/alloys";
 
 describe("Maximization Strategy", () => {
   describe("Edge Cases", () => {

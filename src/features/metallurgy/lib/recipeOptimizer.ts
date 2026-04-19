@@ -1,4 +1,4 @@
-import type { AlloyRecipe, MetalId } from "../types/alloys";
+import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
 import { maximizeIngots, type OptimizerResult } from "./maximizationStrategy";
 import { optimizeEconomical } from "./economicalStrategy";
 

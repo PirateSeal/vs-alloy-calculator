@@ -11,7 +11,7 @@ import pl from "./pl.json";
 import pt from "./pt.json";
 import { I18nContext } from "./context";
 import type { Locale } from "./types";
-import type { MetalId } from "@/types/alloys";
+import type { MetalId } from "@/features/metallurgy/types/alloys";
 import { applySeoToDocument } from "./head";
 import { buildLocalizedUrl, isLocale, resolveLocale } from "./routing";
 import { setAnalyticsLocale } from "@/lib/analytics";
@@ -95,6 +95,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     }
     applySeoToDocument(locale);
   }, [locale]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const nextLocale = resolveLocale(
+        window.location.pathname,
+        getSavedLocale(),
+        navigator.language,
+      );
+      setLocaleState((current) => (current === nextLocale ? current : nextLocale));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   return (
     <I18nContext.Provider

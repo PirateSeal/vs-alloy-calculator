@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { ALLOY_RECIPES } from "@/data/alloys";
-import { validateRecipe } from "./recipeValidator";
+import { ALLOY_RECIPES } from "@/features/metallurgy/data/alloys";
+import { validateRecipe } from "@/features/metallurgy/lib/recipeValidator";
 import {
   buildBatchPlan,
   findCraftableRecipes,
   findMaxCraftableIngots,
   normalizeInventoryState,
   planRecipeFromInventory,
-} from "./planner";
+} from "@/features/metallurgy/lib/planner";
 
 function sumInventoryValues(values: Record<string, number>) {
   return Object.values(values).reduce((sum, value) => sum + value, 0);

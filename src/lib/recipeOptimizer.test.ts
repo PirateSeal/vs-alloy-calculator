@@ -1,9 +1,9 @@
 import { describe, it, expect, vi } from 'vitest';
 import { test, fc } from '@fast-check/vitest';
-import { optimizeRecipe } from './recipeOptimizer';
-import type { AlloyRecipe } from '../types/alloys';
-import { ALLOY_RECIPES } from '../data/alloys';
-import * as maximizationStrategy from './maximizationStrategy';
+import { optimizeRecipe } from '@/features/metallurgy/lib/recipeOptimizer';
+import type { AlloyRecipe } from '@/features/metallurgy/types/alloys';
+import { ALLOY_RECIPES } from '@/features/metallurgy/data/alloys';
+import * as maximizationStrategy from '@/features/metallurgy/lib/maximizationStrategy';
 
 describe('Recipe Optimizer', () => {
   describe('Input validation', () => {

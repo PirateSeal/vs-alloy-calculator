@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { I18nContext } from "@/i18n/context";
-import { SeoLandingContent } from "./SeoLandingContent";
+import { SeoLandingContent } from "@/features/metallurgy/components/SeoLandingContent";
 
 describe("SeoLandingContent", () => {
   it("renders a single primary heading and visible FAQ content", () => {

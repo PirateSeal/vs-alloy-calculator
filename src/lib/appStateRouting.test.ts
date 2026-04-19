@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createEmptyCrucible } from "@/lib/alloyLogic";
+import { createEmptyCrucible } from "@/features/metallurgy/lib/alloyLogic";
 import {
   buildCalculatorSearch,
   buildPlannerSearch,
@@ -8,7 +8,7 @@ import {
   getPathnameForMetallurgyView,
   parseCalculatorStateFromSearch,
   parsePlannerStateFromSearch,
-} from "./appStateRouting";
+} from "@/features/metallurgy/routing/appStateRouting";
 
 describe("appStateRouting", () => {
   it("parses the planner route from localized and root paths", () => {

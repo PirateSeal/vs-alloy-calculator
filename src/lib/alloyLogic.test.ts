@@ -18,9 +18,9 @@ import {
   type MetalAmount,
   type AlloyViolation,
   type NuggetAdjustment,
-} from './alloyLogic';
-import type { CrucibleState } from '../types/crucible';
-import { ALLOY_RECIPES, METALS } from '../data/alloys';
+} from '@/features/metallurgy/lib/alloyLogic';
+import type { CrucibleState } from '@/features/metallurgy/types/crucible';
+import { ALLOY_RECIPES, METALS } from '@/features/metallurgy/data/alloys';
 
 const tinBronze = ALLOY_RECIPES.find((r) => r.id === 'tin-bronze')!;
 const bismuthBronze = ALLOY_RECIPES.find((r) => r.id === 'bismuth-bronze')!;

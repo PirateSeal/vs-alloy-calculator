@@ -1,8 +1,8 @@
-import { METALS } from "@/data/alloys";
-import { aggregateCrucible } from "@/lib/alloyLogic";
-import { calculateRarityCost } from "@/lib/metalRarity";
-import type { AlloyRecipe, MetalId } from "@/types/alloys";
-import type { CrucibleState } from "@/types/crucible";
+import { METALS } from "../data/alloys";
+import { aggregateCrucible } from "../lib/alloyLogic";
+import { calculateRarityCost } from "../lib/metalRarity";
+import type { AlloyRecipe, MetalId } from "../types/alloys";
+import type { CrucibleState } from "../types/crucible";
 import type {
   BatchPlan,
   BatchRun,
@@ -11,7 +11,7 @@ import type {
   PlannerInsights,
   RecipePlannerResult,
   ScarcityMode,
-} from "@/types/planner";
+} from "../types/planner";
 import { validateRecipe } from "./recipeValidator";
 
 interface MetalAmount {

@@ -1,24 +1,20 @@
-import { ALLOY_RECIPES, METALS } from "@/data/alloys";
-import { createEmptyCrucible } from "@/lib/alloyLogic";
-import type { AlloyRecipe, MetalId } from "@/types/alloys";
-import type { CrucibleState } from "@/types/crucible";
+import { ALLOY_RECIPES, METALS } from "@/features/metallurgy/data/alloys";
+import { createEmptyCrucible } from "@/features/metallurgy/lib/alloyLogic";
+import { METALLURGY_VIEW_PATHS } from "@/features/metallurgy/routing/routes";
+import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
+import type { CrucibleState } from "@/features/metallurgy/types/crucible";
 import type {
   InventoryState,
   MetallurgyView,
   PlannerState,
   ScarcityMode,
-} from "@/types/planner";
+} from "@/features/metallurgy/types/planner";
 import { getLocaleFromPath, stripLocalePrefix } from "@/i18n";
 
 const VALID_METAL_IDS = new Set<string>(METALS.map((metal) => metal.id));
 const VALID_RECIPE_IDS = new Set<string>(ALLOY_RECIPES.map((recipe) => recipe.id));
 
-export const VIEW_PATHS: Record<MetallurgyView, string> = {
-  calculator: "/",
-  planner: "/planner/",
-  reference: "/reference/",
-  about: "/about/",
-};
+export const VIEW_PATHS = METALLURGY_VIEW_PATHS;
 
 const DEFAULT_SCARCITY_MODE: ScarcityMode = "balanced";
 
@@ -100,6 +96,17 @@ export function parseCalculatorStateFromSearch(search: string): { crucible: Cruc
   return { crucible: hasAny ? base : createEmptyCrucible(), recipe };
 }
 
+export function parseCalculatorUrlStateFromSearch(search: string): {
+  crucible: CrucibleState;
+  selectedRecipeId: AlloyRecipe["id"] | null;
+} {
+  const parsed = parseCalculatorStateFromSearch(search);
+  return {
+    crucible: parsed.crucible,
+    selectedRecipeId: parsed.recipe?.id ?? null,
+  };
+}
+
 export function buildCalculatorSearch(crucible: CrucibleState, selectedRecipe: AlloyRecipe | null): string {
   const params = new URLSearchParams();
 
@@ -114,6 +121,16 @@ export function buildCalculatorSearch(crucible: CrucibleState, selectedRecipe: A
   }
 
   return params.toString();
+}
+
+export function buildCalculatorSearchFromState(
+  crucible: CrucibleState,
+  selectedRecipeId: AlloyRecipe["id"] | null,
+): string {
+  const recipe = selectedRecipeId
+    ? ALLOY_RECIPES.find((candidate) => candidate.id === selectedRecipeId) ?? null
+    : null;
+  return buildCalculatorSearch(crucible, recipe);
 }
 
 function isScarcityMode(value: string | null): value is ScarcityMode {

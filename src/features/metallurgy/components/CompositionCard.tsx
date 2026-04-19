@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Check, ChevronDown, FlaskConical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { METALS } from "@/data/alloys";
+import { METALS } from "../data/alloys";
 import { useTranslation } from "@/i18n";
-import { getRarityScore } from "@/lib/metalRarity";
-import type { AlloyMatchDetail, MetalAmount } from "@/lib/alloyLogic";
+import { getRarityScore } from "../lib/metalRarity";
+import type { AlloyMatchDetail, MetalAmount } from "../lib/alloyLogic";
 
 interface CompositionCardProps {
   amounts: MetalAmount[];

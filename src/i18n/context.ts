@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { MetalId } from "@/types/alloys";
+import type { MetalId } from "@/features/metallurgy/types/alloys";
 import type { Locale } from "./types";
 
 export interface I18nContextValue {

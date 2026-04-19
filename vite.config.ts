@@ -6,12 +6,11 @@ import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { SUPPORTED_LOCALES } from './src/i18n/routing'
 import { localizeHtmlDocument } from './src/i18n/seo'
+import { METALLURGY_APP_ROUTES } from './src/features/metallurgy/routing/routes'
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
 const SITE_URL = 'https://vs-calculator.tcousin.com'
-const APP_ROUTES = ['/', '/planner/', '/reference/', '/about/'] as const
-
-function getLocalizedRoutePath(locale: string, route: (typeof APP_ROUTES)[number]) {
+function getLocalizedRoutePath(locale: string, route: (typeof METALLURGY_APP_ROUTES)[number]) {
   if (locale === 'en') {
     return route
   }
@@ -19,7 +18,7 @@ function getLocalizedRoutePath(locale: string, route: (typeof APP_ROUTES)[number
   return route === '/' ? `/${locale}/` : `/${locale}${route}`
 }
 
-function getRoutePriority(route: (typeof APP_ROUTES)[number], locale: string) {
+function getRoutePriority(route: (typeof METALLURGY_APP_ROUTES)[number], locale: string) {
   if (route === '/') {
     return locale === 'en' ? '1.0' : '0.9'
   }
@@ -34,7 +33,7 @@ function generateSitemapXml() {
     String(now.getMonth() + 1).padStart(2, '0'),
     String(now.getDate()).padStart(2, '0'),
   ].join('-')
-  const urls = APP_ROUTES.flatMap((route) =>
+  const urls = METALLURGY_APP_ROUTES.flatMap((route) =>
     SUPPORTED_LOCALES.map((locale) => {
       const loc = new URL(getLocalizedRoutePath(locale, route), `${SITE_URL}/`).toString()
       const alternates = [
@@ -84,7 +83,7 @@ function localizedHtmlPlugin() {
       const indexPath = join(outDir, 'index.html')
       const rootHtml = readFileSync(indexPath, 'utf-8')
 
-      for (const route of APP_ROUTES) {
+      for (const route of METALLURGY_APP_ROUTES) {
         for (const locale of SUPPORTED_LOCALES) {
           const localizedHtml = localizeHtmlDocument(rootHtml, locale, route)
           const targetPath =

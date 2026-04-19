@@ -18,11 +18,11 @@ import {
   applyNuggetAdjustments,
   calculateNuggetAdjustments,
   createPresetForAlloy,
-} from "@/lib/alloyLogic";
-import { optimizeRecipe } from "@/lib/recipeOptimizer";
-import type { EvaluationResult, NuggetAdjustment } from "@/lib/alloyLogic";
-import type { AlloyRecipe, MetalId } from "@/types/alloys";
-import type { CrucibleState } from "@/types/crucible";
+} from "../lib/alloyLogic";
+import { optimizeRecipe } from "../lib/recipeOptimizer";
+import type { EvaluationResult, NuggetAdjustment } from "../lib/alloyLogic";
+import type { AlloyRecipe, MetalId } from "../types/alloys";
+import type { CrucibleState } from "../types/crucible";
 
 type TranslateFn = (key: string, vars?: Record<string, string | number>) => string;
 type StatusTone = "success" | "warning" | "destructive" | "neutral";

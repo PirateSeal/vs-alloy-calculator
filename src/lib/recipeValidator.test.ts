@@ -7,11 +7,11 @@ import {
   validateTotalUnits,
   validateComponentPresence,
   validateRecipe,
-} from './recipeValidator';
-import type { CrucibleState } from '../types/crucible';
-import type { AlloyRecipe, MetalId } from '../types/alloys';
-import type { MetalAmount } from './metalRarity';
-import { ALLOY_RECIPES } from '../data/alloys';
+} from '@/features/metallurgy/lib/recipeValidator';
+import type { CrucibleState } from '@/features/metallurgy/types/crucible';
+import type { AlloyRecipe, MetalId } from '@/features/metallurgy/types/alloys';
+import type { MetalAmount } from '@/features/metallurgy/lib/metalRarity';
+import { ALLOY_RECIPES } from '@/features/metallurgy/data/alloys';
 
 describe('Recipe Validator', () => {
   describe('validateSlotCount', () => {

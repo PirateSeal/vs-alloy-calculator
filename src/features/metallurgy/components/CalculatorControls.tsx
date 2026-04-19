@@ -14,10 +14,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
-import { optimizeRecipe } from "@/lib/recipeOptimizer";
-import type { EvaluationResult } from "@/lib/alloyLogic";
-import type { AlloyRecipe } from "@/types/alloys";
-import type { CrucibleState } from "@/types/crucible";
+import { optimizeRecipe } from "../lib/recipeOptimizer";
+import type { EvaluationResult } from "../lib/alloyLogic";
+import type { AlloyRecipe } from "../types/alloys";
+import type { CrucibleState } from "../types/crucible";
 
 interface CalculatorControlsProps {
   evaluation: EvaluationResult;

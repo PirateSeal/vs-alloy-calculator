@@ -1,4 +1,4 @@
-import type { Metal, AlloyRecipe } from "../types/alloys";
+import type { Metal, AlloyRecipe } from "@/features/metallurgy/types/alloys";
 
 export const METALS: Metal[] = [
   { id: "copper",  color: "#B87333", nuggetImage: "/metal-images/Nugget-nativecopper.png" },

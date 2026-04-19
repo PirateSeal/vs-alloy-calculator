@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { test, fc } from "@fast-check/vitest";
-import { optimizeEconomical } from "./economicalStrategy";
-import type { AlloyRecipe, MetalId } from "../types/alloys";
-import { ALLOY_RECIPES } from "../data/alloys";
-import { calculateRarityCost } from "./metalRarity";
+import { optimizeEconomical } from "@/features/metallurgy/lib/economicalStrategy";
+import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
+import { ALLOY_RECIPES } from "@/features/metallurgy/data/alloys";
+import { calculateRarityCost } from "@/features/metallurgy/lib/metalRarity";
 
 describe("Economical Strategy", () => {
   describe("Edge Cases", () => {

@@ -1,5 +1,5 @@
-import type { MetalId, AlloyRecipe, Metal } from "../types/alloys";
-import type { CrucibleState } from "../types/crucible";
+import type { MetalId, AlloyRecipe, Metal } from "@/features/metallurgy/types/alloys";
+import type { CrucibleState } from "@/features/metallurgy/types/crucible";
 
 export interface MetalAmount {
   metalId: MetalId;

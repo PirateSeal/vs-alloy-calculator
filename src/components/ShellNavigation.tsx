@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
-import type { AppDomain, MetallurgyView } from "@/types/planner";
+import type { AppDomain, MetallurgyView } from "@/features/metallurgy/types/planner";
 import { LOCALE_OPTIONS, useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";

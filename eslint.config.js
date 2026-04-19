@@ -19,11 +19,30 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['../*'],
+              message: 'Use @/ alias instead of relative parent imports.',
+            },
+          ],
+        },
+      ],
+    },
   },
   {
     files: ['src/components/ui/**/*.{ts,tsx}'],
     rules: {
       'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    files: ['src/features/metallurgy/**/*.{ts,tsx}', 'src/i18n/seo.ts'],
+    rules: {
+      'no-restricted-imports': 'off',
     },
   },
 ])

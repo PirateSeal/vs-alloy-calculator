@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   getMetallurgyViewFromPath,
   getPathnameForMetallurgyView,
-} from './appStateRouting';
+} from '@/features/metallurgy/routing/appStateRouting';
 
 describe('appStateRouting view detection', () => {
   it('detects about view from root and localized paths', () => {
