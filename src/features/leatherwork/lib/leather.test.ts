@@ -7,9 +7,20 @@ import {
   hidesForLeatherTarget,
 } from "./leather";
 
+const t = (key: string, vars?: Record<string, string | number>) => {
+  let value = key;
+  if (vars) {
+    for (const [name, replacement] of Object.entries(vars)) {
+      value = value.replaceAll(`{${name}}`, String(replacement));
+    }
+  }
+  return value;
+};
+
 describe("leather calculations", () => {
   it("calculates forward values for small hides", () => {
     const plan = calculateLeatherPlan({
+      t,
       hideCount: 8,
       mode: "hides",
       size: "small",
@@ -27,6 +38,7 @@ describe("leather calculations", () => {
     expect(hidesForLeather(5, "medium")).toBe(3);
 
     const plan = calculateLeatherPlan({
+      t,
       hideCount: hidesForLeather(5, "medium"),
       mode: "leather",
       size: "medium",
@@ -40,6 +52,7 @@ describe("leather calculations", () => {
 
   it("uses per-step tannin log ceiling rather than a single aggregated ceiling", () => {
     const plan = calculateLeatherPlan({
+      t,
       hideCount: 8,
       mode: "hides",
       size: "small",
@@ -59,6 +72,7 @@ describe("leather calculations", () => {
 
   it("keeps barrel counts aligned to hide capacity", () => {
     const plan = calculateLeatherPlan({
+      t,
       hideCount: 13,
       mode: "hides",
       size: "medium",
@@ -72,6 +86,7 @@ describe("leather calculations", () => {
 
   it("supports bear hides that expand into huge leather workflow", () => {
     const plan = calculateLeatherPlan({
+      t,
       hideCount: 2,
       mode: "hides",
       size: "large",
@@ -93,6 +108,7 @@ describe("leather calculations", () => {
 
   it("builds a bear pelt plan with split results", () => {
     const plan = calculatePeltPlan({
+      t,
       hideCount: 2,
       size: "huge",
       bearVariant: "brown",

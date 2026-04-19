@@ -34,8 +34,14 @@ export function LeatherSummaryCard({
     ? calculation.hideProfile.leatherAssetPath
     : calculation.curedPeltAssetPath;
   const resultText = isLeatherWorkflow
-    ? `${calculation.rawHideCount} hides -> ${calculation.actualLeather} leather`
-    : `${calculation.rawHideCount} hides -> ${calculation.curedPeltCount} ${calculation.curedPeltCount === 1 ? "pelt" : "pelts"}`;
+    ? t("leather.summary.result_leather", {
+        hides: calculation.rawHideCount,
+        leather: calculation.actualLeather,
+      })
+    : t(`leather.summary.result_pelt.${calculation.curedPeltCount === 1 ? "one" : "other"}`, {
+        hides: calculation.rawHideCount,
+        pelts: calculation.curedPeltCount,
+      });
   const subtitle = isLeatherWorkflow
     ? calculation.hideProfile.rawHideSubtitle
     : bearVariant

@@ -7,8 +7,10 @@ import type {
   LeatherState,
   LeatherworkCalculation,
 } from "@/features/leatherwork/types/leather";
+import { useTranslation } from "@/i18n";
 
 export function useLeatherCalculation(state: LeatherState): LeatherworkCalculation {
+  const { t } = useTranslation();
   const {
     workflow,
     mode,
@@ -23,6 +25,7 @@ export function useLeatherCalculation(state: LeatherState): LeatherworkCalculati
   return useMemo(() => {
     if (workflow === "pelt") {
       return calculatePeltPlan({
+        t,
         hideCount,
         size,
         animalVariant,
@@ -31,6 +34,7 @@ export function useLeatherCalculation(state: LeatherState): LeatherworkCalculati
     }
 
     return calculateLeatherPlan({
+      t,
       hideCount,
       mode,
       size,
@@ -39,5 +43,5 @@ export function useLeatherCalculation(state: LeatherState): LeatherworkCalculati
       animalVariant,
       bearVariant,
     });
-  }, [animalVariant, bearVariant, hideCount, mode, size, solvent, targetLeather, workflow]);
+  }, [animalVariant, bearVariant, hideCount, mode, size, solvent, t, targetLeather, workflow]);
 }

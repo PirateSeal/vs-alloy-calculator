@@ -42,28 +42,35 @@ export const DILUTED_BORAX_BATCH_COST = 2;
 export const TANNIN_BATCH_LITERS = 10;
 const BUCKET_LITERS = 10;
 
+type TranslateFn = (key: string, vars?: Record<string, string | number>) => string;
+
+function translateCount(
+  t: TranslateFn,
+  baseKey: string,
+  count: number,
+  vars?: Record<string, string | number>,
+): string {
+  return t(`${baseKey}.${count === 1 ? "one" : "other"}`, { count, ...vars });
+}
+
 function formatLiters(liters: number): string {
   return `${liters} L`;
 }
 
-function formatBuckets(liters: number): string {
-  return `${Math.ceil(liters / BUCKET_LITERS)} ${Math.ceil(liters / BUCKET_LITERS) === 1 ? "bucket" : "buckets"}`;
+function formatBuckets(t: TranslateFn, liters: number): string {
+  return translateCount(t, "leather.count.bucket", Math.ceil(liters / BUCKET_LITERS));
 }
 
-function formatBarrels(count: number): string {
-  return `${count} ${count === 1 ? "barrel" : "barrels"}`;
+function formatBarrels(t: TranslateFn, count: number): string {
+  return translateCount(t, "leather.count.barrel", count);
 }
 
-function formatBatches(count: number): string {
-  return `${count} ${count === 1 ? "batch" : "batches"}`;
+function formatBatches(t: TranslateFn, count: number): string {
+  return translateCount(t, "leather.count.batch", count);
 }
 
-function formatUnits(count: number, singular: string, plural: string = `${singular}s`): string {
-  return `${count} ${count === 1 ? singular : plural}`;
-}
-
-function titleCase(label: string): string {
-  return label.charAt(0).toUpperCase() + label.slice(1);
+function formatUnits(t: TranslateFn, count: number, baseKey: string): string {
+  return translateCount(t, baseKey, count);
 }
 
 export type HideStage = "raw" | "soaked" | "scraped" | "prepared";
@@ -93,54 +100,46 @@ export function getMaterialAssetPath(material: LeatherMaterial): string {
   return `/leather/materials/${material}.png`;
 }
 
-function getSizeLabel(size: HideSize): string {
-  return size;
+function getSizeLabel(t: TranslateFn, size: HideSize): string {
+  return t(`leather.hide_size.${size}`);
 }
 
-function getAnimalLabel(animalVariant: AnimalVariant): string {
-  switch (animalVariant) {
-    case "fox":
-      return "fox";
-    case "arctic-fox":
-      return "arctic fox";
-    case "raccoon":
-      return "raccoon";
-    default:
-      return "generic";
-  }
+function getAnimalLabel(t: TranslateFn, animalVariant: AnimalVariant): string {
+  return t(`leather.animal.${animalVariant}`);
 }
 
-function getBearLabel(bearVariant: BearVariant): string {
-  switch (bearVariant) {
-    case "sun":
-      return "sun bear";
-    case "panda":
-      return "panda bear";
-    case "black":
-      return "black bear";
-    case "brown":
-      return "brown bear";
-    case "polar":
-      return "polar bear";
-  }
+function getBearLabel(t: TranslateFn, bearVariant: BearVariant): string {
+  return t(`leather.bear.${bearVariant}`);
 }
 
-function buildHideDescriptor(
+function buildStageHideDescriptor(
+  t: TranslateFn,
+  stage: "raw" | "soaked",
   count: number,
   size: HideSize,
-  noun: string,
   animalVariant: AnimalVariant,
   bearVariant: BearVariant | null,
 ): string {
+  const countKey = count === 1 ? "one" : "other";
+
   if (bearVariant) {
-    return `${count} ${getBearLabel(bearVariant)} ${count === 1 ? noun : `${noun}s`}`;
+    return t(`leather.descriptor.${stage}.bear.${countKey}`, {
+      count,
+      bear: getBearLabel(t, bearVariant),
+    });
   }
 
   if (size === "small" && animalVariant !== "generic") {
-    return `${count} ${getAnimalLabel(animalVariant)} ${count === 1 ? noun : `${noun}s`}`;
+    return t(`leather.descriptor.${stage}.animal.${countKey}`, {
+      count,
+      animal: getAnimalLabel(t, animalVariant),
+    });
   }
 
-  return `${count} ${getSizeLabel(size)} ${count === 1 ? noun : `${noun}s`}`;
+  return t(`leather.descriptor.${stage}.size.${countKey}`, {
+    count,
+    size: getSizeLabel(t, size),
+  });
 }
 
 function getLeatherYieldForSelection(size: HideSize, bearVariant: BearVariant | null): number {
@@ -182,11 +181,13 @@ function getPeltFatRequired(size: HideSize, hideCount: number, bearVariant: Bear
 }
 
 export function getSelectedHideProfile({
+  t,
   size,
   animalVariant = "generic",
   bearVariant = null,
   rawHideCount = 1,
 }: {
+  t: TranslateFn;
   size: HideSize;
   animalVariant?: AnimalVariant;
   bearVariant?: BearVariant | null;
@@ -202,14 +203,17 @@ export function getSelectedHideProfile({
       animalVariant: "generic",
       bearVariant,
       rawHideCount,
-      rawHideLabel: titleCase(getBearLabel(bearVariant)),
-      rawHideSubtitle: `Raw ${rawSize} hide -> ${bearData.scrapedHugeHides} huge scraped hides each`,
+      rawHideLabel: getBearLabel(t, bearVariant),
+      rawHideSubtitle: t("leather.profile.subtitle.bear", {
+        size: getSizeLabel(t, rawSize),
+        hides: bearData.scrapedHugeHides,
+      }),
       rawAssetPath: getHideAssetPath("raw", rawSize),
       soakingLitersPerRawHide: HIDE_DATA[rawSize].litersPerHide,
       soakingBarrelCapacity: HIDE_DATA[rawSize].maxPerBarrel,
       scrapedHideCountPerRawHide: bearData.scrapedHugeHides,
       scrapedHideSize: "huge",
-      scrapedHideLabel: "Huge scraped hides",
+      scrapedHideLabel: t("leather.profile.label.scraped", { size: getSizeLabel(t, "huge") }),
       scrapedAssetPath: getHideAssetPath("scraped", "huge"),
       preparedAssetPath: getHideAssetPath("prepared", "huge"),
       leatherAssetPath: getMaterialAssetPath("leather"),
@@ -218,12 +222,12 @@ export function getSelectedHideProfile({
   }
 
   const label = size === "small" && animalVariant !== "generic"
-    ? `${titleCase(getAnimalLabel(animalVariant))} hides`
-    : `${titleCase(getSizeLabel(size))} hides`;
+    ? t("leather.profile.label.animal", { animal: getAnimalLabel(t, animalVariant) })
+    : t("leather.profile.label.size", { size: getSizeLabel(t, size) });
 
   const subtitle = size === "small" && animalVariant !== "generic"
-    ? `${titleCase(getAnimalLabel(animalVariant))} uses the small-hide workflow`
-    : `${titleCase(getSizeLabel(size))} hide workflow`;
+    ? t("leather.profile.subtitle.small_variant", { animal: getAnimalLabel(t, animalVariant) })
+    : t("leather.profile.subtitle.size", { size: getSizeLabel(t, size) });
 
   return {
     rawSize: size,
@@ -238,7 +242,7 @@ export function getSelectedHideProfile({
     soakingBarrelCapacity: HIDE_DATA[size].maxPerBarrel,
     scrapedHideCountPerRawHide: 1,
     scrapedHideSize: size,
-    scrapedHideLabel: `${titleCase(size)} scraped hides`,
+    scrapedHideLabel: t("leather.profile.label.scraped", { size: getSizeLabel(t, size) }),
     scrapedAssetPath: getHideAssetPath("scraped", size),
     preparedAssetPath: getHideAssetPath("prepared", size),
     leatherAssetPath: getMaterialAssetPath("leather"),
@@ -247,6 +251,7 @@ export function getSelectedHideProfile({
 }
 
 function buildLeatherSummaryMetrics({
+  t,
   rawHideCount,
   actualLeather,
   totalWater,
@@ -255,6 +260,7 @@ function buildLeatherSummaryMetrics({
   solventAmount,
   peakHideBarrels,
 }: {
+  t: TranslateFn;
   rawHideCount: number;
   actualLeather: number;
   totalWater: number;
@@ -266,43 +272,48 @@ function buildLeatherSummaryMetrics({
   return [
     {
       id: "output",
-      label: "Actual output",
-      value: formatUnits(actualLeather, "leather"),
-      hint: `${formatUnits(rawHideCount, "raw hide")} in`,
+      label: t("leather.metric.output"),
+      value: formatUnits(t, actualLeather, "leather.term.leather"),
+      hint: t("leather.metric.output_hint", { count: rawHideCount }),
       assetPath: getMaterialAssetPath("leather"),
     },
     {
       id: "barrels",
-      label: "Peak hide barrels",
+      label: t("leather.metric.barrels"),
       value: String(peakHideBarrels),
-      hint: "Soak, prepare, or complete at once",
+      hint: t("leather.metric.barrels_hint"),
       assetPath: getMaterialAssetPath("barrel"),
     },
     {
       id: "water",
-      label: "Total water",
+      label: t("leather.metric.water"),
       value: formatLiters(totalWater),
-      hint: formatBuckets(totalWater),
+      hint: formatBuckets(t, totalWater),
       assetPath: getMaterialAssetPath("weak-tannin"),
     },
     {
       id: "solvent",
-      label: solvent === "lime" ? "Lime" : "Powdered borax",
+      label: t(`leather.solvent.${solvent}`),
       value: String(solventAmount),
-      hint: solvent === "lime" ? "1 lime per soaking liter" : `${Math.ceil(solventAmount / 2)} borax chunks`,
+      hint: solvent === "lime"
+        ? t("leather.metric.solvent_hint_lime")
+        : t("leather.metric.solvent_hint_borax", {
+            chunks: Math.ceil(solventAmount / 2),
+          }),
       assetPath: solvent === "lime" ? getMaterialAssetPath("lime") : getMaterialAssetPath("borax-powder"),
     },
     {
       id: "logs",
-      label: "Oak or acacia logs",
+      label: t("leather.shopping.logs"),
       value: String(totalLogs),
-      hint: "Weak + strong tannin combined",
+      hint: t("leather.metric.logs_hint"),
       assetPath: getMaterialAssetPath("oak-log"),
     },
   ];
 }
 
 function buildLeatherShoppingList({
+  t,
   rawHideCount,
   totalWater,
   solvent,
@@ -311,6 +322,7 @@ function buildLeatherShoppingList({
   totalLogs,
   hideProfile,
 }: {
+  t: TranslateFn;
   rawHideCount: number;
   totalWater: number;
   solvent: Solvent;
@@ -322,44 +334,47 @@ function buildLeatherShoppingList({
   return [
     {
       id: "raw-hides",
-      label: "Raw hides",
+      label: t("leather.shopping.raw_hides"),
       amount: String(rawHideCount),
       hint: hideProfile.rawHideSubtitle,
       assetPath: hideProfile.rawAssetPath,
     },
     {
       id: "water",
-      label: "Water (total)",
+      label: t("leather.shopping.water_total"),
       amount: formatLiters(totalWater),
-      hint: formatBuckets(totalWater),
+      hint: formatBuckets(t, totalWater),
       assetPath: getMaterialAssetPath("weak-tannin"),
     },
     solvent === "lime"
       ? {
           id: "lime",
-          label: "Lime",
+          label: t("leather.shopping.lime"),
           amount: String(limeRequired),
-          hint: `${formatLiters(limeRequired)} soaking liquid`,
+          hint: t("leather.shopping.hint.lime", { liters: formatLiters(limeRequired) }),
           assetPath: getMaterialAssetPath("lime"),
         }
       : {
           id: "powdered-borax",
-          label: "Powdered borax",
+          label: t("leather.shopping.powdered_borax"),
           amount: String(powderedBoraxRequired),
-          hint: `${Math.ceil(powderedBoraxRequired / 2)} borax chunks for diluted borax`,
+          hint: t("leather.shopping.hint.powdered_borax", {
+            chunks: Math.ceil(powderedBoraxRequired / 2),
+          }),
           assetPath: getMaterialAssetPath("borax-powder"),
         },
     {
       id: "logs",
-      label: "Oak or acacia logs",
+      label: t("leather.shopping.logs"),
       amount: String(totalLogs),
-      hint: "Any mix of oak and acacia works",
+      hint: t("leather.shopping.hint.logs"),
       assetPath: getMaterialAssetPath("oak-log"),
     },
   ];
 }
 
 function buildLeatherPipeline({
+  t,
   hideProfile,
   rawHideCount,
   scrapedHideCount,
@@ -378,6 +393,7 @@ function buildLeatherPipeline({
   powderedBoraxRequired,
   solvent,
 }: {
+  t: TranslateFn;
   hideProfile: HideProfile;
   rawHideCount: number;
   scrapedHideCount: number;
@@ -396,110 +412,136 @@ function buildLeatherPipeline({
   powderedBoraxRequired: number;
   solvent: Solvent;
 }): PipelineStep[] {
-  const rawDescriptor = buildHideDescriptor(
+  const rawDescriptor = buildStageHideDescriptor(
+    t,
+    "raw",
     rawHideCount,
     hideProfile.rawSize,
-    "hide",
     hideProfile.animalVariant,
     hideProfile.bearVariant,
   );
-  const soakedDescriptor = buildHideDescriptor(
+  const soakedDescriptor = buildStageHideDescriptor(
+    t,
+    "soaked",
     rawHideCount,
     hideProfile.rawSize,
-    "soaked hide",
     hideProfile.animalVariant,
     hideProfile.bearVariant,
   );
-  const scrapedDescriptor = `${scrapedHideCount} scraped ${hideProfile.scrapedHideSize} ${scrapedHideCount === 1 ? "hide" : "hides"}`;
-  const preparedDescriptor = `${scrapedHideCount} prepared ${hideProfile.scrapedHideSize} ${scrapedHideCount === 1 ? "hide" : "hides"}`;
+  const scrapedDescriptor = t(`leather.descriptor.scraped.${scrapedHideCount === 1 ? "one" : "other"}`, {
+    count: scrapedHideCount,
+    size: getSizeLabel(t, hideProfile.scrapedHideSize),
+  });
+  const preparedDescriptor = t(`leather.descriptor.prepared.${scrapedHideCount === 1 ? "one" : "other"}`, {
+    count: scrapedHideCount,
+    size: getSizeLabel(t, hideProfile.scrapedHideSize),
+  });
 
   return [
     {
       id: "make-weak-tannin",
-      title: "Make weak tannin",
-      duration: "1 day",
-      summary: `${formatBarrels(weakTanninBarrelsPerRound)} per round · ${formatBatches(weakTanninBarrelsPerRound * 2)} total`,
+      title: t("leather.pipeline.step.make_weak_tannin.title"),
+      duration: t("leather.pipeline.duration.one_day"),
+      summary: t("leather.pipeline.step.make_weak_tannin.summary", {
+        barrels: formatBarrels(t, weakTanninBarrelsPerRound),
+        batches: formatBatches(t, weakTanninBarrelsPerRound * 2),
+      }),
       barrels: weakTanninBarrelsPerRound,
       batches: weakTanninBarrelsPerRound * 2,
       stageAsset: getMaterialAssetPath("weak-tannin"),
       inputs: [
-        `${tanninLogsForWeak} oak or acacia logs`,
-        `${formatLiters(weakTanninWater)} water`,
+        t("leather.pipeline.input.logs", { count: tanninLogsForWeak }),
+        t("leather.pipeline.input.water", { liters: formatLiters(weakTanninWater) }),
       ],
       outputs: [
-        `${formatLiters(weakTanninBarrelsPerRound * TANNIN_BATCH_LITERS * 2)} weak tannin for preparing`,
-        `${formatLiters(tanninLitersPerStage)} weak tannin saved for strong conversion`,
+        t("leather.pipeline.output.weak_tannin_preparing", {
+          liters: formatLiters(weakTanninBarrelsPerRound * TANNIN_BATCH_LITERS * 2),
+        }),
+        t("leather.pipeline.output.weak_tannin_saved", {
+          liters: formatLiters(tanninLitersPerStage),
+        }),
       ],
-      note: "Start tannin before soaking, or while hides are still in the first barrel step.",
+      note: t("leather.pipeline.step.make_weak_tannin.note"),
     },
     {
       id: "soak",
-      title: "Soak hides",
-      duration: "20 hours",
-      summary: formatBarrels(soakingBarrels),
+      title: t("leather.pipeline.step.soak.title"),
+      duration: t("leather.pipeline.duration.twenty_hours"),
+      summary: formatBarrels(t, soakingBarrels),
       barrels: soakingBarrels,
       stageAsset: getHideAssetPath("soaked", hideProfile.rawSize),
       inputs: [
         rawDescriptor,
-        `${formatLiters(soakingLiters)} water`,
-        solvent === "lime" ? `${limeRequired} lime` : `${powderedBoraxRequired} powdered borax`,
+        t("leather.pipeline.input.water", { liters: formatLiters(soakingLiters) }),
+        solvent === "lime"
+          ? t("leather.pipeline.input.lime", { count: limeRequired })
+          : t("leather.pipeline.input.powdered_borax", { count: powderedBoraxRequired }),
       ],
       outputs: [soakedDescriptor],
-      note: "This step uses the raw hide size. Bears only turn into huge hides after scraping.",
+      note: t("leather.pipeline.step.soak.note"),
     },
     {
       id: "scrape",
-      title: "Scrape",
-      duration: "Instant",
-      summary: "Knife + crafting grid",
+      title: t("leather.pipeline.step.scrape.title"),
+      duration: t("leather.pipeline.duration.instant"),
+      summary: t("leather.pipeline.step.scrape.summary"),
       stageAsset: hideProfile.scrapedAssetPath,
-      inputs: [soakedDescriptor, "1 knife"],
+      inputs: [soakedDescriptor, translateCount(t, "leather.term.knife", 1)],
       outputs: [scrapedDescriptor],
       note: hideProfile.bearVariant
-        ? `Each ${getBearLabel(hideProfile.bearVariant)} hide scrapes into ${hideProfile.scrapedHideCountPerRawHide} huge hides.`
+        ? t("leather.pipeline.step.scrape.note_bear", {
+            bear: getBearLabel(t, hideProfile.bearVariant),
+            hides: hideProfile.scrapedHideCountPerRawHide,
+          })
         : hideProfile.rawSize === "small" && hideProfile.animalVariant !== "generic"
-          ? `${titleCase(getAnimalLabel(hideProfile.animalVariant))} uses the standard small-hide scrape result.`
+          ? t("leather.pipeline.step.scrape.note_small", {
+              animal: getAnimalLabel(t, hideProfile.animalVariant),
+            })
           : undefined,
     },
     {
       id: "prepare",
-      title: "Prepare hides",
-      duration: "3 days",
-      summary: formatBarrels(preparingBarrels),
+      title: t("leather.pipeline.step.prepare.title"),
+      duration: t("leather.pipeline.duration.three_days"),
+      summary: formatBarrels(t, preparingBarrels),
       barrels: preparingBarrels,
       stageAsset: hideProfile.preparedAssetPath,
-      inputs: [scrapedDescriptor, `${formatLiters(tanninLitersPerStage)} weak tannin`],
+      inputs: [scrapedDescriptor, t("leather.pipeline.input.weak_tannin", { liters: formatLiters(tanninLitersPerStage) })],
       outputs: [preparedDescriptor],
-      note: "This is the handoff point where the reserved weak tannin should be converted to strong tannin.",
+      note: t("leather.pipeline.step.prepare.note"),
     },
     {
       id: "make-strong-tannin",
-      title: "Make strong tannin",
-      duration: "1 day",
-      summary: `${formatBarrels(strongTanninBarrels)} · ${formatBatches(strongTanninBarrels)}`,
+      title: t("leather.pipeline.step.make_strong_tannin.title"),
+      duration: t("leather.pipeline.duration.one_day"),
+      summary: t("leather.pipeline.step.make_strong_tannin.summary", {
+        barrels: formatBarrels(t, strongTanninBarrels),
+        batches: formatBatches(t, strongTanninBarrels),
+      }),
       barrels: strongTanninBarrels,
       batches: strongTanninBarrels,
       stageAsset: getMaterialAssetPath("strong-tannin"),
       inputs: [
-        `${tanninLogsForStrong} oak or acacia logs`,
-        `${formatLiters(tanninLitersPerStage)} weak tannin`,
+        t("leather.pipeline.input.logs", { count: tanninLogsForStrong }),
+        t("leather.pipeline.input.weak_tannin", { liters: formatLiters(tanninLitersPerStage) }),
       ],
-      outputs: [`${formatLiters(tanninLitersPerStage)} strong tannin`],
+      outputs: [t("leather.pipeline.output.strong_tannin", { liters: formatLiters(tanninLitersPerStage) })],
     },
     {
       id: "complete",
-      title: "Complete leather",
-      duration: "4.5 days",
-      summary: formatBarrels(completingBarrels),
+      title: t("leather.pipeline.step.complete.title"),
+      duration: t("leather.pipeline.duration.four_half_days"),
+      summary: formatBarrels(t, completingBarrels),
       barrels: completingBarrels,
       stageAsset: getMaterialAssetPath("leather"),
-      inputs: [preparedDescriptor, `${formatLiters(tanninLitersPerStage)} strong tannin`],
-      outputs: [`${formatUnits(actualLeather, "leather")}`],
+      inputs: [preparedDescriptor, t("leather.pipeline.input.strong_tannin", { liters: formatLiters(tanninLitersPerStage) })],
+      outputs: [formatUnits(t, actualLeather, "leather.term.leather")],
     },
   ];
 }
 
 export function calculateLeatherPlan({
+  t,
   hideCount,
   mode,
   size,
@@ -508,6 +550,7 @@ export function calculateLeatherPlan({
   animalVariant = "generic",
   bearVariant = null,
 }: {
+  t: TranslateFn;
   hideCount: number;
   mode: LeatherMode;
   size: HideSize;
@@ -521,6 +564,7 @@ export function calculateLeatherPlan({
     : hideCount;
 
   const hideProfile = getSelectedHideProfile({
+    t,
     size,
     animalVariant,
     bearVariant,
@@ -570,6 +614,7 @@ export function calculateLeatherPlan({
     strongTanninBarrels: strongTanninBatches,
     completingBarrels: preparingBarrels,
     summaryMetrics: buildLeatherSummaryMetrics({
+      t,
       rawHideCount,
       actualLeather,
       totalWater,
@@ -579,6 +624,7 @@ export function calculateLeatherPlan({
       peakHideBarrels: Math.max(soakingBarrels, preparingBarrels),
     }),
     shoppingList: buildLeatherShoppingList({
+      t,
       rawHideCount,
       totalWater,
       solvent,
@@ -588,6 +634,7 @@ export function calculateLeatherPlan({
       hideProfile,
     }),
     pipeline: buildLeatherPipeline({
+      t,
       hideProfile,
       rawHideCount,
       scrapedHideCount,
@@ -610,12 +657,14 @@ export function calculateLeatherPlan({
 }
 
 function buildPeltSummaryMetrics({
+  t,
   fatRequired,
   curedPeltCount,
   curedPeltLabel,
   splitGenericPeltCount,
   splitGenericPeltLabel,
 }: {
+  t: TranslateFn;
   fatRequired: number;
   curedPeltCount: number;
   curedPeltLabel: string;
@@ -625,22 +674,22 @@ function buildPeltSummaryMetrics({
   const metrics: SummaryMetric[] = [
     {
       id: "pelts",
-      label: "Cured output",
+      label: t("leather.pelt.metric.output"),
       value: `${curedPeltCount} ${curedPeltLabel}`,
-      hint: "After 48 hours of curing",
+      hint: t("leather.pelt.metric.output_hint"),
       assetPath: getMaterialAssetPath("leather"),
     },
     {
       id: "fat",
-      label: "Fat required",
-      value: formatUnits(fatRequired, "fat lump"),
-      hint: "Applied in the crafting grid",
+      label: t("leather.pelt.metric.fat"),
+      value: formatUnits(t, fatRequired, "leather.term.fat_lump"),
+      hint: t("leather.pelt.metric.fat_hint"),
     },
     {
       id: "time",
-      label: "Cure time",
-      value: "48 hours",
-      hint: "Storage location does not matter",
+      label: t("leather.pelt.metric.time"),
+      value: t("leather.pipeline.duration.forty_eight_hours"),
+      hint: t("leather.pelt.metric.time_hint"),
       assetPath: getMaterialAssetPath("barrel"),
     },
   ];
@@ -648,9 +697,9 @@ function buildPeltSummaryMetrics({
   if (splitGenericPeltCount > 0 && splitGenericPeltLabel) {
     metrics.push({
       id: "split",
-      label: "If split after curing",
-      value: `${splitGenericPeltCount} ${splitGenericPeltLabel}`,
-      hint: "Plus one bear head per raw hide",
+      label: t("leather.pelt.metric.split"),
+      value: splitGenericPeltLabel,
+      hint: t("leather.pelt.metric.split_hint"),
       assetPath: getHideAssetPath("raw", "huge"),
     });
   }
@@ -659,10 +708,12 @@ function buildPeltSummaryMetrics({
 }
 
 function buildPeltShoppingList({
+  t,
   hideProfile,
   rawHideCount,
   fatRequired,
 }: {
+  t: TranslateFn;
   hideProfile: HideProfile;
   rawHideCount: number;
   fatRequired: number;
@@ -670,25 +721,25 @@ function buildPeltShoppingList({
   const items: ShoppingListItem[] = [
     {
       id: "raw-hides",
-      label: "Raw hides",
+      label: t("leather.shopping.raw_hides"),
       amount: String(rawHideCount),
       hint: hideProfile.rawHideSubtitle,
       assetPath: hideProfile.rawAssetPath,
     },
     {
       id: "fat",
-      label: "Fat",
+      label: t("leather.pelt.shopping.fat"),
       amount: String(fatRequired),
-      hint: "Used to oil the hides before curing",
+      hint: t("leather.pelt.shopping.fat_hint"),
     },
   ];
 
   if (hideProfile.bearVariant) {
     items.push({
       id: "knife",
-      label: "Knife",
+      label: t("leather.pelt.shopping.knife"),
       amount: "1",
-      hint: "Only needed if you want to split the cured bear pelt",
+      hint: t("leather.pelt.shopping.knife_hint"),
       assetPath: getMaterialAssetPath("knife-copper"),
     });
   }
@@ -697,70 +748,82 @@ function buildPeltShoppingList({
 }
 
 function buildPeltPipeline({
+  t,
   hideProfile,
   rawHideCount,
   fatRequired,
   curedPeltLabel,
-  splitGenericPeltCount,
   splitGenericPeltLabel,
   splitHeadCount,
 }: {
+  t: TranslateFn;
   hideProfile: HideProfile;
   rawHideCount: number;
   fatRequired: number;
   curedPeltLabel: string;
-  splitGenericPeltCount: number;
   splitGenericPeltLabel: string | null;
   splitHeadCount: number;
 }): PipelineStep[] {
-  const rawDescriptor = buildHideDescriptor(
+  const rawDescriptor = buildStageHideDescriptor(
+    t,
+    "raw",
     rawHideCount,
     hideProfile.rawSize,
-    "hide",
     hideProfile.animalVariant,
     hideProfile.bearVariant,
   );
   const oiledDescriptor = hideProfile.bearVariant
-    ? `${rawHideCount} oiled ${getBearLabel(hideProfile.bearVariant)} hides`
-    : `${rawHideCount} oiled ${hideProfile.rawSize} hides`;
+    ? t(`leather.descriptor.oiled.bear.${rawHideCount === 1 ? "one" : "other"}`, {
+        count: rawHideCount,
+        bear: getBearLabel(t, hideProfile.bearVariant),
+      })
+    : t(`leather.descriptor.oiled.size.${rawHideCount === 1 ? "one" : "other"}`, {
+        count: rawHideCount,
+        size: getSizeLabel(t, hideProfile.rawSize),
+      });
   const steps: PipelineStep[] = [
     {
       id: "oil",
-      title: "Oil hides",
-      duration: "Instant",
-      summary: "Crafting grid",
+      title: t("leather.pelt.step.oil.title"),
+      duration: t("leather.pipeline.duration.instant"),
+      summary: t("leather.pelt.step.oil.summary"),
       stageAsset: hideProfile.rawAssetPath,
-      inputs: [rawDescriptor, formatUnits(fatRequired, "fat lump")],
+      inputs: [rawDescriptor, formatUnits(t, fatRequired, "leather.term.fat_lump")],
       outputs: [oiledDescriptor],
       note: hideProfile.bearVariant
-        ? "Bear hides take 1 or 2 fat each depending on species."
-        : "Small hides oil in groups of four, medium in groups of two, large individually.",
+        ? t("leather.pelt.step.oil.note_bear")
+        : t("leather.pelt.step.oil.note_standard"),
     },
     {
       id: "cure",
-      title: "Cure pelts",
-      duration: "48 hours",
-      summary: "No barrel required",
+      title: t("leather.pelt.step.cure.title"),
+      duration: t("leather.pipeline.duration.forty_eight_hours"),
+      summary: t("leather.pelt.step.cure.summary"),
       stageAsset: hideProfile.rawAssetPath,
       inputs: [oiledDescriptor],
       outputs: [`${rawHideCount} ${curedPeltLabel}`],
-      note: "Curing time is fixed. Storage location does not affect the result.",
+      note: t("leather.pelt.step.cure.note"),
     },
   ];
 
   if (hideProfile.bearVariant && splitGenericPeltLabel) {
     steps.push({
       id: "split",
-      title: "Split bear pelts",
-      duration: "Instant",
-      summary: "Optional knife step",
+      title: t("leather.pelt.step.split.title"),
+      duration: t("leather.pipeline.duration.instant"),
+      summary: t("leather.pelt.step.split.summary"),
       stageAsset: hideProfile.rawAssetPath,
-      inputs: [`${rawHideCount} bear pelts with head`, "1 knife"],
-      outputs: [
-        `${splitHeadCount} bear ${splitHeadCount === 1 ? "head" : "heads"}`,
-        `${splitGenericPeltCount} ${splitGenericPeltLabel}`,
+      inputs: [
+        `${rawHideCount} ${t("leather.pelt.label.bear_with_head")}`,
+        translateCount(t, "leather.term.knife", 1),
       ],
-      note: "Bear armor recipes use the head separately from the body pelt.",
+      outputs: [
+        t(`leather.pelt.output.bear_head.${splitHeadCount === 1 ? "one" : "other"}`, {
+          count: splitHeadCount,
+        }),
+        splitGenericPeltLabel,
+      ],
+      note: t("leather.pelt.step.split.note"),
     });
   }
 
@@ -768,17 +831,20 @@ function buildPeltPipeline({
 }
 
 export function calculatePeltPlan({
+  t,
   hideCount,
   size,
   animalVariant = "generic",
   bearVariant = null,
 }: {
+  t: TranslateFn;
   hideCount: number;
   size: HideSize;
   animalVariant?: AnimalVariant;
   bearVariant?: BearVariant | null;
 }): PeltCalculation {
   const hideProfile = getSelectedHideProfile({
+    t,
     size,
     animalVariant,
     bearVariant,
@@ -788,40 +854,51 @@ export function calculatePeltPlan({
   const splitGenericPeltCount = bearVariant ? hideCount * BEAR_DATA[bearVariant].splitPeltCount : 0;
   const splitGenericPeltSize = bearVariant ? BEAR_DATA[bearVariant].splitPeltSize : null;
   const splitGenericPeltLabel = splitGenericPeltSize
-    ? `${splitGenericPeltCount} ${splitGenericPeltSize} ${splitGenericPeltCount === 1 ? "pelt" : "pelts"}`
+    ? t(`leather.pelt.label.size_pelt.${splitGenericPeltCount === 1 ? "one" : "other"}`, {
+        count: splitGenericPeltCount,
+        size: getSizeLabel(t, splitGenericPeltSize).toLowerCase(),
+      })
     : null;
+  const curedPeltLabel = bearVariant
+    ? t("leather.pelt.label.bear_with_head")
+    : t(`leather.pelt.label.size_pelt.${hideCount === 1 ? "one" : "other"}`, {
+        count: hideCount,
+        size: getSizeLabel(t, hideProfile.rawSize).toLowerCase(),
+      });
 
   return {
     workflow: "pelt",
     hideProfile,
     rawHideCount: hideCount,
     fatRequired,
-    curingDuration: "48 hours",
+    curingDuration: t("leather.pipeline.duration.forty_eight_hours"),
     curedPeltCount: hideCount,
-    curedPeltLabel: bearVariant ? "bear pelts with head" : `${hideProfile.rawSize} pelts`,
+    curedPeltLabel,
     curedPeltAssetPath: hideProfile.rawAssetPath,
     splitGenericPeltCount,
     splitGenericPeltSize,
     splitGenericPeltLabel,
     splitHeadCount: bearVariant ? hideCount : 0,
     summaryMetrics: buildPeltSummaryMetrics({
+      t,
       fatRequired,
       curedPeltCount: hideCount,
-      curedPeltLabel: bearVariant ? "bear pelts with head" : `${hideProfile.rawSize} pelts`,
+      curedPeltLabel,
       splitGenericPeltCount,
       splitGenericPeltLabel,
     }),
     shoppingList: buildPeltShoppingList({
+      t,
       hideProfile,
       rawHideCount: hideCount,
       fatRequired,
     }),
     pipeline: buildPeltPipeline({
+      t,
       hideProfile,
       rawHideCount: hideCount,
       fatRequired,
-      curedPeltLabel: bearVariant ? "bear pelts with head" : `${hideProfile.rawSize} pelts`,
-      splitGenericPeltCount,
+      curedPeltLabel,
       splitGenericPeltLabel,
       splitHeadCount: bearVariant ? hideCount : 0,
     }),

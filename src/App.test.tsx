@@ -74,13 +74,13 @@ describe("App integration", () => {
     const user = userEvent.setup();
     render(<App />);
 
-    expect(await screen.findByText(/Leatherworking Planner/i)).toBeInTheDocument();
-    expect(screen.getByText(/3 hides -> 9 leather/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Planificateur de travail du cuir/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 peaux -> 9 cuir/i)).toBeInTheDocument();
 
     await user.click(screen.getAllByRole("button", { name: /Calculateur/i })[0]);
 
     expect(window.location.pathname).toBe("/fr/metallurgy/");
-    expect(screen.queryByText(/Leatherworking Planner/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Planificateur de travail du cuir/i)).not.toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: /Calculateur/i })[0]).toHaveAttribute("aria-current", "page");
   });
 

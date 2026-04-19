@@ -52,6 +52,7 @@ export function LeatherApp() {
   const calculation = useLeatherCalculation(inputs);
   const selectionLabel = getSelectionLabel(t, size, animalVariant, bearVariant);
   const inputProfile = getSelectedHideProfile({
+    t,
     size,
     animalVariant,
     bearVariant,
