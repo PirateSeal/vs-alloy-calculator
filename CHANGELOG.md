@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.2] - 2026-04-19
+
+### Changed
+- **Tier 2 component-health refactor completed** — Split the remaining large metallurgy and leatherwork view surfaces into focused components, centralized recipe/hide asset metadata, and finished the selector-hook cleanup so app-level screens and URL sync each subscribe through stable shallow selectors.
+- **Leather option data made localizable and reusable** — Converted shared hide and bear option records from hardcoded English UI strings into semantic data consumed by both the planner picker and the shared leather reference.
+
+### Fixed
+- **Leather state normalization hardened** — URL hydration now flows through the same normalization boundary as UI input updates, so pelt-mode, bear-size, and small-animal invariants stay consistent regardless of how the page is opened.
+- **Sidebar collapsible behavior polished** — The domain groups in the desktop rail now behave as an accordion, and their expand/collapse animation now uses the correct Radix collapsible height keyframes instead of the accordion fallback that caused choppy motion.
+
+### Tests
+- **Leather input normalization coverage expanded** — Added direct store tests for `updateInputs()` invariants covering pelt mode, bear variant sizing, and small-animal reset behavior.
+
 ## [1.11.1] - 2026-04-19
 
 ### Changed
