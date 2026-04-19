@@ -7,7 +7,7 @@ import {
   buildPlannerSearch,
   getPathnameForMetallurgyView,
 } from "@/features/metallurgy/routing/appStateRouting";
-import { useMetallurgyStore } from "@/features/metallurgy/store/useMetallurgyStore";
+import { useMetallurgyUrlState } from "@/features/metallurgy/store/useMetallurgyUrlState";
 import type { MetallurgyView } from "@/features/metallurgy/types/planner";
 
 
@@ -18,12 +18,14 @@ function buildUrl(pathname: string, search: string, hash: string) {
 }
 
 export function useMetallurgyUrlSync() {
-  const activeView = useMetallurgyStore((state) => state.activeView);
-  const calculatorCrucible = useMetallurgyStore((state) => state.calculatorCrucible);
-  const selectedRecipeId = useMetallurgyStore((state) => state.selectedRecipeId);
-  const plannerState = useMetallurgyStore((state) => state.plannerState);
-  const setActiveView = useMetallurgyStore((state) => state.setActiveView);
-  const hydrateFromLocation = useMetallurgyStore((state) => state.hydrateFromLocation);
+  const {
+    activeView,
+    calculatorCrucible,
+    selectedRecipeId,
+    plannerState,
+    setActiveView,
+    hydrateFromLocation,
+  } = useMetallurgyUrlState();
   const skipNextReplaceRef = useRef(false);
 
   useEffect(() => {

@@ -5,15 +5,14 @@ import {
   DILUTED_BORAX_BATCH_LITERS,
   HIDE_DATA,
   TANNIN_BATCH_LITERS,
-  getHideAssetPath,
   getMaterialAssetPath,
 } from "@/features/leatherwork/lib/leather";
-import type { BearVariant, HideSize } from "@/features/leatherwork/types/leather";
+import {
+  BEAR_OPTIONS,
+  HIDE_SIZE_OPTIONS,
+} from "@/features/leatherwork/data/hideOptions";
 import { useTranslation } from "@/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const HIDE_SIZE_ORDER: HideSize[] = ["small", "medium", "large", "huge"];
-const BEAR_ORDER: BearVariant[] = ["sun", "panda", "black", "brown", "polar"];
 
 export function LeatherReferencePanel() {
   const { t } = useTranslation();
@@ -68,19 +67,19 @@ export function LeatherReferencePanel() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {HIDE_SIZE_ORDER.map((size) => {
-            const data = HIDE_DATA[size];
+          {HIDE_SIZE_OPTIONS.map((option) => {
+            const data = HIDE_DATA[option.size];
             return (
               <div
-                key={size}
+                key={option.size}
                 className="rounded-[1.5rem] border border-border/30 bg-background/45 p-4"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex size-12 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                    <img src={getHideAssetPath("raw", size)} alt="" aria-hidden="true" className="size-9 object-contain" />
+                    <img src={option.assetPath} alt="" aria-hidden="true" className="size-9 object-contain" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{t(`leather.hide_size.${size}`)}</p>
+                    <p className="text-sm font-semibold text-foreground">{t(`leather.hide_size.${option.size}`)}</p>
                     <p className="text-xs text-muted-foreground">{t("reference.leather.hide_profiles.subtitle")}</p>
                   </div>
                 </div>
@@ -164,15 +163,15 @@ export function LeatherReferencePanel() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          {BEAR_ORDER.map((bear) => {
-            const data = BEAR_DATA[bear];
+          {BEAR_OPTIONS.map((option) => {
+            const data = BEAR_DATA[option.variant];
             return (
-              <div key={bear} className="rounded-[1.5rem] border border-border/30 bg-background/45 p-4">
+              <div key={option.variant} className="rounded-[1.5rem] border border-border/30 bg-background/45 p-4">
                 <div className="flex items-center gap-3">
                   <div className="flex size-11 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                    <img src={getHideAssetPath("raw", data.rawSize)} alt="" aria-hidden="true" className="size-7 object-contain" />
+                    <img src={option.assetPath} alt="" aria-hidden="true" className="size-7 object-contain" />
                   </div>
-                  <p className="text-sm font-semibold text-foreground">{t(`leather.bear.${bear}`)}</p>
+                  <p className="text-sm font-semibold text-foreground">{t(`leather.bear.${option.variant}`)}</p>
                 </div>
                 <div className="mt-4 space-y-2 text-sm text-muted-foreground">
                   <p>{t("reference.leather.bears.raw_size", { size: t(`leather.hide_size.${data.rawSize}`) })}</p>

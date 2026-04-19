@@ -1,21 +1,23 @@
 import { useEffect, useRef } from "react";
-import { useLeatherStore } from "@/features/leatherwork/store/useLeatherStore";
 import { buildLeatherSearch } from "@/features/leatherwork/routing/appStateRouting";
+import { useLeatherUrlState } from "@/features/leatherwork/store/useLeatherUrlState";
 
 function buildUrl(pathname: string, search: string, hash: string) {
   return search ? `${pathname}?${search}${hash}` : `${pathname}${hash}`;
 }
 
 export function useLeatherUrlSync() {
-  const workflow = useLeatherStore((state) => state.workflow);
-  const mode = useLeatherStore((state) => state.mode);
-  const size = useLeatherStore((state) => state.size);
-  const animalVariant = useLeatherStore((state) => state.animalVariant);
-  const bearVariant = useLeatherStore((state) => state.bearVariant);
-  const hideCount = useLeatherStore((state) => state.hideCount);
-  const targetLeather = useLeatherStore((state) => state.targetLeather);
-  const solvent = useLeatherStore((state) => state.solvent);
-  const hydrateFromLocation = useLeatherStore((state) => state.hydrateFromLocation);
+  const {
+    workflow,
+    mode,
+    size,
+    animalVariant,
+    bearVariant,
+    hideCount,
+    targetLeather,
+    solvent,
+    hydrateFromLocation,
+  } = useLeatherUrlState();
   const skipNextReplaceRef = useRef(false);
 
   useEffect(() => {

@@ -1,59 +1,35 @@
+import { memo } from "react";
+import { BEAR_DATA, HIDE_DATA } from "@/features/leatherwork/lib/leather";
 import type {
   AnimalVariant,
   BearVariant,
   HideSize,
   LeatherWorkflow,
 } from "@/features/leatherwork/types/leather";
-import { getHideAssetPath } from "@/features/leatherwork/lib/leather";
+import {
+  ANIMAL_OPTIONS,
+  BEAR_OPTIONS,
+  HIDE_SIZE_OPTIONS,
+} from "@/features/leatherwork/data/hideOptions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 
-const HIDE_SIZE_OPTIONS: Array<{
-  size: HideSize;
-  assetPath: string;
-  leatherYield: string;
-  peltHint: string;
-}> = [
-  { size: "small", assetPath: getHideAssetPath("raw", "small"), leatherYield: "1 leather", peltHint: "4 per fat" },
-  { size: "medium", assetPath: getHideAssetPath("raw", "medium"), leatherYield: "2 leather", peltHint: "2 per fat" },
-  { size: "large", assetPath: getHideAssetPath("raw", "large"), leatherYield: "3 leather", peltHint: "1 per fat" },
-  { size: "huge", assetPath: getHideAssetPath("raw", "huge"), leatherYield: "5 leather", peltHint: "2 fat each" },
-];
-
-const ANIMAL_OPTIONS: Array<{ variant: AnimalVariant; assetPath: string; note: string }> = [
-  { variant: "generic", assetPath: getHideAssetPath("raw", "small"), note: "Standard small hide" },
-  { variant: "fox", assetPath: getHideAssetPath("raw", "small"), note: "Scrapes to 1 small hide" },
-  { variant: "arctic-fox", assetPath: getHideAssetPath("raw", "small"), note: "Scrapes to 1 small hide" },
-  { variant: "raccoon", assetPath: getHideAssetPath("raw", "small"), note: "Scrapes to 1 small hide" },
-];
-
-const BEAR_OPTIONS: Array<{
-  variant: BearVariant;
-  assetPath: string;
-  leatherHint: string;
-  peltHint: string;
-}> = [
-  { variant: "sun", assetPath: getHideAssetPath("raw", "large"), leatherHint: "2 huge hides -> 10 leather", peltHint: "1 fat -> 1 medium pelt + head" },
-  { variant: "panda", assetPath: getHideAssetPath("raw", "large"), leatherHint: "2 huge hides -> 10 leather", peltHint: "1 fat -> 1 large pelt + head" },
-  { variant: "black", assetPath: getHideAssetPath("raw", "huge"), leatherHint: "2 huge hides -> 10 leather", peltHint: "2 fat -> 2 large pelts + head" },
-  { variant: "brown", assetPath: getHideAssetPath("raw", "huge"), leatherHint: "3 huge hides -> 15 leather", peltHint: "2 fat -> 2 huge pelts + head" },
-  { variant: "polar", assetPath: getHideAssetPath("raw", "huge"), leatherHint: "3 huge hides -> 15 leather", peltHint: "2 fat -> 3 huge pelts + head" },
-];
-
-function OptionTile({
-  active,
-  assetPath,
-  title,
-  subtitle,
-  onClick,
-}: {
+interface OptionTileProps {
   active: boolean;
   assetPath: string;
   title: string;
   subtitle: string;
   onClick: () => void;
-}) {
+}
+
+const OptionTile = memo(function OptionTile({
+  active,
+  assetPath,
+  title,
+  subtitle,
+  onClick,
+}: OptionTileProps) {
   return (
     <button
       type="button"
@@ -73,6 +49,57 @@ function OptionTile({
       </div>
       <p className="text-xs leading-relaxed text-muted-foreground">{subtitle}</p>
     </button>
+  );
+});
+
+function getHideSubtitle(
+  workflow: LeatherWorkflow,
+  option: (typeof HIDE_SIZE_OPTIONS)[number],
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
+  if (workflow === "leather") {
+    return t("leather.option.leather_yield", { count: option.leatherYield });
+  }
+
+  if (option.peltFatCost >= 1) {
+    return t("leather.option.fat_each", { count: option.peltFatCost });
+  }
+
+  return t("leather.option.per_fat", { count: 1 / option.peltFatCost });
+}
+
+function getAnimalSubtitle(
+  option: (typeof ANIMAL_OPTIONS)[number],
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
+  return option.usesSmallHideWorkflow
+    ? t("leather.option.small_hide_workflow")
+    : t("leather.option.standard_small_hide");
+}
+
+function getBearSubtitle(
+  workflow: LeatherWorkflow,
+  bearVariant: BearVariant,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
+  const bearData = BEAR_DATA[bearVariant];
+
+  if (workflow === "leather") {
+    return t("leather.option.bear_leather_hint", {
+      hides: bearData.scrapedHugeHides,
+      leather: bearData.scrapedHugeHides * HIDE_DATA.huge.leatherYield,
+    });
+  }
+
+  return t(
+    bearData.splitPeltCount === 1
+      ? "leather.option.bear_pelt_hint_one"
+      : "leather.option.bear_pelt_hint_other",
+    {
+      fat: bearData.peltFatCost,
+      count: bearData.splitPeltCount,
+      size: t(`leather.hide_size.${bearData.splitPeltSize}`),
+    },
   );
 }
 
@@ -135,7 +162,7 @@ export function HidePicker({
                 active={bearVariant === option.variant}
                 assetPath={option.assetPath}
                 title={t(`leather.bear.${option.variant}`)}
-                subtitle={workflow === "leather" ? option.leatherHint : option.peltHint}
+                subtitle={getBearSubtitle(workflow, option.variant, t)}
                 onClick={() => onBearVariantChange(option.variant)}
               />
             ))}
@@ -152,7 +179,7 @@ export function HidePicker({
                   active={size === option.size}
                   assetPath={option.assetPath}
                   title={t(`leather.hide_size.${option.size}`)}
-                  subtitle={workflow === "leather" ? option.leatherYield : option.peltHint}
+                  subtitle={getHideSubtitle(workflow, option, t)}
                   onClick={() => onSizeChange(option.size)}
                 />
               ))}
@@ -172,7 +199,7 @@ export function HidePicker({
                     active={animalVariant === option.variant}
                     assetPath={option.assetPath}
                     title={t(`leather.animal.${option.variant}`)}
-                    subtitle={option.note}
+                    subtitle={getAnimalSubtitle(option, t)}
                     onClick={() => onAnimalChange(option.variant)}
                   />
                 ))}

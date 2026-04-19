@@ -13,7 +13,7 @@ import {
   Languages,
   Link,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { AppDomain, AppNavTarget } from "@/types/app";
@@ -53,10 +53,11 @@ function DomainNavigationMenu({
   onSelect: (tab: AppNavTarget) => void;
 }) {
   const { t } = useTranslation();
-  const [openDomains, setOpenDomains] = useState<Record<AppDomain, boolean>>({
-    metallurgy: activeDomain === "metallurgy",
-    leather: activeDomain === "leather",
-  });
+  const [openDomain, setOpenDomain] = useState<AppDomain | null>(activeDomain);
+
+  useEffect(() => {
+    setOpenDomain(activeDomain);
+  }, [activeDomain]);
 
   const items: Array<{
     domain: AppDomain;
@@ -103,17 +104,14 @@ function DomainNavigationMenu({
       {items.map((item) => {
         const DomainIcon = item.icon;
         const active = item.domain === activeDomain;
-        const open = active || openDomains[item.domain];
+        const open = openDomain === item.domain;
 
         if (collapsed) {
           const button = (
             <button
               type="button"
               onClick={() => {
-                setOpenDomains((current) => ({
-                  ...current,
-                  [item.domain]: true,
-                }));
+                setOpenDomain(item.domain);
                 onExpandRail();
               }}
               aria-current={active ? "page" : undefined}
@@ -141,10 +139,7 @@ function DomainNavigationMenu({
             key={item.domain}
             open={open}
             onOpenChange={(nextOpen) => {
-              setOpenDomains((current) => ({
-                ...current,
-                [item.domain]: nextOpen,
-              }));
+              setOpenDomain(nextOpen ? item.domain : null);
             }}
             className="flex flex-col gap-2"
           >
@@ -168,7 +163,7 @@ function DomainNavigationMenu({
                 />
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden">
+            <CollapsibleContent className="data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down overflow-hidden">
               <div className="ml-4 flex flex-col gap-1 border-l border-border/20 pl-3">
                 {item.tools.map((tool) => {
                   const ToolIcon = tool.icon;
