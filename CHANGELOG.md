@@ -5,6 +5,12 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.1] - 2026-04-19
+
+### Fixed
+- **Hreflang parity with build output** — Root `index.html` now declares hreflang entries for all ten supported locales (en, fr, de, es, ru, zh, ja, ko, pl, pt) plus `x-default`, matching what the build-time localized HTML plugin already emits. Removes confusing source/build divergence.
+- **Static body content for crawlers** — Added a `<noscript>` block with a short Vintage Story alloy calculator description before the React root so low-authority crawlers see meaningful content without executing JavaScript. Helps Google Search Console indexing.
+
 ## [1.10.0] - 2026-04-19
 
 ### Added
