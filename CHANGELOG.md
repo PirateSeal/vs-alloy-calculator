@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.3] - 2026-04-19
+
+### Added
+- **Localization glossary and QA coverage** — Added a shared i18n glossary plus locale regression tests that enforce flat key parity, placeholder parity, translation notices, replacement-character safety, and hide-term checks across all supported locales.
+
+### Changed
+- **Leather copy moved to locale-owned phrasing** — Refactored the leather planner and pelt-calculation output away from English fragment composition so summary lines, workflow descriptors, and profile labels render through fuller translation keys.
+- **Locale copy normalized across every supported language** — Reworked the leather, overview, shared reference, and shell copy in `de`, `es`, `fr`, `ja`, `ko`, `pl`, `pt`, `ru`, and `zh` to keep game terms accurate while making the surrounding UI text more natural.
+
+### Fixed
+- **Hardcoded English on leather surfaces removed** — Leather calculations and summary cards now resolve translatable strings at render time instead of emitting embedded English labels and result text.
+- **Hide-as-verb mistranslations blocked** — Corrected the machine-translated “hide” regressions that were leaking into several non-English leather strings and added automated checks to stop them from reappearing.
+
+### Tests
+- **Localized route assertions updated** — App and leather tests now verify the localized leather route and the new translation-backed leather output paths rather than relying on English fallback behavior.
+
 ## [1.11.2] - 2026-04-19
 
 ### Changed
