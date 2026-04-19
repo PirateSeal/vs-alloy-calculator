@@ -38,7 +38,7 @@ describe("localized SEO documents", () => {
     expect(localized).toContain('hreflang="de"');
     expect(localized).toContain("Calculateur d'alliages Vintage Story");
     expect(localized).toContain('"inLanguage": "fr"');
-    expect(localized).toContain('"@type": "FAQPage"');
+    expect(localized).not.toContain('"@type": "FAQPage"');
     expect(localized).toContain("https://vs-calculator.tcousin.com/Grid_Copper_anvil.png");
   });
 
@@ -48,19 +48,21 @@ describe("localized SEO documents", () => {
 
     expect(seo.socialImageUrl).toBe("https://vs-calculator.tcousin.com/Grid_Copper_anvil.png");
     expect(seo.title).toContain("Vintage Story Alloy Calculator");
-    expect(schema).toHaveLength(2);
+    expect(schema).toHaveLength(1);
     expect(schema[0]["@type"]).toBe("WebApplication");
-    expect(schema[1]["@type"]).toBe("FAQPage");
   });
 
   it("creates route-aware metadata for dedicated about pages", () => {
     const seo = getSeoContent("en", "/about/");
+    const schema = JSON.parse(seo.schema) as Array<Record<string, unknown>>;
 
     expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/about/");
     expect(seo.title).toContain("Guide & FAQ");
     expect(seo.alternates.find((alternate) => alternate.hrefLang === "fr")?.href).toBe(
       "https://vs-calculator.tcousin.com/fr/about/",
     );
+    expect(schema).toHaveLength(2);
+    expect(schema[1]["@type"]).toBe("FAQPage");
   });
 
   it("creates localized planner metadata and canonical URLs", () => {

@@ -5,6 +5,14 @@ All notable changes to the Vintage Story Alloy Calculator will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.2] - 2026-04-19
+
+### Changed
+- **FAQ schema scoped to About page** — JSON-LD `FAQPage` structured data now only emits on `/about/`, where the FAQ content actually lives. Other routes keep the `WebApplication` schema only, avoiding misleading FAQ markup on pages that do not render the FAQ.
+
+### Tests
+- **Test coverage raised from 56% to 96%** — Added comprehensive unit tests for `alloyLogic` (aggregation, evaluation, presets, ratio-lock adjustment, max-ingot calculation, nugget adjustments), `i18n/provider` (locale detection, persistence, fallback, var substitution), `i18n/head` (DOM SEO mutation), `analytics`, `card` UI primitives, and additional edge cases for routing, planner, and `appStateRouting`. Function coverage now 100%.
+
 ## [1.10.1] - 2026-04-19
 
 ### Fixed

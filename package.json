@@ -1,7 +1,7 @@
 {
   "name": "vs-alloy-calculator",
   "private": true,
-  "version": "1.10.1",
+  "version": "1.10.2",
   "type": "module",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@fast-check/vitest": "^0.3.0",
+    "@fast-check/vitest": "^0.4.0",
     "@tailwindcss/postcss": "^4.2.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -48,7 +48,7 @@
     "eslint": "^10.1.0",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
-    "fast-check": "^4.6.0",
+    "fast-check": "^4.7.0",
     "globals": "^17.4.0",
     "jsdom": "^29.0.1",
     "postcss": "^8.5.8",

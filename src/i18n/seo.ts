@@ -538,6 +538,10 @@ function getPageDescription(locale: Locale, content: SeoContent, pathname: strin
   return content.description;
 }
 
+function shouldIncludeFaqSchema(pathname: string): boolean {
+  return pathname === "/about/";
+}
+
 export function getCanonicalUrlForPath(locale: Locale, pathname: string = "/"): string {
   return new URL(getLocalePath(locale, pathname), `${SITE_URL}/`).toString();
 }
@@ -562,7 +566,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
   const title = getPageTitle(locale, content.title, normalizedPath);
   const canonicalUrl = getCanonicalUrlForPath(locale, normalizedPath);
 
-  const schema = [
+  const schema: Array<Record<string, unknown>> = [
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
@@ -581,7 +585,10 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
       },
       featureList: content.featureList,
     },
-    {
+  ];
+
+  if (shouldIncludeFaqSchema(normalizedPath)) {
+    schema.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",
       inLanguage: locale,
@@ -593,8 +600,8 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
           text: item.answer,
         },
       })),
-    },
-  ];
+    });
+  }
 
   return {
     ...content,
