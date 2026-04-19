@@ -1,19 +1,19 @@
 import { FlaskConical, Package, Waves } from "lucide-react";
-import { BEAR_DATA, DILUTED_BORAX_BATCH_COST, DILUTED_BORAX_BATCH_LITERS, HIDE_DATA, TANNIN_BATCH_LITERS } from "@/features/leatherwork/lib/leather";
+import {
+  BEAR_DATA,
+  DILUTED_BORAX_BATCH_COST,
+  DILUTED_BORAX_BATCH_LITERS,
+  HIDE_DATA,
+  TANNIN_BATCH_LITERS,
+  getHideAssetPath,
+  getMaterialAssetPath,
+} from "@/features/leatherwork/lib/leather";
 import type { BearVariant, HideSize } from "@/features/leatherwork/types/leather";
 import { useTranslation } from "@/i18n";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const HIDE_SIZE_ORDER: HideSize[] = ["small", "medium", "large", "huge"];
 const BEAR_ORDER: BearVariant[] = ["sun", "panda", "black", "brown", "polar"];
-
-function getHideAssetPath(stage: "raw" | "scraped", size: HideSize) {
-  return `/leather/hides/${stage}/${size}.png`;
-}
-
-function getMaterialAssetPath(material: string) {
-  return `/leather/materials/${material}.png`;
-}
 
 export function LeatherReferencePanel() {
   const { t } = useTranslation();

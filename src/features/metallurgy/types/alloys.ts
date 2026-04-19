@@ -26,3 +26,13 @@ export interface AlloyRecipe {
   components: AlloyComponent[];
   meltTempC?: number;
 }
+
+export interface MetalNuggetAmount {
+  metalId: MetalId;
+  nuggets: number;
+}
+
+export interface MetalAmount extends MetalNuggetAmount {
+  units: number;
+  percent: number;
+}

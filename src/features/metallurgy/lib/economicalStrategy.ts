@@ -1,126 +1,53 @@
-import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
-import type { CrucibleState, CrucibleSlot } from "@/features/metallurgy/types/crucible";
-import type { MetalAmount } from "./metalRarity";
+import type { AlloyRecipe, MetalId, MetalNuggetAmount } from "@/features/metallurgy/types/alloys";
+import {
+  NUGGETS_PER_INGOT,
+  PERCENTAGE_TOLERANCE,
+  UNITS_PER_INGOT,
+  UNITS_PER_NUGGET,
+} from "./constants";
+import {
+  amountsToCrucible,
+  calculatePercentages,
+  fitsInFourSlots,
+} from "./shared/crucibleAllocation";
 import { calculateRarityCost, getRarityScore } from "./metalRarity";
 import { validateRecipe } from "./recipeValidator";
 import type { OptimizerResult } from "./maximizationStrategy";
 
-/**
- * Distribute nuggets across slots with max 128 per slot
- */
-function distributeToSlots(
-  metalId: MetalId,
-  totalNuggets: number
-): CrucibleSlot[] {
-  const slots: CrucibleSlot[] = [];
-  let remaining = totalNuggets;
-  let slotId = 0;
-
-  while (remaining > 0) {
-    const nuggets = Math.min(128, remaining);
-    slots.push({
-      id: slotId++,
-      metalId,
-      nuggets,
-    });
-    remaining -= nuggets;
-  }
-
-  return slots;
-}
-
-/**
- * Convert metal amounts to crucible state
- */
-function amountsToCrucible(amounts: MetalAmount[]): CrucibleState {
-  const allSlots: CrucibleSlot[] = [];
-
-  for (const amount of amounts) {
-    const slots = distributeToSlots(amount.metalId, amount.nuggets);
-    allSlots.push(...slots);
-  }
-
-  // Reassign slot IDs sequentially
-  allSlots.forEach((slot, index) => {
-    slot.id = index;
-  });
-
-  // Ensure we always have 4 slots (fill remaining with empty slots)
-  while (allSlots.length < 4) {
-    allSlots.push({
-      id: allSlots.length,
-      metalId: null,
-      nuggets: 0,
-    });
-  }
-
-  return { slots: allSlots };
-}
-
-/**
- * Calculate percentages for metadata
- */
-function calculatePercentages(
-  amounts: MetalAmount[]
-): Record<MetalId, number> {
-  const totalUnits = amounts.reduce((sum, a) => sum + a.nuggets * 5, 0);
-  const percentages: Record<string, number> = {};
-
-  for (const amount of amounts) {
-    percentages[amount.metalId] = ((amount.nuggets * 5) / totalUnits) * 100;
-  }
-
-  return percentages as Record<MetalId, number>;
-}
-
-/**
- * Check if a recipe fits in 4 slots
- */
-function fitsInFourSlots(amounts: MetalAmount[]): boolean {
-  let totalSlots = 0;
-
-  for (const amount of amounts) {
-    const slotsNeeded = Math.ceil(amount.nuggets / 128);
-    totalSlots += slotsNeeded;
-  }
-
-  return totalSlots <= 4;
-}
-
-/**
- * Attempt to create a valid recipe for N ingots with economical distribution
- * Biases toward common metals (lower rarity scores) within percentage constraints
- */
 function createEconomicalRecipe(
   recipe: AlloyRecipe,
-  targetIngots: number
-): MetalAmount[] | null {
-  const targetUnits = targetIngots * 100;
-  const targetNuggets = targetIngots * 20;
+  targetIngots: number,
+): MetalNuggetAmount[] | null {
+  const targetUnits = targetIngots * UNITS_PER_INGOT;
+  const targetNuggets = targetIngots * NUGGETS_PER_INGOT;
   const components = recipe.components;
 
-  // Handle single component
   if (components.length === 1) {
     return [
       {
         metalId: components[0].metalId,
-        nuggets: targetUnits / 5,
+        nuggets: targetUnits / UNITS_PER_NUGGET,
       },
     ];
   }
 
-  // Sort components by rarity score (ascending) to prioritize common metals
-  const sortedComponents = [...components].sort((a, b) => {
-    return getRarityScore(a.metalId) - getRarityScore(b.metalId);
-  });
+  const sortedComponents = [...components].sort(
+    (a, b) => getRarityScore(a.metalId) - getRarityScore(b.metalId),
+  );
 
   const ranges = sortedComponents.map((component) => ({
     component,
-    minNuggets: Math.ceil((((component.minPercent - 0.01) / 100) * targetUnits - 0.000001) / 5),
-    maxNuggets: Math.floor((((component.maxPercent + 0.01) / 100) * targetUnits + 0.000001) / 5),
+    minNuggets: Math.ceil(
+      (((component.minPercent - PERCENTAGE_TOLERANCE) / 100) * targetUnits - 0.000001) /
+        UNITS_PER_NUGGET,
+    ),
+    maxNuggets: Math.floor(
+      (((component.maxPercent + PERCENTAGE_TOLERANCE) / 100) * targetUnits + 0.000001) /
+        UNITS_PER_NUGGET,
+    ),
   }));
 
-  let bestAmounts: MetalAmount[] | null = null;
+  let bestAmounts: MetalNuggetAmount[] | null = null;
   let bestRarityCost = Number.POSITIVE_INFINITY;
   let bestSlotsUsed = Number.POSITIVE_INFINITY;
 
@@ -139,7 +66,7 @@ function createEconomicalRecipe(
   const solve = (
     index: number,
     currentNuggets: number,
-    currentAmounts: MetalAmount[],
+    currentAmounts: MetalNuggetAmount[],
   ) => {
     if (index === ranges.length) {
       if (currentNuggets !== targetNuggets || !fitsInFourSlots(currentAmounts)) {
@@ -169,17 +96,17 @@ function createEconomicalRecipe(
     const globalMax = Math.min(maxNuggets, targetNuggets - currentNuggets - minRemaining);
 
     for (let nuggets = globalMin; nuggets <= globalMax; nuggets++) {
-      const percent = ((nuggets * 5) / targetUnits) * 100;
-      if (percent < component.minPercent - 0.01 || percent > component.maxPercent + 0.01) {
+      const percent = ((nuggets * UNITS_PER_NUGGET) / targetUnits) * 100;
+      if (
+        percent < component.minPercent - PERCENTAGE_TOLERANCE ||
+        percent > component.maxPercent + PERCENTAGE_TOLERANCE
+      ) {
         continue;
       }
 
       const nextAmounts = [
         ...currentAmounts,
-        {
-          metalId: component.metalId,
-          nuggets,
-        },
+        { metalId: component.metalId, nuggets },
       ];
 
       if (!fitsInFourSlots(nextAmounts)) {
@@ -195,17 +122,10 @@ function createEconomicalRecipe(
   return bestAmounts;
 }
 
-/**
- * Optimize recipe for economical mode - minimize rarity cost for target ingot amount
- * @param recipe - The alloy recipe to optimize
- * @param targetIngots - The desired number of ingots to produce
- * @returns OptimizerResult with minimized rarity cost
- */
 export function optimizeEconomical(
   recipe: AlloyRecipe,
-  targetIngots?: number
+  targetIngots?: number,
 ): OptimizerResult {
-  // Validate recipe has components
   if (!recipe.components || recipe.components.length === 0) {
     return {
       success: false,
@@ -221,7 +141,6 @@ export function optimizeEconomical(
     };
   }
 
-  // Validate target ingots is provided
   if (targetIngots === undefined || targetIngots === null) {
     return {
       success: false,
@@ -237,7 +156,6 @@ export function optimizeEconomical(
     };
   }
 
-  // Validate target ingots is positive
   if (targetIngots <= 0) {
     return {
       success: false,
@@ -253,7 +171,6 @@ export function optimizeEconomical(
     };
   }
 
-  // Create economical recipe for target ingots
   const amounts = createEconomicalRecipe(recipe, targetIngots);
 
   if (!amounts) {
@@ -271,8 +188,6 @@ export function optimizeEconomical(
     };
   }
 
-  // Check if recipe fits in 4 slots
-
   if (!fitsInFourSlots(amounts)) {
     return {
       success: false,
@@ -288,10 +203,7 @@ export function optimizeEconomical(
     };
   }
 
-  // Convert to crucible state
   const crucible = amountsToCrucible(amounts);
-
-  // Validate the result
   const validation = validateRecipe(crucible, recipe, targetIngots);
   if (!validation.valid) {
     return {
@@ -308,7 +220,6 @@ export function optimizeEconomical(
     };
   }
 
-  // Calculate rarity cost and metadata
   const rarityCost = calculateRarityCost(amounts);
   const totalNuggets = amounts.reduce((sum, a) => sum + a.nuggets, 0);
   const percentages = calculatePercentages(amounts);
