@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { BEAR_DATA, HIDE_DATA } from "@/features/leatherwork/lib/leather";
 import type {
   AnimalVariant,
   BearVariant,
@@ -50,6 +51,57 @@ const OptionTile = memo(function OptionTile({
     </button>
   );
 });
+
+function getHideSubtitle(
+  workflow: LeatherWorkflow,
+  option: (typeof HIDE_SIZE_OPTIONS)[number],
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
+  if (workflow === "leather") {
+    return t("leather.option.leather_yield", { count: option.leatherYield });
+  }
+
+  if (option.peltFatCost >= 1) {
+    return t("leather.option.fat_each", { count: option.peltFatCost });
+  }
+
+  return t("leather.option.per_fat", { count: 1 / option.peltFatCost });
+}
+
+function getAnimalSubtitle(
+  option: (typeof ANIMAL_OPTIONS)[number],
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
+  return option.usesSmallHideWorkflow
+    ? t("leather.option.small_hide_workflow")
+    : t("leather.option.standard_small_hide");
+}
+
+function getBearSubtitle(
+  workflow: LeatherWorkflow,
+  bearVariant: BearVariant,
+  t: (key: string, vars?: Record<string, string | number>) => string,
+) {
+  const bearData = BEAR_DATA[bearVariant];
+
+  if (workflow === "leather") {
+    return t("leather.option.bear_leather_hint", {
+      hides: bearData.scrapedHugeHides,
+      leather: bearData.scrapedHugeHides * HIDE_DATA.huge.leatherYield,
+    });
+  }
+
+  return t(
+    bearData.splitPeltCount === 1
+      ? "leather.option.bear_pelt_hint_one"
+      : "leather.option.bear_pelt_hint_other",
+    {
+      fat: bearData.peltFatCost,
+      count: bearData.splitPeltCount,
+      size: t(`leather.hide_size.${bearData.splitPeltSize}`),
+    },
+  );
+}
 
 interface HidePickerProps {
   workflow: LeatherWorkflow;
@@ -110,7 +162,7 @@ export function HidePicker({
                 active={bearVariant === option.variant}
                 assetPath={option.assetPath}
                 title={t(`leather.bear.${option.variant}`)}
-                subtitle={workflow === "leather" ? option.leatherHint : option.peltHint}
+                subtitle={getBearSubtitle(workflow, option.variant, t)}
                 onClick={() => onBearVariantChange(option.variant)}
               />
             ))}
@@ -127,7 +179,7 @@ export function HidePicker({
                   active={size === option.size}
                   assetPath={option.assetPath}
                   title={t(`leather.hide_size.${option.size}`)}
-                  subtitle={workflow === "leather" ? option.leatherYield : option.peltHint}
+                  subtitle={getHideSubtitle(workflow, option, t)}
                   onClick={() => onSizeChange(option.size)}
                 />
               ))}
@@ -147,7 +199,7 @@ export function HidePicker({
                     active={animalVariant === option.variant}
                     assetPath={option.assetPath}
                     title={t(`leather.animal.${option.variant}`)}
-                    subtitle={option.note}
+                    subtitle={getAnimalSubtitle(option, t)}
                     onClick={() => onAnimalChange(option.variant)}
                   />
                 ))}

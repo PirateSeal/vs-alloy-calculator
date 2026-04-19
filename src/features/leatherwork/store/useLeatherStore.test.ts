@@ -44,4 +44,38 @@ describe("useLeatherStore", () => {
     expect(state.bearVariant).toBe("polar");
     expect(state.size).toBe("huge");
   });
+
+  it("forces hides mode when switching to pelt workflow through updateInputs", () => {
+    useLeatherStore.getState().updateInputs({ mode: "leather" });
+    useLeatherStore.getState().updateInputs({ workflow: "pelt" });
+
+    const state = useLeatherStore.getState();
+    expect(state.workflow).toBe("pelt");
+    expect(state.mode).toBe("hides");
+  });
+
+  it("forces bear invariants through updateInputs", () => {
+    useLeatherStore.getState().updateInputs({
+      size: "small",
+      animalVariant: "fox",
+      bearVariant: "polar",
+    });
+
+    const state = useLeatherStore.getState();
+    expect(state.bearVariant).toBe("polar");
+    expect(state.size).toBe("huge");
+    expect(state.animalVariant).toBe("generic");
+  });
+
+  it("clears small-animal variants when size changes away from small", () => {
+    useLeatherStore.getState().updateInputs({
+      size: "small",
+      animalVariant: "fox",
+    });
+    useLeatherStore.getState().updateInputs({ size: "large" });
+
+    const state = useLeatherStore.getState();
+    expect(state.size).toBe("large");
+    expect(state.animalVariant).toBe("generic");
+  });
 });

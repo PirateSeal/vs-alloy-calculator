@@ -47,11 +47,15 @@ function getInitialState(): LeatherState {
     return createDefaultLeatherState();
   }
 
-  return parseLeatherStateFromSearch(window.location.search);
+  return normalizeLeatherState(
+    createDefaultLeatherState(),
+    parseLeatherStateFromSearch(window.location.search),
+  );
 }
 
 export const useLeatherStore = create<LeatherStoreState>((set) => ({
   ...getInitialState(),
   updateInputs: (update) => set((state) => normalizeLeatherState(state, update)),
-  hydrateFromLocation: (_pathname, search) => set(parseLeatherStateFromSearch(search)),
+  hydrateFromLocation: (_pathname, search) =>
+    set(normalizeLeatherState(createDefaultLeatherState(), parseLeatherStateFromSearch(search))),
 }));
