@@ -45,3 +45,9 @@ variable "allow_bucket_force_destroy" {
   type        = bool
   default     = false
 }
+
+variable "monthly_cost_budget_usd" {
+  description = "Monthly account-wide AWS cost threshold in USD used by the billing alert. The budget publishes to the cost-alerts SNS topic at 80% and 100% of this value. Expected baseline spend for this project is ~$2-3/month."
+  type        = number
+  default     = 5
+}

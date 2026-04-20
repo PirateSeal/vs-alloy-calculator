@@ -463,3 +463,67 @@ resource "aws_servicecatalogappregistry_application" "main" {
 # The S3 bucket and CloudFront distribution already have the common_tags applied,
 # which includes the Application tag that links them to the AppRegistry application.
 # AWS automatically discovers and associates resources based on matching tags.
+
+# SNS topic used as the destination for cost-budget notifications. Email
+# subscriptions are deliberately not declared in Terraform so the public repo
+# does not contain personal email addresses. Subscribe manually after apply:
+#
+#   aws sns subscribe \
+#     --topic-arn <cost_alerts_topic_arn output> \
+#     --protocol email \
+#     --notification-endpoint you@example.com
+resource "aws_sns_topic" "cost_alerts" {
+  name = "${var.project_name}-cost-alerts"
+  tags = local.common_tags
+}
+
+# Allow the AWS Budgets service to publish to the SNS topic.
+resource "aws_sns_topic_policy" "cost_alerts" {
+  arn = aws_sns_topic.cost_alerts.arn
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowBudgetsToPublish"
+        Effect = "Allow"
+        Principal = {
+          Service = "budgets.amazonaws.com"
+        }
+        Action   = "sns:Publish"
+        Resource = aws_sns_topic.cost_alerts.arn
+      }
+    ]
+  })
+}
+
+# Account-wide monthly cost budget. AWS Budgets is free for the first two
+# budgets per account, so this adds no recurring charge on a dedicated account.
+# The threshold is account-wide rather than tag-scoped because cost-allocation
+# tag activation is a manual, delayed step in the Billing console and silent
+# failure modes are worse than a slightly broader alarm.
+resource "aws_budgets_budget" "monthly_cost" {
+  name         = "${var.project_name}-monthly-cost"
+  budget_type  = "COST"
+  time_unit    = "MONTHLY"
+  limit_amount = tostring(var.monthly_cost_budget_usd)
+  limit_unit   = "USD"
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 80
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
+    subscriber_sns_topic_arns  = [aws_sns_topic.cost_alerts.arn]
+  }
+
+  notification {
+    comparison_operator        = "GREATER_THAN"
+    threshold                  = 100
+    threshold_type             = "PERCENTAGE"
+    notification_type          = "ACTUAL"
+    subscriber_sns_topic_arns  = [aws_sns_topic.cost_alerts.arn]
+  }
+
+  depends_on = [aws_sns_topic_policy.cost_alerts]
+}

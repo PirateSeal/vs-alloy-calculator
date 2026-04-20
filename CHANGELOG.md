@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **DNS CAA record** — Added a Route53 `CAA` record at `<subdomain>.<domain>` restricting certificate issuance to `amazon.com` and `amazontrust.com` (and blocking wildcard issuance). Applies to both the apex and the `www` variant without affecting other tenants of the shared parent zone.
+- **Monthly cost budget** — Added an AWS Budget (free within the first two budgets per account) that publishes to a new SNS topic at 80% and 100% of a configurable monthly USD threshold (`monthly_cost_budget_usd`, default $5). No email subscription is declared in Terraform so the public repo stays email-free; operators subscribe post-apply via `aws sns subscribe` using the exported `cost_alerts_topic_arn`.
+- **Terraform CI** — Added `.github/workflows/terraform.yml` running `terraform fmt -check`, `terraform init -backend=false`, and `terraform validate` on any PR or push that touches `terraform/**`. The job needs no AWS credentials, so it runs safely on fork PRs.
+- **PR validation on the deploy workflow** — The `build-and-test` job in the deploy workflow now also runs on pull requests targeting `master`, so contributors see a green (or red) check before a maintainer merges. The `deploy` job stays tag-gated and never runs on PRs.
 
 ### Removed
 - **Dead S3 lifecycle rule** — Removed the `delete-old-files` lifecycle rule that filtered on the `old/` prefix; the site never writes anything under that prefix, so the rule was a no-op.
