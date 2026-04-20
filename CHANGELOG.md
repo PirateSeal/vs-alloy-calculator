@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.4] - 2026-04-20
+
+### Changed
+- **Tier 3 refactor completed** - Finished the remaining type-safety and maintainability work by introducing shared metallurgy configuration solving, discriminated optimizer results, a split preset-allocation path in alloy logic, and a slimmer leatherwork calculation surface backed by focused core, allocation, and batch-builder modules.
+- **Leather calculation contracts tightened** - Leather plan results now narrow by mode and carry a dedicated leather pipeline step type, which removes ambiguous `targetLeather` handling and makes the extracted workflow builders safer to evolve.
+
+### Tests
+- **Component coverage added for large feature surfaces** - Added render-level tests for the alloy reference table, metallurgy planner view, and leatherwork app, alongside direct tests for hide-profile allocation and leather store normalization paths.
+- **Coverage reporting enforced in CI** - Vitest now runs with coverage thresholds, publishes report artifacts in the deploy workflow, and the repo now ignores local `coverage/` output so the validation flow stays clean.
+
 ## [1.11.3] - 2026-04-19
 
 ### Added
