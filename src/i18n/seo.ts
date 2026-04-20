@@ -645,7 +645,6 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
       description: description,
       applicationCategory: "GameApplication",
       operatingSystem: "Any",
-      browserRequirements: "Requires JavaScript",
       inLanguage: locale,
       image: SITE_IMAGE_URL,
       offers: {
@@ -690,6 +689,65 @@ function replaceTag(html: string, pattern: RegExp, replacement: string): string 
   return pattern.test(html) ? html.replace(pattern, replacement) : html;
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderFaqList(items: SeoFaqItem[]): string {
+  return items
+    .map(
+      (item) =>
+        `        <div class="seo-prerender__faq-item">\n          <h3>${escapeHtml(item.question)}</h3>\n          <p>${escapeHtml(item.answer)}</p>\n        </div>`,
+    )
+    .join("\n");
+}
+
+export function getPrerenderedSeoBody(locale: Locale, pathname: string = "/"): string {
+  const content = SEO_CONTENT[locale];
+  const normalizedPath = pathname === "/" ? "/" : pathname.endsWith("/") ? pathname : `${pathname}/`;
+  const title = getPageTitle(locale, content.title, normalizedPath);
+  const description = getPageDescription(locale, content, normalizedPath);
+
+  if (!isAboutPath(normalizedPath)) {
+    return [
+      '    <main class="seo-prerender" data-seo-prerender>',
+      `      <h1>${escapeHtml(title)}</h1>`,
+      `      <p>${escapeHtml(description)}</p>`,
+      "    </main>",
+    ].join("\n");
+  }
+
+  const faqItems = OVERVIEW_FAQ_ITEMS;
+
+  return [
+    '    <main class="seo-prerender" data-seo-prerender>',
+    `      <h1>${escapeHtml(content.heroTitle)}</h1>`,
+    `      <p class="seo-prerender__lead">${escapeHtml(content.heroDescription)}</p>`,
+    "      <section>",
+    `        <h2>${escapeHtml(content.howItWorksHeading)}</h2>`,
+    `        <p>${escapeHtml(content.howItWorksBody)}</p>`,
+    "      </section>",
+    "      <section>",
+    `        <h2>${escapeHtml(content.supportedAlloysHeading)}</h2>`,
+    `        <p>${escapeHtml(content.supportedAlloysBody)}</p>`,
+    "      </section>",
+    "      <section>",
+    `        <h2>${escapeHtml(content.planningHeading)}</h2>`,
+    `        <p>${escapeHtml(content.planningBody)}</p>`,
+    "      </section>",
+    "      <section>",
+    `        <h2>${escapeHtml(content.faqHeading)}</h2>`,
+    renderFaqList(faqItems),
+    "      </section>",
+    "    </main>",
+  ].join("\n");
+}
+
 export function localizeHtmlDocument(html: string, locale: Locale, pathname: string = "/"): string {
   const seo = getSeoContent(locale, pathname);
   const alternatesMarkup = seo.alternates
@@ -698,6 +756,7 @@ export function localizeHtmlDocument(html: string, locale: Locale, pathname: str
         `  <link rel="alternate" hreflang="${alternate.hrefLang}" href="${alternate.href}" />`,
     )
     .join("\n");
+  const prerenderedBody = getPrerenderedSeoBody(locale, pathname);
 
   let localized = html;
   localized = replaceTag(
@@ -779,6 +838,11 @@ export function localizeHtmlDocument(html: string, locale: Locale, pathname: str
     localized,
     /<script type="application\/ld\+json" data-seo-schema="true">[\s\S]*?<\/script>/,
     `  <script type="application/ld+json" data-seo-schema="true">\n${seo.schema}\n  </script>`,
+  );
+  localized = replaceTag(
+    localized,
+    /<div id="root">[\s\S]*?<\/div>/,
+    `<div id="root">\n${prerenderedBody}\n  </div>`,
   );
 
   return localized;
