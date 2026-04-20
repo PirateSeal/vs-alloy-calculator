@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
+import { trackLeatherInputChange } from "@/lib/analytics";
 
 interface OptionTileProps {
   active: boolean;
@@ -134,7 +135,12 @@ export function HidePicker({
             type="button"
             variant={isBearSelection ? "outline" : "default"}
             className="justify-start"
-            onClick={() => onBearVariantChange(null)}
+            onClick={() => {
+              if (isBearSelection) {
+                trackLeatherInputChange("family", { value: "standard", workflow });
+              }
+              onBearVariantChange(null);
+            }}
           >
             {t("leather.family.standard")}
           </Button>
@@ -142,7 +148,12 @@ export function HidePicker({
             type="button"
             variant={isBearSelection ? "default" : "outline"}
             className="justify-start"
-            onClick={() => onBearVariantChange(bearVariant ?? "sun")}
+            onClick={() => {
+              if (!isBearSelection) {
+                trackLeatherInputChange("family", { value: "bear", workflow });
+              }
+              onBearVariantChange(bearVariant ?? "sun");
+            }}
           >
             {t("leather.family.bear")}
           </Button>
@@ -163,7 +174,12 @@ export function HidePicker({
                 assetPath={option.assetPath}
                 title={t(`leather.bear.${option.variant}`)}
                 subtitle={getBearSubtitle(workflow, option.variant, t)}
-                onClick={() => onBearVariantChange(option.variant)}
+                onClick={() => {
+                  if (bearVariant !== option.variant) {
+                    trackLeatherInputChange("bear_variant", { value: option.variant, workflow });
+                  }
+                  onBearVariantChange(option.variant);
+                }}
               />
             ))}
           </div>
@@ -180,7 +196,12 @@ export function HidePicker({
                   assetPath={option.assetPath}
                   title={t(`leather.hide_size.${option.size}`)}
                   subtitle={getHideSubtitle(workflow, option, t)}
-                  onClick={() => onSizeChange(option.size)}
+                  onClick={() => {
+                    if (size !== option.size) {
+                      trackLeatherInputChange("hide_size", { value: option.size, workflow });
+                    }
+                    onSizeChange(option.size);
+                  }}
                 />
               ))}
             </div>
@@ -200,7 +221,12 @@ export function HidePicker({
                     assetPath={option.assetPath}
                     title={t(`leather.animal.${option.variant}`)}
                     subtitle={getAnimalSubtitle(option, t)}
-                    onClick={() => onAnimalChange(option.variant)}
+                    onClick={() => {
+                      if (animalVariant !== option.variant) {
+                        trackLeatherInputChange("animal_variant", { value: option.variant, workflow });
+                      }
+                      onAnimalChange(option.variant);
+                    }}
                   />
                 ))}
               </div>

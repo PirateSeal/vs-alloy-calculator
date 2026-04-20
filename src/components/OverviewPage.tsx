@@ -4,6 +4,7 @@ import type { AppNavTarget } from "@/types/app";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { track } from "@/lib/analytics";
 
 interface OverviewPageProps {
   onNavigate: (target: AppNavTarget) => void;
@@ -67,6 +68,7 @@ export function OverviewPage({ onNavigate }: OverviewPageProps) {
                 href="https://wiki.vintagestory.at"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => track("external-link", { destination: "wiki", source: "overview" })}
                 className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
               >
                 {t("header.nav.wiki")}
@@ -75,6 +77,7 @@ export function OverviewPage({ onNavigate }: OverviewPageProps) {
                 href="https://www.vintagestory.at"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => track("external-link", { destination: "vintage-story", source: "overview" })}
                 className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
               >
                 {t("header.nav.vs_website")}
@@ -83,6 +86,7 @@ export function OverviewPage({ onNavigate }: OverviewPageProps) {
                 href="https://github.com/PirateSeal/vs-alloy-calculator"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => track("external-link", { destination: "github", source: "overview" })}
                 className="underline decoration-border underline-offset-4 transition-colors hover:text-foreground"
               >
                 {t("header.nav.github")}

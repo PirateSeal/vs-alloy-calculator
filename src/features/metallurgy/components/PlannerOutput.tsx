@@ -13,6 +13,7 @@ import type {
   ScarcityMode,
 } from "@/features/metallurgy/types/planner";
 import { getLocalePath, useTranslation } from "@/i18n";
+import { trackPlannerOpenInCalculator } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
 function formatInventoryList(
@@ -297,6 +298,12 @@ export function PlannerOutput({
 
                               <a
                                 href={calculatorHref}
+                                onClick={() =>
+                                  trackPlannerOpenInCalculator({
+                                    recipe: result.recipeId,
+                                    run: run.runNumber,
+                                    ingots: run.ingotsProduced,
+                                  })}
                                 className={cn(
                                   "inline-flex h-11 items-center justify-center rounded-full border border-border/45 bg-background/70 px-4 text-sm font-semibold text-foreground transition-colors hover:bg-accent/50",
                                 )}

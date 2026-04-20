@@ -11,6 +11,7 @@ import { OverviewPage } from "@/components/OverviewPage";
 import { SharedReferencePage } from "@/components/SharedReferencePage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DEFAULT_LOCALE, applySeoToDocument, getLocaleFromPath } from "@/i18n";
+import { trackAppNavigation } from "@/lib/analytics";
 import {
   getAppDomainFromPath,
   getAppNavTargetFromPath,
@@ -64,6 +65,7 @@ function App() {
     const pathname = getLocalizedOverviewPath(window.location.pathname);
     const nextUrl = buildUrl(pathname, "", "");
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const didChange = nextUrl !== currentUrl || activeTarget !== "overview" || activeDomain !== domain;
 
     if (nextUrl !== currentUrl) {
       history.pushState(null, "", nextUrl);
@@ -72,13 +74,21 @@ function App() {
     setActiveTarget("overview");
     setActiveDomain(domain);
     applySeoToDocument(getLocaleFromPath(pathname) ?? DEFAULT_LOCALE);
-  }, []);
+    if (didChange) {
+      trackAppNavigation("overview", {
+        previous_target: activeTarget,
+        previous_domain: activeDomain,
+        next_domain: domain,
+      });
+    }
+  }, [activeDomain, activeTarget]);
 
   const navigateToReference = useCallback((domain: AppDomain) => {
     const pathname = getLocalizedReferencePath(window.location.pathname);
     const hash = domain === "leather" ? "#leather" : "#metallurgy";
     const nextUrl = buildUrl(pathname, "", hash);
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const didChange = nextUrl !== currentUrl || activeTarget !== "reference" || activeDomain !== domain;
 
     if (nextUrl !== currentUrl) {
       history.pushState(null, "", nextUrl);
@@ -87,13 +97,21 @@ function App() {
     setActiveTarget("reference");
     setActiveDomain(domain);
     applySeoToDocument(getLocaleFromPath(pathname) ?? DEFAULT_LOCALE);
-  }, []);
+    if (didChange) {
+      trackAppNavigation("reference", {
+        previous_target: activeTarget,
+        previous_domain: activeDomain,
+        next_domain: domain,
+      });
+    }
+  }, [activeDomain, activeTarget]);
 
   const navigateToLeather = useCallback(() => {
     const pathname = getLocalizedLeatherPath(window.location.pathname);
     const search = buildLeatherSearch(useLeatherStore.getState());
     const nextUrl = buildUrl(pathname, search, "");
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const didChange = nextUrl !== currentUrl || activeTarget !== "leather" || activeDomain !== "leather";
 
     if (nextUrl !== currentUrl) {
       history.pushState(null, "", nextUrl);
@@ -102,7 +120,14 @@ function App() {
     setActiveTarget("leather");
     setActiveDomain("leather");
     applySeoToDocument(getLocaleFromPath(pathname) ?? DEFAULT_LOCALE);
-  }, []);
+    if (didChange) {
+      trackAppNavigation("leather", {
+        previous_target: activeTarget,
+        previous_domain: activeDomain,
+        next_domain: "leather",
+      });
+    }
+  }, [activeDomain, activeTarget]);
 
   const navigateToMetallurgy = useCallback((view: "calculator" | "planner") => {
     const metallurgyState = useMetallurgyStore.getState();
@@ -113,6 +138,7 @@ function App() {
         : buildPlannerSearch(metallurgyState.plannerState);
     const nextUrl = buildUrl(pathname, search, "");
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const didChange = nextUrl !== currentUrl || activeTarget !== view || activeDomain !== "metallurgy";
 
     if (nextUrl !== currentUrl) {
       history.pushState(null, "", nextUrl);
@@ -122,7 +148,14 @@ function App() {
     setActiveTarget(view);
     setActiveDomain("metallurgy");
     applySeoToDocument(getLocaleFromPath(pathname) ?? DEFAULT_LOCALE);
-  }, []);
+    if (didChange) {
+      trackAppNavigation(view, {
+        previous_target: activeTarget,
+        previous_domain: activeDomain,
+        next_domain: "metallurgy",
+      });
+    }
+  }, [activeDomain, activeTarget]);
 
   const handleSharedNavigation = useCallback(
     (target: AppNavTarget) => {

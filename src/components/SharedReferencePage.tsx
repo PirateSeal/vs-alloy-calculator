@@ -6,6 +6,7 @@ import { LeatherReferencePanel } from "@/components/LeatherReferencePanel";
 import { AlloyReferenceTable } from "@/features/metallurgy/components/AlloyReferenceTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { trackReferenceTabChange } from "@/lib/analytics";
 
 interface SharedReferencePageProps {
   recipes: AlloyRecipe[];
@@ -34,7 +35,13 @@ export function SharedReferencePage({
         <CardContent className="pt-0">
           <Tabs
             value={activeTab}
-            onValueChange={(value) => onTabChange(value as ReferenceTab)}
+            onValueChange={(value) => {
+              const nextTab = value as ReferenceTab;
+              if (nextTab !== activeTab) {
+                trackReferenceTabChange(nextTab, { source: "tabs" });
+              }
+              onTabChange(nextTab);
+            }}
             className="space-y-4"
           >
             <TabsList className="h-auto flex-wrap gap-2 rounded-[1.5rem] bg-background/55 p-2">

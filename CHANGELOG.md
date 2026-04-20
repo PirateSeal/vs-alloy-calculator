@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.6] - 2026-04-20
+
+### Added
+- **Route-aware Umami event context** - All tracked Umami events now include the active locale, canonical app path, active app target, active domain, and reference-tab context when relevant. This makes shared overview/reference traffic, metallurgy flows, and leather flows segmentable without relying on event-specific payloads alone.
+
+### Changed
+- **Analytics coverage expanded for new app surfaces** - Added explicit tracking for shared-app navigation, reference tab switching, metallurgy planner interactions, planner deep-links into the calculator, leather workflow/input changes, and overview outbound links so the analytics layer now reflects the multi-domain product surface introduced after the original Umami integration.
+
 ## [1.11.5] - 2026-04-20
 
 ### Fixed

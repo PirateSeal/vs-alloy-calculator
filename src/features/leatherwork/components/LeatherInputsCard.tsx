@@ -21,6 +21,7 @@ import type {
   Solvent,
 } from "@/features/leatherwork/types/leather";
 import { useTranslation } from "@/i18n";
+import { trackLeatherInputChange } from "@/lib/analytics";
 
 interface LeatherInputsCardProps {
   workflow: LeatherWorkflow;
@@ -64,14 +65,24 @@ export function LeatherInputsCard({
             <Button
               type="button"
               variant={workflow === "leather" ? "default" : "outline"}
-              onClick={() => onUpdate({ workflow: "leather" })}
+              onClick={() => {
+                if (workflow !== "leather") {
+                  trackLeatherInputChange("workflow", { value: "leather" });
+                }
+                onUpdate({ workflow: "leather" });
+              }}
             >
               {t("leather.workflow.leather")}
             </Button>
             <Button
               type="button"
               variant={workflow === "pelt" ? "default" : "outline"}
-              onClick={() => onUpdate({ workflow: "pelt" })}
+              onClick={() => {
+                if (workflow !== "pelt") {
+                  trackLeatherInputChange("workflow", { value: "pelt" });
+                }
+                onUpdate({ workflow: "pelt" });
+              }}
             >
               {t("leather.workflow.pelt")}
             </Button>
@@ -85,14 +96,24 @@ export function LeatherInputsCard({
               <Button
                 type="button"
                 variant={mode === "hides" ? "default" : "outline"}
-                onClick={() => onUpdate({ mode: "hides" })}
+                onClick={() => {
+                  if (mode !== "hides") {
+                    trackLeatherInputChange("mode", { value: "hides", workflow });
+                  }
+                  onUpdate({ mode: "hides" });
+                }}
               >
                 {t("leather.mode.hides")}
               </Button>
               <Button
                 type="button"
                 variant={mode === "leather" ? "default" : "outline"}
-                onClick={() => onUpdate({ mode: "leather" })}
+                onClick={() => {
+                  if (mode !== "leather") {
+                    trackLeatherInputChange("mode", { value: "leather", workflow });
+                  }
+                  onUpdate({ mode: "leather" });
+                }}
               >
                 {t("leather.mode.leather")}
               </Button>
@@ -120,9 +141,21 @@ export function LeatherInputsCard({
           <p className="text-sm font-medium text-foreground">{quantityLabel}</p>
           <NumberInput
             value={isLeatherMode ? targetLeather : hideCount}
-            onChange={(value) =>
-              isLeatherMode ? onUpdate({ targetLeather: value }) : onUpdate({ hideCount: value })
-            }
+            onChange={(value) => {
+              const previousValue = isLeatherMode ? targetLeather : hideCount;
+              if (value !== previousValue) {
+                trackLeatherInputChange(isLeatherMode ? "target_leather" : "hide_count", {
+                  value,
+                  workflow,
+                  mode,
+                });
+              }
+              if (isLeatherMode) {
+                onUpdate({ targetLeather: value });
+                return;
+              }
+              onUpdate({ hideCount: value });
+            }}
             min={1}
             max={999}
             className="w-full"
@@ -133,7 +166,15 @@ export function LeatherInputsCard({
         {workflow === "leather" ? (
           <div className="flex flex-col gap-2">
             <p className="text-sm font-medium text-foreground">{t("leather.inputs.solvent")}</p>
-            <Select value={solvent} onValueChange={(value) => onUpdate({ solvent: value as Solvent })}>
+            <Select
+              value={solvent}
+              onValueChange={(value) => {
+                if (value !== solvent) {
+                  trackLeatherInputChange("solvent", { value, workflow, mode });
+                }
+                onUpdate({ solvent: value as Solvent });
+              }}
+            >
               <SelectTrigger aria-label={t("leather.inputs.solvent")}>
                 <SelectValue />
               </SelectTrigger>
