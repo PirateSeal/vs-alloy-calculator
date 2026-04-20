@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Localized and sub-route indexing** — Added a CloudFront Function that rewrites directory-style URIs (e.g. `/fr/reference/`) to their built `index.html` objects so each locale and sub-route now serves its own meta tags, canonical URL, hreflang set, and JSON-LD instead of falling back to the English overview page. CloudFront 403/404 responses now return a real 404 status so Google stops treating unknown paths as soft 404s.
+- **`www` subdomain now resolves** — Added Route53 A/AAAA records for `www.<subdomain>.<domain>`. The ACM certificate and CloudFront distribution already advertised the name, but the DNS records were missing, so the documented `https://www.vs-calculator.tcousin.com` URL never resolved.
+
+### Changed
+- **S3 bucket `force_destroy` is opt-in** — The static-site bucket no longer defaults to `force_destroy = true`. The new `allow_bucket_force_destroy` Terraform variable (default `false`) must be set explicitly to allow a tear-down, protecting deployed assets from an accidental `terraform destroy`.
+
+### Removed
+- **Dead S3 lifecycle rule** — Removed the `delete-old-files` lifecycle rule that filtered on the `old/` prefix; the site never writes anything under that prefix, so the rule was a no-op.
+- **Stale CloudFront TODO** — Dropped the "Placeholder for restrictions" comment on the distribution's `restrictions` block; the block remains but with no misleading TODO.
 
 ## [1.11.4] - 2026-04-20
 

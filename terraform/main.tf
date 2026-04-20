@@ -39,7 +39,7 @@ resource "random_id" "bucket_suffix" {
 # S3 bucket for static website hosting
 resource "aws_s3_bucket" "static_site" {
   bucket        = "${var.project_name}-static-site-${random_id.bucket_suffix.hex}"
-  force_destroy = true
+  force_destroy = var.allow_bucket_force_destroy
 
   tags = merge(
     local.common_tags,
@@ -109,24 +109,6 @@ resource "aws_s3_bucket_policy" "static_site" {
     aws_cloudfront_distribution.main,
     aws_s3_bucket_public_access_block.static_site
   ]
-}
-
-# S3 lifecycle policy to delete old deployment artifacts
-resource "aws_s3_bucket_lifecycle_configuration" "static_site" {
-  bucket = aws_s3_bucket.static_site.id
-
-  rule {
-    id     = "delete-old-files"
-    status = "Enabled"
-
-    filter {
-      prefix = "old/"
-    }
-
-    expiration {
-      days = 30
-    }
-  }
 }
 
 # Custom CloudFront response headers policy with CSP
@@ -294,7 +276,6 @@ resource "aws_cloudfront_distribution" "main" {
     error_caching_min_ttl = 0
   }
 
-  # Placeholder for restrictions - to be implemented in task 6.6
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -331,6 +312,34 @@ resource "aws_route53_record" "main_a" {
 resource "aws_route53_record" "main_aaaa" {
   zone_id = data.aws_route53_zone.main.zone_id
   name    = "${var.subdomain}.${var.domain_name}"
+  type    = "AAAA"
+
+  alias {
+    name                   = aws_cloudfront_distribution.main.domain_name
+    zone_id                = aws_cloudfront_distribution.main.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# Route53 A record (IPv4) for the www variant. The ACM certificate and the
+# CloudFront distribution both advertise www.<subdomain>.<domain>, but without
+# these records the name does not resolve.
+resource "aws_route53_record" "www_a" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "www.${var.subdomain}.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.main.domain_name
+    zone_id                = aws_cloudfront_distribution.main.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# Route53 AAAA record (IPv6) for the www variant.
+resource "aws_route53_record" "www_aaaa" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "www.${var.subdomain}.${var.domain_name}"
   type    = "AAAA"
 
   alias {

@@ -39,3 +39,9 @@ variable "github_repo" {
   type        = string
   default     = "PirateSeal/vs-alloy-calculator"
 }
+
+variable "allow_bucket_force_destroy" {
+  description = "Whether Terraform may delete the static-site S3 bucket even when it still contains objects. Keep false in production; set to true locally only when deliberately tearing the environment down."
+  type        = bool
+  default     = false
+}
