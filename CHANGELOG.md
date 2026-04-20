@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **S3 bucket `force_destroy` is opt-in** — The static-site bucket no longer defaults to `force_destroy = true`. The new `allow_bucket_force_destroy` Terraform variable (default `false`) must be set explicitly to allow a tear-down, protecting deployed assets from an accidental `terraform destroy`.
+- **CSP hardened** — Added `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, and `upgrade-insecure-requests` to the CloudFront response headers policy. The CSP is now emitted as a `join()`ed list so future directives are easier to review.
+- **GitHub Actions IAM policy split by scope** — The deploy role now separates bucket-level actions (`s3:ListBucket`, `s3:ListBucketMultipartUploads`) from object-level actions (`s3:GetObject`, `s3:PutObject`, `s3:DeleteObject`, `s3:AbortMultipartUpload`), matching each action to the ARN shape it actually applies to, and adding the multipart-upload permissions required by `aws s3 sync` for larger bundles.
+
+### Added
+- **DNS CAA record** — Added a Route53 `CAA` record at `<subdomain>.<domain>` restricting certificate issuance to `amazon.com` and `amazontrust.com` (and blocking wildcard issuance). Applies to both the apex and the `www` variant without affecting other tenants of the shared parent zone.
 
 ### Removed
 - **Dead S3 lifecycle rule** — Removed the `delete-old-files` lifecycle rule that filtered on the `old/` prefix; the site never writes anything under that prefix, so the rule was a no-op.

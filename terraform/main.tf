@@ -118,8 +118,20 @@ resource "aws_cloudfront_response_headers_policy" "main" {
 
   security_headers_config {
     content_security_policy {
-      content_security_policy = "default-src 'self'; script-src 'self' https://cloud.umami.is; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api-gateway.umami.dev; frame-ancestors 'none'"
-      override                = true
+      content_security_policy = join("; ", [
+        "default-src 'self'",
+        "script-src 'self' https://cloud.umami.is",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data:",
+        "connect-src 'self' https://api-gateway.umami.dev",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "upgrade-insecure-requests",
+      ])
+      override = true
     }
 
     content_type_options {
@@ -349,6 +361,22 @@ resource "aws_route53_record" "www_aaaa" {
   }
 }
 
+# Restrict which CAs may issue certificates for this subdomain tree. Placing
+# the CAA record at <subdomain>.<domain> covers both the apex and the www
+# variant without affecting other tenants of the shared <domain> zone.
+resource "aws_route53_record" "caa" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "${var.subdomain}.${var.domain_name}"
+  type    = "CAA"
+  ttl     = 300
+
+  records = [
+    "0 issue \"amazon.com\"",
+    "0 issue \"amazontrust.com\"",
+    "0 issuewild \";\"",
+  ]
+}
+
 # Reference the existing GitHub Actions OIDC provider (shared across the account)
 data "aws_iam_openid_connect_provider" "github_actions" {
   url = "https://token.actions.githubusercontent.com"
@@ -391,28 +419,34 @@ resource "aws_iam_role_policy" "github_actions" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "S3BucketAccess"
+        Sid    = "S3BucketLevel"
         Effect = "Allow"
         Action = [
-          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:ListBucketMultipartUploads",
+        ]
+        Resource = aws_s3_bucket.static_site.arn
+      },
+      {
+        Sid    = "S3ObjectLevel"
+        Effect = "Allow"
+        Action = [
           "s3:GetObject",
+          "s3:PutObject",
           "s3:DeleteObject",
-          "s3:ListBucket"
+          "s3:AbortMultipartUpload",
         ]
-        Resource = [
-          aws_s3_bucket.static_site.arn,
-          "${aws_s3_bucket.static_site.arn}/*"
-        ]
+        Resource = "${aws_s3_bucket.static_site.arn}/*"
       },
       {
         Sid    = "CloudFrontInvalidation"
         Effect = "Allow"
         Action = [
           "cloudfront:CreateInvalidation",
-          "cloudfront:GetInvalidation"
+          "cloudfront:GetInvalidation",
         ]
         Resource = aws_cloudfront_distribution.main.arn
-      }
+      },
     ]
   })
 }
