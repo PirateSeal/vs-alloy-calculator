@@ -10,6 +10,10 @@
 
 A dedicated Vintage Story helper for mapping crucible compositions to valid alloy recipes. The calculator simulates the in-game crucible (four slots, 0-128 nuggets each), visualizes metal ratios in real time, and validates whether your composition matches recipes like Tin Bronze, Bismuth Bronze, Black Bronze, Brass, Electrum, and more while showing exact nugget counts and ingot yield.
 
+## Live App
+
+- Calculator: [vs-calculator.tcousin.com](https://vs-calculator.tcousin.com/)
+
 ## ✨ Why This Exists
 
 Tracking alloy breakpoints in spreadsheets becomes error-prone when juggling multiple metals with odd nugget counts or partial ingots. This UI-first calculator:
