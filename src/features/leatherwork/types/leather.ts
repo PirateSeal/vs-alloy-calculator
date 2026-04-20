@@ -22,18 +22,37 @@ export interface LeatherState {
   solvent: Solvent;
 }
 
-export interface PipelineStep {
+interface PipelineStepBase {
   id: string;
   title: string;
   duration: string;
   summary: string;
-  barrels?: number;
-  batches?: number;
   stageAsset?: string;
   inputs: string[];
   outputs: string[];
   note?: string;
 }
+
+export type PipelineStep =
+  | PipelineStepBase
+  | (PipelineStepBase & {
+      barrels: number;
+      batches?: number;
+    });
+
+export type LeatherPipelineStep =
+  | (PipelineStepBase & {
+      barrels: number;
+      batches: number;
+    })
+  | (PipelineStepBase & {
+      barrels: number;
+      batches?: undefined;
+    })
+  | (PipelineStepBase & {
+      barrels?: undefined;
+      batches?: undefined;
+    });
 
 export interface ShoppingListItem {
   id: string;
@@ -71,12 +90,10 @@ export interface HideProfile {
   leatherYieldPerRawHide: number;
 }
 
-export interface LeatherCalculation {
+interface LeatherCalculationBase {
   workflow: "leather";
   hideProfile: HideProfile;
-  mode: LeatherMode;
   rawHideCount: number;
-  targetLeather: number | null;
   actualLeather: number;
   scrapedHideCount: number;
   soakingLiters: number;
@@ -98,8 +115,22 @@ export interface LeatherCalculation {
   completingBarrels: number;
   summaryMetrics: SummaryMetric[];
   shoppingList: ShoppingListItem[];
-  pipeline: PipelineStep[];
+  pipeline: LeatherPipelineStep[];
 }
+
+export interface LeatherCalculationHides extends LeatherCalculationBase {
+  mode: "hides";
+  targetLeather: null;
+}
+
+export interface LeatherCalculationLeather extends LeatherCalculationBase {
+  mode: "leather";
+  targetLeather: number;
+}
+
+export type LeatherCalculation =
+  | LeatherCalculationHides
+  | LeatherCalculationLeather;
 
 export interface PeltCalculation {
   workflow: "pelt";

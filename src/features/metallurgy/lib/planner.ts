@@ -13,12 +13,11 @@ import type {
   ScarcityMode,
 } from "../types/planner";
 import {
-  NUGGETS_PER_INGOT,
-  PERCENTAGE_TOLERANCE,
   UNITS_PER_INGOT,
   UNITS_PER_NUGGET,
 } from "./constants";
 import { amountsToCrucible, countSlotsUsed } from "./shared/crucibleAllocation";
+import { visitValidConfigurations } from "./shared/configurationSolver";
 import { validateRecipe } from "./recipeValidator";
 
 interface RunCandidate {
@@ -144,16 +143,11 @@ export function getRunCandidate(recipe: AlloyRecipe, targetIngots: number, mode:
   }
 
   const targetUnits = targetIngots * UNITS_PER_INGOT;
-  const targetNuggets = targetIngots * NUGGETS_PER_INGOT;
-  const components = recipe.components;
   let bestCandidate: RunCandidate | null = null;
-
-  function solve(index: number, currentNuggets: number, currentAmounts: MetalNuggetAmount[]) {
-    if (index === components.length) {
-      if (currentNuggets !== targetNuggets || countSlotsUsed(currentAmounts) > 4) {
-        return;
-      }
-
+  visitValidConfigurations({
+    recipe,
+    targetIngots,
+    visit: (currentAmounts) => {
       const crucible = amountsToCrucible(currentAmounts);
       if (!validateRecipe(crucible, recipe, targetIngots).valid) {
         return;
@@ -182,35 +176,8 @@ export function getRunCandidate(recipe: AlloyRecipe, targetIngots: number, mode:
       if (!bestCandidate || compareRunCandidates(candidate, bestCandidate, mode) < 0) {
         bestCandidate = candidate;
       }
-
-      return;
-    }
-
-    const component = components[index];
-    const minNuggets = Math.ceil((((component.minPercent - PERCENTAGE_TOLERANCE) / 100) * targetUnits - 0.000001) / UNITS_PER_NUGGET);
-    const maxNuggets = Math.floor((((component.maxPercent + PERCENTAGE_TOLERANCE) / 100) * targetUnits + 0.000001) / UNITS_PER_NUGGET);
-
-    let minRemaining = 0;
-    let maxRemaining = 0;
-    for (let nextIndex = index + 1; nextIndex < components.length; nextIndex++) {
-      const nextComponent = components[nextIndex];
-      minRemaining += Math.ceil((((nextComponent.minPercent - PERCENTAGE_TOLERANCE) / 100) * targetUnits - 0.000001) / UNITS_PER_NUGGET);
-      maxRemaining += Math.floor((((nextComponent.maxPercent + PERCENTAGE_TOLERANCE) / 100) * targetUnits + 0.000001) / UNITS_PER_NUGGET);
-    }
-
-    const lowerBound = Math.max(minNuggets, targetNuggets - currentNuggets - maxRemaining);
-    const upperBound = Math.min(maxNuggets, targetNuggets - currentNuggets - minRemaining);
-
-    for (let nuggets = lowerBound; nuggets <= upperBound; nuggets++) {
-      const amounts = [...currentAmounts, { metalId: component.metalId, nuggets }];
-      if (countSlotsUsed(amounts) > 4) {
-        continue;
-      }
-      solve(index + 1, currentNuggets + nuggets, amounts);
-    }
-  }
-
-  solve(0, 0, []);
+    },
+  });
   runCandidateCache.set(cacheKey, bestCandidate);
   return bestCandidate;
 }

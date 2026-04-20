@@ -1,5 +1,9 @@
-import type { AlloyRecipe, MetalId } from "@/features/metallurgy/types/alloys";
-import { maximizeIngots, type OptimizerResult } from "./maximizationStrategy";
+import type { AlloyRecipe } from "@/features/metallurgy/types/alloys";
+import {
+  createOptimizerFailure,
+  maximizeIngots,
+  type OptimizerResult,
+} from "./maximizationStrategy";
 import { optimizeEconomical } from "./economicalStrategy";
 
 /**
@@ -21,33 +25,19 @@ export interface OptimizerInput {
 export function optimizeRecipe(input: OptimizerInput): OptimizerResult {
   // Validate input
   if (!input || !input.recipe) {
-    return {
-      success: false,
-      crucible: null,
-      ingotCount: 0,
-      error: "Invalid input: recipe is required",
-      metadata: {
-        mode: input?.mode || "maximize",
-        recipe: input?.recipe || { id: "", name: "", components: [] },
-        totalNuggets: 0,
-        percentages: {} as Record<MetalId, number>,
-      },
-    };
+    return createOptimizerFailure(
+      input?.mode || "maximize",
+      input?.recipe || { id: "", components: [] },
+      "Invalid input: recipe is required",
+    );
   }
 
   if (!input.mode || (input.mode !== "maximize" && input.mode !== "economical")) {
-    return {
-      success: false,
-      crucible: null,
-      ingotCount: 0,
-      error: "Invalid input: mode must be 'maximize' or 'economical'",
-      metadata: {
-        mode: "maximize",
-        recipe: input.recipe,
-        totalNuggets: 0,
-        percentages: {} as Record<MetalId, number>,
-      },
-    };
+    return createOptimizerFailure(
+      "maximize",
+      input.recipe,
+      "Invalid input: mode must be 'maximize' or 'economical'",
+    );
   }
 
   // Create a deep copy of the recipe to ensure immutability
@@ -58,18 +48,11 @@ export function optimizeRecipe(input: OptimizerInput): OptimizerResult {
 
   // Validate targetIngots for economical mode
   if (input.mode === "economical" && !input.targetIngots) {
-    return {
-      success: false,
-      crucible: null,
-      ingotCount: 0,
-      error: "Target ingot amount is required for economical mode",
-      metadata: {
-        mode: "economical",
-        recipe: recipeCopy,
-        totalNuggets: 0,
-        percentages: {} as Record<MetalId, number>,
-      },
-    };
+    return createOptimizerFailure(
+      "economical",
+      recipeCopy,
+      "Target ingot amount is required for economical mode",
+    );
   }
 
   // Dispatch to appropriate strategy
@@ -82,18 +65,11 @@ export function optimizeRecipe(input: OptimizerInput): OptimizerResult {
   } catch (error) {
     // Handle unexpected errors
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-    return {
-      success: false,
-      crucible: null,
-      ingotCount: 0,
-      error: `Optimization failed: ${errorMessage}`,
-      metadata: {
-        mode: input.mode,
-        recipe: recipeCopy,
-        totalNuggets: 0,
-        percentages: {} as Record<MetalId, number>,
-      },
-    };
+    return createOptimizerFailure(
+      input.mode,
+      recipeCopy,
+      `Optimization failed: ${errorMessage}`,
+    );
   }
 }
 

@@ -3,7 +3,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import type {
   BearVariant,
   HideProfile,
-  LeatherMode,
   LeatherWorkflow,
   LeatherworkCalculation,
 } from "@/features/leatherwork/types/leather";
@@ -14,9 +13,7 @@ interface LeatherSummaryCardProps {
   inputProfile: HideProfile;
   selectionLabel: string;
   workflow: LeatherWorkflow;
-  mode: LeatherMode;
   bearVariant: BearVariant | null;
-  targetLeather: number;
 }
 
 export function LeatherSummaryCard({
@@ -24,9 +21,7 @@ export function LeatherSummaryCard({
   inputProfile,
   selectionLabel,
   workflow,
-  mode,
   bearVariant,
-  targetLeather,
 }: LeatherSummaryCardProps) {
   const { t } = useTranslation();
   const isLeatherWorkflow = calculation.workflow === "leather";
@@ -48,7 +43,9 @@ export function LeatherSummaryCard({
       ? t("leather.notes.bear_pelt")
       : t("leather.notes.pelt_simple");
   const showTargetNote =
-    isLeatherWorkflow && mode === "leather" && calculation.targetLeather !== calculation.actualLeather;
+    isLeatherWorkflow &&
+    calculation.mode === "leather" &&
+    calculation.targetLeather !== calculation.actualLeather;
   const bottleneckText = isLeatherWorkflow
     ? bearVariant
       ? t("leather.summary.bottleneck_bear")
@@ -89,7 +86,7 @@ export function LeatherSummaryCard({
               <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
               {showTargetNote ? (
                 <p className="mt-2 text-sm text-primary">
-                  {t("leather.summary.target", { target: targetLeather })}
+                  {t("leather.summary.target", { target: calculation.targetLeather })}
                 </p>
               ) : null}
             </div>

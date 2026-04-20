@@ -3,6 +3,7 @@ import {
   calculateLeatherPlan,
   calculatePeltPlan,
   getPowderedBoraxRequired,
+  getSelectedHideProfile,
   hidesForLeather,
   hidesForLeatherTarget,
 } from "./leather";
@@ -104,6 +105,28 @@ describe("leather calculations", () => {
 
   it("ceilings target leather against bear raw-hide yield", () => {
     expect(hidesForLeatherTarget(21, "large", "sun")).toBe(3);
+  });
+
+  it("builds hide profiles directly for animal and bear variants", () => {
+    const foxProfile = getSelectedHideProfile({
+      t,
+      size: "small",
+      animalVariant: "fox",
+      rawHideCount: 2,
+    });
+    const bearProfile = getSelectedHideProfile({
+      t,
+      size: "large",
+      bearVariant: "brown",
+      rawHideCount: 1,
+    });
+
+    expect(foxProfile.rawSize).toBe("small");
+    expect(foxProfile.animalVariant).toBe("fox");
+    expect(foxProfile.scrapedHideSize).toBe("small");
+    expect(bearProfile.rawSize).toBe("huge");
+    expect(bearProfile.scrapedHideCountPerRawHide).toBe(3);
+    expect(bearProfile.scrapedHideSize).toBe("huge");
   });
 
   it("builds a bear pelt plan with split results", () => {

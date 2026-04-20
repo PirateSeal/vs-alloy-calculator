@@ -1,6 +1,13 @@
 import type { MetalId, AlloyRecipe, Metal, MetalAmount } from "@/features/metallurgy/types/alloys";
 import type { CrucibleState } from "@/features/metallurgy/types/crucible";
-import { CONTAMINATION_THRESHOLD, PERCENTAGE_TOLERANCE } from "./constants";
+import {
+  CONTAMINATION_THRESHOLD,
+  MAX_NUGGETS_PER_SLOT,
+  NUGGETS_PER_INGOT,
+  PERCENTAGE_TOLERANCE,
+  UNITS_PER_INGOT,
+  UNITS_PER_NUGGET,
+} from "./constants";
 
 export type { MetalAmount } from "@/features/metallurgy/types/alloys";
 
@@ -274,6 +281,122 @@ export function getAvailableMetals(
   return allMetals;
 }
 
+interface PresetAllocation {
+  metalId: MetalId;
+  nuggets: number;
+  minPercent: number;
+  maxPercent: number;
+}
+
+function findOptimalNuggets(target: number, minUnits: number, maxUnits: number): number {
+  const minNuggets = Math.ceil(minUnits / UNITS_PER_NUGGET);
+  const maxNuggets = Math.floor(maxUnits / UNITS_PER_NUGGET);
+  const preferredMultiples = [128, 96, 64, 32, 16, 8];
+
+  for (const multiple of preferredMultiples) {
+    const candidates = [
+      Math.floor(target / multiple) * multiple,
+      Math.ceil(target / multiple) * multiple,
+    ];
+
+    for (const candidate of candidates) {
+      if (candidate >= minNuggets && candidate <= maxNuggets && candidate > 0) {
+        return candidate;
+      }
+    }
+  }
+
+  return Math.max(minNuggets, Math.min(maxNuggets, Math.round(target)));
+}
+
+function buildPresetAllocations(
+  recipe: AlloyRecipe,
+  targetNuggets: number,
+  allocateNuggets: (component: AlloyRecipe["components"][number], targetForComponent: number) => number,
+): PresetAllocation[] {
+  const allocations: PresetAllocation[] = [];
+  let remainingNuggets = targetNuggets;
+
+  for (let index = 0; index < recipe.components.length - 1; index++) {
+    const component = recipe.components[index];
+    const midpoint = (component.minPercent + component.maxPercent) / 2;
+    const targetForComponent = (targetNuggets * midpoint) / 100;
+    const nuggets = allocateNuggets(component, targetForComponent);
+
+    allocations.push({
+      metalId: component.metalId,
+      nuggets,
+      minPercent: component.minPercent,
+      maxPercent: component.maxPercent,
+    });
+    remainingNuggets -= nuggets;
+  }
+
+  const lastComponent = recipe.components[recipe.components.length - 1];
+  allocations.push({
+    metalId: lastComponent.metalId,
+    nuggets: remainingNuggets,
+    minPercent: lastComponent.minPercent,
+    maxPercent: lastComponent.maxPercent,
+  });
+
+  return allocations;
+}
+
+function validatePresetAllocations(allocations: PresetAllocation[], targetUnits: number): boolean {
+  return allocations.every((allocation) => {
+    const percent = ((allocation.nuggets * UNITS_PER_NUGGET) / targetUnits) * 100;
+    return (
+      percent >= allocation.minPercent - PERCENTAGE_TOLERANCE &&
+      percent <= allocation.maxPercent + PERCENTAGE_TOLERANCE
+    );
+  });
+}
+
+function getPresetAllocations(recipe: AlloyRecipe, ingotAmount: number): PresetAllocation[] {
+  const targetNuggets = NUGGETS_PER_INGOT * ingotAmount;
+  const targetUnits = UNITS_PER_INGOT * ingotAmount;
+
+  const optimizedAllocations = buildPresetAllocations(
+    recipe,
+    targetNuggets,
+    (component, targetForComponent) => {
+      const minUnits = (targetUnits * component.minPercent) / 100;
+      const maxUnits = (targetUnits * component.maxPercent) / 100;
+      return findOptimalNuggets(targetForComponent, minUnits, maxUnits);
+    },
+  );
+
+  if (validatePresetAllocations(optimizedAllocations, targetUnits)) {
+    return optimizedAllocations;
+  }
+
+  return buildPresetAllocations(
+    recipe,
+    targetNuggets,
+    (_, targetForComponent) => Math.round(targetForComponent),
+  );
+}
+
+function allocationsToCrucible(allocations: PresetAllocation[]): CrucibleState {
+  const crucible = createEmptyCrucible();
+  let slotIndex = 0;
+
+  for (const allocation of allocations) {
+    let remainingNuggets = allocation.nuggets;
+
+    while (remainingNuggets > 0 && slotIndex < 4) {
+      const nuggetsForSlot = Math.min(remainingNuggets, MAX_NUGGETS_PER_SLOT);
+      crucible.slots[slotIndex].metalId = allocation.metalId;
+      crucible.slots[slotIndex].nuggets = nuggetsForSlot;
+      remainingNuggets -= nuggetsForSlot;
+      slotIndex++;
+    }
+  }
+
+  return crucible;
+}
+
 /**
  * Creates a preset crucible for a given alloy recipe
  * Optimizes for efficient slot usage by preferring multiples of 128, 96, 64, 32
@@ -282,143 +405,7 @@ export function getAvailableMetals(
  * @param ingotAmount - Number of ingots to create (default: 1)
  */
 export function createPresetForAlloy(recipe: AlloyRecipe, ingotAmount: number = 1): CrucibleState {
-  const NUGGETS_PER_INGOT = 20;
-  const UNITS_PER_INGOT = 100;
-  const MAX_NUGGETS_PER_SLOT = 128;
-
-  const targetNuggets = NUGGETS_PER_INGOT * ingotAmount;
-  const targetUnits = UNITS_PER_INGOT * ingotAmount;
-
-  // Helper function to find the best "round" number near a target
-  // Prefers 128, 96, 64, 32, 16 for efficient slot usage
-  function findOptimalNuggets(target: number, minUnits: number, maxUnits: number): number {
-    const minNuggets = Math.ceil(minUnits / 5);
-    const maxNuggets = Math.floor(maxUnits / 5);
-
-    // Preferred values in order of efficiency
-    const preferredMultiples = [128, 96, 64, 32, 16, 8];
-
-    // Try to find a multiple that's close to target and within range
-    for (const mult of preferredMultiples) {
-      const candidates = [
-        Math.floor(target / mult) * mult,
-        Math.ceil(target / mult) * mult,
-      ];
-
-      for (const candidate of candidates) {
-        if (candidate >= minNuggets && candidate <= maxNuggets && candidate > 0) {
-          return candidate;
-        }
-      }
-    }
-
-    // If no preferred multiple works, just clamp to range
-    return Math.max(minNuggets, Math.min(maxNuggets, Math.round(target)));
-  }
-
-  // Calculate initial allocation using optimization
-  const allocations: Array<{
-    metalId: MetalId;
-    nuggets: number;
-    minPercent: number;
-    maxPercent: number;
-  }> = [];
-
-  let remainingNuggets = targetNuggets;
-
-  // Process all components except the last one
-  for (let i = 0; i < recipe.components.length - 1; i++) {
-    const comp = recipe.components[i];
-    const midPercent = (comp.minPercent + comp.maxPercent) / 2;
-
-    // Calculate target based on midpoint
-    const targetForComp = (targetNuggets * midPercent) / 100;
-
-    // Calculate min/max based on percentage constraints
-    const minUnits = (targetUnits * comp.minPercent) / 100;
-    const maxUnits = (targetUnits * comp.maxPercent) / 100;
-
-    // Find optimal nuggets
-    const nuggets = findOptimalNuggets(targetForComp, minUnits, maxUnits);
-
-    allocations.push({
-      metalId: comp.metalId,
-      nuggets,
-      minPercent: comp.minPercent,
-      maxPercent: comp.maxPercent,
-    });
-
-    remainingNuggets -= nuggets;
-  }
-
-  // Last component gets whatever's left
-  const lastComp = recipe.components[recipe.components.length - 1];
-  allocations.push({
-    metalId: lastComp.metalId,
-    nuggets: remainingNuggets,
-    minPercent: lastComp.minPercent,
-    maxPercent: lastComp.maxPercent,
-  });
-
-  // Validate that all percentages are within range
-  let isValid = true;
-  for (const alloc of allocations) {
-    const units = alloc.nuggets * 5;
-    const percent = (units / targetUnits) * 100;
-
-    if (percent < alloc.minPercent - PERCENTAGE_TOLERANCE || percent > alloc.maxPercent + PERCENTAGE_TOLERANCE) {
-      isValid = false;
-      break;
-    }
-  }
-
-  // If invalid, fall back to simple midpoint calculation
-  if (!isValid) {
-    allocations.length = 0;
-    remainingNuggets = targetNuggets;
-
-    for (let i = 0; i < recipe.components.length - 1; i++) {
-      const comp = recipe.components[i];
-      const midPercent = (comp.minPercent + comp.maxPercent) / 2;
-      const nuggets = Math.round((targetNuggets * midPercent) / 100);
-
-      allocations.push({
-        metalId: comp.metalId,
-        nuggets,
-        minPercent: comp.minPercent,
-        maxPercent: comp.maxPercent,
-      });
-
-      remainingNuggets -= nuggets;
-    }
-
-    const lastComp = recipe.components[recipe.components.length - 1];
-    allocations.push({
-      metalId: lastComp.metalId,
-      nuggets: remainingNuggets,
-      minPercent: lastComp.minPercent,
-      maxPercent: lastComp.maxPercent,
-    });
-  }
-
-  // Create crucible state with metals distributed across slots
-  const crucible = createEmptyCrucible();
-
-  // Distribute metals across slots, splitting if needed
-  let slotIndex = 0;
-  for (const alloc of allocations) {
-    let remainingNuggets = alloc.nuggets;
-
-    while (remainingNuggets > 0 && slotIndex < 4) {
-      const nuggetsForSlot = Math.min(remainingNuggets, MAX_NUGGETS_PER_SLOT);
-      crucible.slots[slotIndex].metalId = alloc.metalId;
-      crucible.slots[slotIndex].nuggets = nuggetsForSlot;
-      remainingNuggets -= nuggetsForSlot;
-      slotIndex++;
-    }
-  }
-
-  return crucible;
+  return allocationsToCrucible(getPresetAllocations(recipe, ingotAmount));
 }
 
 /**

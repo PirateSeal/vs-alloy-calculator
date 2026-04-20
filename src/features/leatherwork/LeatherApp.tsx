@@ -82,9 +82,7 @@ export function LeatherApp() {
             inputProfile={inputProfile}
             selectionLabel={selectionLabel}
             workflow={workflow}
-            mode={mode}
             bearVariant={bearVariant}
-            targetLeather={targetLeather}
           />
         </section>
       </div>

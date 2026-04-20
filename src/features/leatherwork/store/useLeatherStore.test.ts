@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createDefaultLeatherState } from "@/features/leatherwork/routing/appStateRouting";
-import { useLeatherStore } from "./useLeatherStore";
+import { normalizeLeatherState, useLeatherStore } from "./useLeatherStore";
 
 describe("useLeatherStore", () => {
   beforeEach(() => {
@@ -77,5 +77,24 @@ describe("useLeatherStore", () => {
     const state = useLeatherStore.getState();
     expect(state.size).toBe("large");
     expect(state.animalVariant).toBe("generic");
+  });
+
+  it("applies the same normalization when updateInputs is invoked through setState", () => {
+    useLeatherStore.setState((state) =>
+      normalizeLeatherState(state, {
+        workflow: "pelt",
+        mode: "leather",
+        size: "large",
+        animalVariant: "fox",
+        bearVariant: "sun",
+      }),
+    );
+
+    const state = useLeatherStore.getState();
+    expect(state.workflow).toBe("pelt");
+    expect(state.mode).toBe("hides");
+    expect(state.size).toBe("large");
+    expect(state.animalVariant).toBe("generic");
+    expect(state.bearVariant).toBe("sun");
   });
 });

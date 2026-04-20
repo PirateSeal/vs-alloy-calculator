@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { buildLeatherSearch, parseLeatherStateFromSearch } from "./appStateRouting";
+import {
+  buildLeatherSearch,
+  getLeatherPathname,
+  isLeatherPath,
+  parseLeatherStateFromSearch,
+} from "./appStateRouting";
 
 describe("leather routing state", () => {
   it("parses localized query state", () => {
@@ -47,5 +52,16 @@ describe("leather routing state", () => {
     expect(state.bearVariant).toBe("brown");
     expect(state.size).toBe("huge");
     expect(state.hideCount).toBe(2);
+  });
+
+  it("matches locale-aware leather paths", () => {
+    expect(isLeatherPath("/leather/")).toBe(true);
+    expect(isLeatherPath("/fr/leather")).toBe(true);
+    expect(isLeatherPath("/fr/metallurgy/")).toBe(false);
+  });
+
+  it("builds locale-aware leather pathnames", () => {
+    expect(getLeatherPathname("/leather/")).toBe("/leather/");
+    expect(getLeatherPathname("/fr/reference/")).toBe("/fr/leather/");
   });
 });
