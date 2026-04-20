@@ -178,6 +178,17 @@ resource "aws_cloudfront_origin_access_control" "main" {
   signing_protocol                  = "sigv4"
 }
 
+# Rewrite pretty SPA routes (e.g. /fr/reference/) to their built index.html
+# files so each localized route returns its own meta tags, canonical URL, and
+# hreflang set instead of the root overview page.
+resource "aws_cloudfront_function" "rewrite_spa_routes" {
+  name    = "${var.project_name}-rewrite-spa-routes"
+  runtime = "cloudfront-js-2.0"
+  comment = "Rewrite directory-style SPA routes to their index.html objects"
+  publish = true
+  code    = file("${path.module}/functions/rewrite-spa-routes.js")
+}
+
 # ACM Certificate for HTTPS (must be in us-east-1 for CloudFront)
 resource "aws_acm_certificate" "main" {
   provider = aws.us_east_1
@@ -259,19 +270,26 @@ resource "aws_cloudfront_distribution" "main" {
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.rewrite_spa_routes.arn
+    }
   }
 
-  # Custom error responses for SPA routing support
+  # Return a real 404 for paths that do not map to a built HTML file so
+  # Google does not flag every unknown URL as a soft 404. The SPA shell is
+  # still served so client-side routing can render a not-found view.
   custom_error_response {
     error_code            = 404
-    response_code         = 200
+    response_code         = 404
     response_page_path    = "/index.html"
     error_caching_min_ttl = 0
   }
 
   custom_error_response {
     error_code            = 403
-    response_code         = 200
+    response_code         = 404
     response_page_path    = "/index.html"
     error_caching_min_ttl = 0
   }

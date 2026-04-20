@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Localized and sub-route indexing** — Added a CloudFront Function that rewrites directory-style URIs (e.g. `/fr/reference/`) to their built `index.html` objects so each locale and sub-route now serves its own meta tags, canonical URL, hreflang set, and JSON-LD instead of falling back to the English overview page. CloudFront 403/404 responses now return a real 404 status so Google stops treating unknown paths as soft 404s.
+
 ## [1.11.4] - 2026-04-20
 
 ### Changed
