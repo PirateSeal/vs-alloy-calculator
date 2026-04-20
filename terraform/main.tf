@@ -39,7 +39,7 @@ resource "random_id" "bucket_suffix" {
 # S3 bucket for static website hosting
 resource "aws_s3_bucket" "static_site" {
   bucket        = "${var.project_name}-static-site-${random_id.bucket_suffix.hex}"
-  force_destroy = true
+  force_destroy = var.allow_bucket_force_destroy
 
   tags = merge(
     local.common_tags,
@@ -111,24 +111,6 @@ resource "aws_s3_bucket_policy" "static_site" {
   ]
 }
 
-# S3 lifecycle policy to delete old deployment artifacts
-resource "aws_s3_bucket_lifecycle_configuration" "static_site" {
-  bucket = aws_s3_bucket.static_site.id
-
-  rule {
-    id     = "delete-old-files"
-    status = "Enabled"
-
-    filter {
-      prefix = "old/"
-    }
-
-    expiration {
-      days = 30
-    }
-  }
-}
-
 # Custom CloudFront response headers policy with CSP
 resource "aws_cloudfront_response_headers_policy" "main" {
   name    = "${var.project_name}-security-headers"
@@ -136,8 +118,20 @@ resource "aws_cloudfront_response_headers_policy" "main" {
 
   security_headers_config {
     content_security_policy {
-      content_security_policy = "default-src 'self'; script-src 'self' https://cloud.umami.is; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api-gateway.umami.dev; frame-ancestors 'none'"
-      override                = true
+      content_security_policy = join("; ", [
+        "default-src 'self'",
+        "script-src 'self' https://cloud.umami.is",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        "img-src 'self' data:",
+        "connect-src 'self' https://api-gateway.umami.dev",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "upgrade-insecure-requests",
+      ])
+      override = true
     }
 
     content_type_options {
@@ -176,6 +170,17 @@ resource "aws_cloudfront_origin_access_control" "main" {
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
+}
+
+# Rewrite pretty SPA routes (e.g. /fr/reference/) to their built index.html
+# files so each localized route returns its own meta tags, canonical URL, and
+# hreflang set instead of the root overview page.
+resource "aws_cloudfront_function" "rewrite_spa_routes" {
+  name    = "${var.project_name}-rewrite-spa-routes"
+  runtime = "cloudfront-js-2.0"
+  comment = "Rewrite directory-style SPA routes to their index.html objects"
+  publish = true
+  code    = file("${path.module}/functions/rewrite-spa-routes.js")
 }
 
 # ACM Certificate for HTTPS (must be in us-east-1 for CloudFront)
@@ -259,24 +264,30 @@ resource "aws_cloudfront_distribution" "main" {
     cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
 
     response_headers_policy_id = aws_cloudfront_response_headers_policy.main.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.rewrite_spa_routes.arn
+    }
   }
 
-  # Custom error responses for SPA routing support
+  # Return a real 404 for paths that do not map to a built HTML file so
+  # Google does not flag every unknown URL as a soft 404. The SPA shell is
+  # still served so client-side routing can render a not-found view.
   custom_error_response {
     error_code            = 404
-    response_code         = 200
+    response_code         = 404
     response_page_path    = "/index.html"
     error_caching_min_ttl = 0
   }
 
   custom_error_response {
     error_code            = 403
-    response_code         = 200
+    response_code         = 404
     response_page_path    = "/index.html"
     error_caching_min_ttl = 0
   }
 
-  # Placeholder for restrictions - to be implemented in task 6.6
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -322,6 +333,50 @@ resource "aws_route53_record" "main_aaaa" {
   }
 }
 
+# Route53 A record (IPv4) for the www variant. The ACM certificate and the
+# CloudFront distribution both advertise www.<subdomain>.<domain>, but without
+# these records the name does not resolve.
+resource "aws_route53_record" "www_a" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "www.${var.subdomain}.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_cloudfront_distribution.main.domain_name
+    zone_id                = aws_cloudfront_distribution.main.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# Route53 AAAA record (IPv6) for the www variant.
+resource "aws_route53_record" "www_aaaa" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "www.${var.subdomain}.${var.domain_name}"
+  type    = "AAAA"
+
+  alias {
+    name                   = aws_cloudfront_distribution.main.domain_name
+    zone_id                = aws_cloudfront_distribution.main.hosted_zone_id
+    evaluate_target_health = false
+  }
+}
+
+# Restrict which CAs may issue certificates for this subdomain tree. Placing
+# the CAA record at <subdomain>.<domain> covers both the apex and the www
+# variant without affecting other tenants of the shared <domain> zone.
+resource "aws_route53_record" "caa" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "${var.subdomain}.${var.domain_name}"
+  type    = "CAA"
+  ttl     = 300
+
+  records = [
+    "0 issue \"amazon.com\"",
+    "0 issue \"amazontrust.com\"",
+    "0 issuewild \";\"",
+  ]
+}
+
 # Reference the existing GitHub Actions OIDC provider (shared across the account)
 data "aws_iam_openid_connect_provider" "github_actions" {
   url = "https://token.actions.githubusercontent.com"
@@ -364,28 +419,34 @@ resource "aws_iam_role_policy" "github_actions" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "S3BucketAccess"
+        Sid    = "S3BucketLevel"
         Effect = "Allow"
         Action = [
-          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:ListBucketMultipartUploads",
+        ]
+        Resource = aws_s3_bucket.static_site.arn
+      },
+      {
+        Sid    = "S3ObjectLevel"
+        Effect = "Allow"
+        Action = [
           "s3:GetObject",
+          "s3:PutObject",
           "s3:DeleteObject",
-          "s3:ListBucket"
+          "s3:AbortMultipartUpload",
         ]
-        Resource = [
-          aws_s3_bucket.static_site.arn,
-          "${aws_s3_bucket.static_site.arn}/*"
-        ]
+        Resource = "${aws_s3_bucket.static_site.arn}/*"
       },
       {
         Sid    = "CloudFrontInvalidation"
         Effect = "Allow"
         Action = [
           "cloudfront:CreateInvalidation",
-          "cloudfront:GetInvalidation"
+          "cloudfront:GetInvalidation",
         ]
         Resource = aws_cloudfront_distribution.main.arn
-      }
+      },
     ]
   })
 }
@@ -402,3 +463,67 @@ resource "aws_servicecatalogappregistry_application" "main" {
 # The S3 bucket and CloudFront distribution already have the common_tags applied,
 # which includes the Application tag that links them to the AppRegistry application.
 # AWS automatically discovers and associates resources based on matching tags.
+
+# SNS topic used as the destination for cost-budget notifications. Email
+# subscriptions are deliberately not declared in Terraform so the public repo
+# does not contain personal email addresses. Subscribe manually after apply:
+#
+#   aws sns subscribe \
+#     --topic-arn <cost_alerts_topic_arn output> \
+#     --protocol email \
+#     --notification-endpoint you@example.com
+resource "aws_sns_topic" "cost_alerts" {
+  name = "${var.project_name}-cost-alerts"
+  tags = local.common_tags
+}
+
+# Allow the AWS Budgets service to publish to the SNS topic.
+resource "aws_sns_topic_policy" "cost_alerts" {
+  arn = aws_sns_topic.cost_alerts.arn
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowBudgetsToPublish"
+        Effect = "Allow"
+        Principal = {
+          Service = "budgets.amazonaws.com"
+        }
+        Action   = "sns:Publish"
+        Resource = aws_sns_topic.cost_alerts.arn
+      }
+    ]
+  })
+}
+
+# Account-wide monthly cost budget. AWS Budgets is free for the first two
+# budgets per account, so this adds no recurring charge on a dedicated account.
+# The threshold is account-wide rather than tag-scoped because cost-allocation
+# tag activation is a manual, delayed step in the Billing console and silent
+# failure modes are worse than a slightly broader alarm.
+resource "aws_budgets_budget" "monthly_cost" {
+  name         = "${var.project_name}-monthly-cost"
+  budget_type  = "COST"
+  time_unit    = "MONTHLY"
+  limit_amount = tostring(var.monthly_cost_budget_usd)
+  limit_unit   = "USD"
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 80
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_sns_topic_arns = [aws_sns_topic.cost_alerts.arn]
+  }
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 100
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_sns_topic_arns = [aws_sns_topic.cost_alerts.arn]
+  }
+
+  depends_on = [aws_sns_topic_policy.cost_alerts]
+}

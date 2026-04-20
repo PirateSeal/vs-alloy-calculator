@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Localized and sub-route indexing** — Added a CloudFront Function that rewrites directory-style URIs (e.g. `/fr/reference/`) to their built `index.html` objects so each locale and sub-route now serves its own meta tags, canonical URL, hreflang set, and JSON-LD instead of falling back to the English overview page. CloudFront 403/404 responses now return a real 404 status so Google stops treating unknown paths as soft 404s.
+- **`www` subdomain now resolves** — Added Route53 A/AAAA records for `www.<subdomain>.<domain>`. The ACM certificate and CloudFront distribution already advertised the name, but the DNS records were missing, so the documented `https://www.vs-calculator.tcousin.com` URL never resolved.
+
+### Changed
+- **S3 bucket `force_destroy` is opt-in** — The static-site bucket no longer defaults to `force_destroy = true`. The new `allow_bucket_force_destroy` Terraform variable (default `false`) must be set explicitly to allow a tear-down, protecting deployed assets from an accidental `terraform destroy`.
+- **CSP hardened** — Added `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, and `upgrade-insecure-requests` to the CloudFront response headers policy. The CSP is now emitted as a `join()`ed list so future directives are easier to review.
+- **GitHub Actions IAM policy split by scope** — The deploy role now separates bucket-level actions (`s3:ListBucket`, `s3:ListBucketMultipartUploads`) from object-level actions (`s3:GetObject`, `s3:PutObject`, `s3:DeleteObject`, `s3:AbortMultipartUpload`), matching each action to the ARN shape it actually applies to, and adding the multipart-upload permissions required by `aws s3 sync` for larger bundles.
+- **Deploy cache policy differentiated by content type** — Replaced the two-bucket cache strategy (fingerprinted vs. no-cache) with four scoped syncs: fingerprinted `assets/*` stay at `max-age=31536000, immutable`; static images (`*.png`, `*.jpg`, `*.jpeg`, `*.webp`, `*.gif`, `*.ico`, `*.svg`) get a 1-day browser cache with revalidation; SEO files (`robots.txt`, `sitemap*.xml`) get 1 hour; HTML and other non-fingerprinted files switch from `no-cache, no-store` to `max-age=0, s-maxage=300, must-revalidate` so browsers always revalidate but CloudFront can edge-cache for 5 minutes, reducing origin fetches without staling deploys (CloudFront invalidation already runs on every deploy).
+- **Single CloudFront invalidation per deploy** — Consolidated the previous fire-and-forget `Invalidate CloudFront cache` step and the `Wait for invalidation to complete` step (which was issuing a second invalidation) into one step that creates a single invalidation and waits for it, halving the per-deploy invalidation count.
+
+### Added
+- **DNS CAA record** — Added a Route53 `CAA` record at `<subdomain>.<domain>` restricting certificate issuance to `amazon.com` and `amazontrust.com` (and blocking wildcard issuance). Applies to both the apex and the `www` variant without affecting other tenants of the shared parent zone.
+- **Monthly cost budget** — Added an AWS Budget (free within the first two budgets per account) that publishes to a new SNS topic at 80% and 100% of a configurable monthly USD threshold (`monthly_cost_budget_usd`, default $5). No email subscription is declared in Terraform so the public repo stays email-free; operators subscribe post-apply via `aws sns subscribe` using the exported `cost_alerts_topic_arn`.
+- **Terraform CI** — Added `.github/workflows/terraform.yml` running `terraform fmt -check`, `terraform init -backend=false`, and `terraform validate` on any PR or push that touches `terraform/**`. The job needs no AWS credentials, so it runs safely on fork PRs.
+- **PR validation on the deploy workflow** — The `build-and-test` job in the deploy workflow now also runs on pull requests targeting `master`, so contributors see a green (or red) check before a maintainer merges. The `deploy` job stays tag-gated and never runs on PRs.
+
+### Removed
+- **Dead S3 lifecycle rule** — Removed the `delete-old-files` lifecycle rule that filtered on the `old/` prefix; the site never writes anything under that prefix, so the rule was a no-op.
+- **Stale CloudFront TODO** — Dropped the "Placeholder for restrictions" comment on the distribution's `restrictions` block; the block remains but with no misleading TODO.
+
 ## [1.11.4] - 2026-04-20
 
 ### Changed

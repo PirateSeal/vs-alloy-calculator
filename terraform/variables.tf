@@ -39,3 +39,15 @@ variable "github_repo" {
   type        = string
   default     = "PirateSeal/vs-alloy-calculator"
 }
+
+variable "allow_bucket_force_destroy" {
+  description = "Whether Terraform may delete the static-site S3 bucket even when it still contains objects. Keep false in production; set to true locally only when deliberately tearing the environment down."
+  type        = bool
+  default     = false
+}
+
+variable "monthly_cost_budget_usd" {
+  description = "Monthly account-wide AWS cost threshold in USD used by the billing alert. The budget publishes to the cost-alerts SNS topic at 80% and 100% of this value. Expected baseline spend for this project is ~$2-3/month."
+  type        = number
+  default     = 5
+}

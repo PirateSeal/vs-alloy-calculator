@@ -27,3 +27,8 @@ output "appregistry_application_id" {
   description = "ID of the AppRegistry application"
   value       = aws_servicecatalogappregistry_application.main.id
 }
+
+output "cost_alerts_topic_arn" {
+  description = "ARN of the SNS topic used for monthly cost-budget notifications. Subscribe an email address manually with: aws sns subscribe --topic-arn <arn> --protocol email --notification-endpoint you@example.com"
+  value       = aws_sns_topic.cost_alerts.arn
+}
