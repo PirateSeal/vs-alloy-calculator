@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
-import { Maximize2, Sparkles, Wand2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Maximize2, Wand2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -10,8 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
@@ -30,6 +29,8 @@ interface CalculatorControlsProps {
   onCrucibleChange: (crucible: CrucibleState) => void;
 }
 
+type OptimizationMode = "economical" | "maximize";
+
 export function CalculatorControls({
   evaluation,
   recipes,
@@ -42,6 +43,7 @@ export function CalculatorControls({
   const [useEconomical, setUseEconomical] = useState(true);
   const selectedRecipeId = selectedRecipe?.id || "";
   const controlsEnabled = Boolean(selectedRecipe);
+  const mode: OptimizationMode = useEconomical ? "economical" : "maximize";
 
   const currentIngotAmount = useMemo(() => {
     if (evaluation.totalNuggets === 0) return 1;
@@ -63,13 +65,14 @@ export function CalculatorControls({
   }, [selectedRecipe, currentIngotAmount, maxIngots]);
 
   const currentRecipe = recipes.find((recipe) => recipe.id === selectedRecipeId);
+  const accentColor = currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333";
 
   const sliderStyle = useMemo(
     () =>
       ({
-        "--slider-color": currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333",
+        "--slider-color": accentColor,
       }) as React.CSSProperties,
-    [currentRecipe],
+    [accentColor],
   );
 
   const handlePresetChange = (recipeId: string) => {
@@ -102,7 +105,7 @@ export function CalculatorControls({
     onLoadPreset(selectedRecipe, newAmount);
   };
 
-  const handleMaximize = () => {
+  const runMaximize = () => {
     if (!selectedRecipe) return;
 
     setUseEconomical(false);
@@ -121,9 +124,10 @@ export function CalculatorControls({
     }
   };
 
-  const handleEconomicalOptimize = () => {
+  const runEconomical = () => {
     if (!selectedRecipe) return;
 
+    setUseEconomical(true);
     const result = optimizeRecipe({
       recipe: selectedRecipe,
       mode: "economical",
@@ -140,175 +144,162 @@ export function CalculatorControls({
     }
   };
 
+  const handleModeChange = (value: string) => {
+    if (!value || value === mode) return;
+    if (value === "maximize") runMaximize();
+    else runEconomical();
+  };
+
+  const ingotLabel =
+    ingotAmount === 1
+      ? t("result.ingots", { n: 1 })
+      : t("result.ingots_plural", { n: ingotAmount });
+  const sliderDisabled = !selectedRecipe || mode === "maximize";
+
   return (
     <section
       className="surface-panel overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92"
       aria-label={t("result.load_preset")}
     >
-      <div className="relative overflow-hidden px-5 py-4 sm:px-6">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,189,141,0.14),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(143,103,62,0.08),transparent_34%)]" />
-        <div className="relative space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex min-w-0 items-center gap-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-primary/90">
-                {t("result.load_preset")}
-              </p>
-              {controlsEnabled ? (
-                <span className="text-xs text-muted-foreground tabular-nums">
-                  · {t("planner.target.max_craftable", { n: maxIngots })}
-                </span>
-              ) : null}
-            </div>
+      <div className="relative overflow-hidden px-5 py-5 sm:px-6 sm:py-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,189,141,0.14),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(143,103,62,0.08),transparent_34%)]" />
 
-            <div
-              className={cn(
-                "surface-subtle flex min-h-12 flex-wrap items-center gap-3 rounded-[1.4rem] bg-background/45 p-3 ring-1 ring-inset ring-border/25 transition-opacity",
-                !controlsEnabled && "opacity-45",
-              )}
+        <div className="relative flex flex-col gap-5">
+          <Select value={selectedRecipeId} onValueChange={handlePresetChange}>
+            <SelectTrigger
+              id="preset-select"
+              aria-label={t("result.choose_alloy")}
+              className="relative h-20 w-full overflow-hidden rounded-[1.5rem] border-0 bg-background/70 px-5 ring-1 ring-inset ring-border/30 transition-[background-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-background/82 focus-visible:ring-primary/45 active:scale-[0.995] motion-reduce:active:scale-100 [&_svg]:size-5 [&_svg]:text-muted-foreground"
             >
-              <Switch
-                id="economical-mode"
-                checked={useEconomical}
-                onCheckedChange={setUseEconomical}
-                disabled={!selectedRecipe}
-              />
-              <Label
-                htmlFor="economical-mode"
-                className={cn(controlsEnabled && "cursor-pointer")}
+              <SelectValue
+                placeholder={
+                  <span className="flex w-full items-center gap-3">
+                    <span className="flex size-11 items-center justify-center rounded-xl border border-dashed border-border/50 bg-background/55 text-muted-foreground">
+                      <Wand2 className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <span className="flex flex-col text-left">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        {t("result.load_preset")}
+                      </span>
+                      <span className="text-base text-muted-foreground/85">
+                        {t("result.choose_alloy")}
+                      </span>
+                    </span>
+                  </span>
+                }
               >
-                {t("result.economical_label")}
-              </Label>
-              <Button
-                size="sm"
+                {currentRecipe && (
+                  <span className="flex w-full items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: accentColor }}
+                    />
+                    <img
+                      src={getIngotImage(currentRecipe.id)}
+                      alt=""
+                      className="image-outline size-11 rounded-xl bg-background/85 p-1 object-contain"
+                      aria-hidden="true"
+                    />
+                    <span className="flex min-w-0 flex-col text-left">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        {t("result.load_preset")}
+                      </span>
+                      <span className="truncate text-balance text-lg font-semibold leading-tight text-foreground">
+                        {getRecipeName(currentRecipe.id)}
+                      </span>
+                    </span>
+                  </span>
+                )}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="rounded-2xl">
+              {recipes.map((recipe) => (
+                <SelectItem key={recipe.id} value={recipe.id} className="py-2">
+                  <span className="flex items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: getAlloyColor(recipe.id) }}
+                    />
+                    <img
+                      src={getIngotImage(recipe.id)}
+                      alt=""
+                      className="image-outline h-8 w-8 rounded-lg bg-background/75 p-1 object-contain"
+                      aria-hidden="true"
+                    />
+                    <span className="text-base">{getRecipeName(recipe.id)}</span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <div
+            className={cn(
+              "surface-subtle flex flex-col gap-4 rounded-[1.5rem] bg-background/45 p-4 ring-1 ring-inset ring-border/25 transition-[opacity] duration-200 sm:p-5",
+              !controlsEnabled && "opacity-55",
+            )}
+          >
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex min-w-0 flex-col gap-1">
+                <Label
+                  htmlFor="amount-slider"
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground"
+                >
+                  {t("result.amount")}
+                </Label>
+                <p className="text-balance text-3xl font-semibold leading-none tracking-tight tabular-nums text-foreground">
+                  {ingotLabel}
+                </p>
+              </div>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {t("planner.target.max_craftable", { n: maxIngots })}
+              </span>
+            </div>
+
+            <div className="flex min-h-[44px] items-center" style={sliderStyle}>
+              <Slider
+                id="amount-slider"
+                value={[ingotAmount]}
+                onValueChange={handleIngotChange}
+                min={1}
+                max={maxIngots}
+                step={1}
+                aria-label={t("result.ingot_amount_aria")}
+                disabled={sliderDisabled}
+                className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
+              />
+            </div>
+
+            <Separator className="bg-border/30" />
+
+            <ToggleGroup
+              type="single"
+              value={mode}
+              onValueChange={handleModeChange}
+              disabled={!controlsEnabled}
+              className="grid w-full grid-cols-2 gap-2"
+              aria-label={t("result.load_preset")}
+            >
+              <ToggleGroupItem
+                value="economical"
                 variant="outline"
-                onClick={handleEconomicalOptimize}
-                disabled={!selectedRecipe || !useEconomical}
-                className="ml-auto rounded-full px-3"
+                className="h-11 gap-2 rounded-full border-border/45 bg-background/55 px-4 text-sm font-medium transition-[background-color,color,border-color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 data-[state=on]:border-primary/60 data-[state=on]:bg-primary/15 data-[state=on]:text-foreground"
               >
-                <Wand2 className="h-4 w-4" aria-hidden="true" />
-                {t("planner.mode.economical")}
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)]">
-            <div className="surface-subtle flex flex-col gap-2 rounded-[1.5rem] bg-background/42 p-4 ring-1 ring-inset ring-border/25">
-              <Label
-                htmlFor="preset-select"
-                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+                <Wand2 data-icon="inline-start" className="h-4 w-4" aria-hidden="true" />
+                {t("result.economical_label")}
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="maximize"
+                variant="outline"
+                className="h-11 gap-2 rounded-full border-border/45 bg-background/55 px-4 text-sm font-medium transition-[background-color,color,border-color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 data-[state=on]:border-primary/60 data-[state=on]:bg-primary/15 data-[state=on]:text-foreground"
               >
-                {t("result.choose_alloy")}
-              </Label>
-              <Select value={selectedRecipeId} onValueChange={handlePresetChange}>
-                <SelectTrigger
-                  id="preset-select"
-                  aria-label={t("result.choose_alloy")}
-                  className="h-14 w-full rounded-[1rem] border-border/50 bg-background/78"
-                >
-                  <SelectValue placeholder={t("result.choose_alloy")}>
-                    {currentRecipe && (
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={getIngotImage(currentRecipe.id)}
-                          alt=""
-                          className="image-outline h-9 w-9 rounded-xl bg-background/75 p-1.5 object-contain"
-                          aria-hidden="true"
-                        />
-                        <span className="text-base">{getRecipeName(currentRecipe.id)}</span>
-                      </div>
-                    )}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {recipes.map((recipe) => (
-                    <SelectItem key={recipe.id} value={recipe.id} className="py-2">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={getIngotImage(recipe.id)}
-                          alt=""
-                          className="image-outline h-8 w-8 rounded-lg bg-background/75 p-1 object-contain"
-                          aria-hidden="true"
-                        />
-                        <span className="text-base">{getRecipeName(recipe.id)}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {!controlsEnabled && (
-                <p className="text-xs text-muted-foreground" data-pretty-text>
-                  {t("result.choose_alloy")}
-                </p>
-              )}
-            </div>
-
-            <div className={cn("surface-subtle rounded-[1.5rem] bg-background/42 p-4 ring-1 ring-inset ring-border/25 transition-opacity", !controlsEnabled && "opacity-45")}>
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                    {t("result.amount")}
-                  </p>
-                  <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
-                    {ingotAmount === 1
-                      ? t("result.ingots", { n: 1 })
-                      : t("result.ingots_plural", { n: ingotAmount })}
-                  </p>
-                </div>
-                <Badge variant="secondary" className="rounded-full bg-background/72 px-3 py-1 ring-1 ring-inset ring-border/25">
-                  {t("planner.target.max_craftable", { n: maxIngots })}
-                </Badge>
-              </div>
-
-              <div className="mt-4 flex items-center gap-3">
-                <div className="flex min-h-[44px] flex-1 items-center" style={sliderStyle}>
-                  <Slider
-                    value={[ingotAmount]}
-                    onValueChange={handleIngotChange}
-                    min={1}
-                    max={maxIngots}
-                    step={1}
-                    aria-label={t("result.ingot_amount_aria")}
-                    disabled={!selectedRecipe}
-                    className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
-                  />
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleMaximize}
-                  disabled={!selectedRecipe}
-                  className="h-11 rounded-full px-3"
-                  title={t("result.maximize_title")}
-                >
-                  <Maximize2 className="h-4 w-4" aria-hidden="true" />
-                  <span className="hidden sm:inline">{t("result.maximize_title")}</span>
-                </Button>
-              </div>
-            </div>
+                <Maximize2 data-icon="inline-start" className="h-4 w-4" aria-hidden="true" />
+                {t("result.maximize_title")}
+              </ToggleGroupItem>
+            </ToggleGroup>
           </div>
-
-          {controlsEnabled && currentRecipe ? (
-            <div className="surface-subtle flex flex-wrap items-center gap-3 rounded-[1.4rem] bg-background/35 p-3 ring-1 ring-inset ring-border/20">
-              <img
-                src={getIngotImage(currentRecipe.id)}
-                alt=""
-                className="image-outline h-10 w-10 rounded-2xl bg-background/75 p-1.5 object-contain"
-                aria-hidden="true"
-              />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">{getRecipeName(currentRecipe.id)}</p>
-                <p className="text-xs text-muted-foreground" data-pretty-text>
-                  {useEconomical ? t("result.economical_label") : t("result.maximize_title")}
-                </p>
-              </div>
-              <Badge className="gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/10">
-                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-                {ingotAmount === 1
-                  ? t("result.ingots", { n: 1 })
-                  : t("result.ingots_plural", { n: ingotAmount })}
-              </Badge>
-            </div>
-          ) : null}
         </div>
       </div>
     </section>
