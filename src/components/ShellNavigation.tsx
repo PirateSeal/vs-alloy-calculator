@@ -12,6 +12,9 @@ import {
   Info,
   Languages,
   Link,
+  MoreHorizontal,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
@@ -25,6 +28,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -371,7 +375,7 @@ function LocaleRailAction({ collapsed }: { collapsed: boolean }) {
           src={activeLocale.flagSrc}
           alt=""
           aria-hidden="true"
-          className="h-4 w-6 shrink-0 rounded-sm object-cover"
+          className="h-4 w-6 shrink-0 rounded-sm object-cover ring-1 ring-inset ring-black/10 dark:ring-white/10"
         />
         <span className="truncate">{activeLocale.label}</span>
       </span>
@@ -408,7 +412,7 @@ function LocaleRailAction({ collapsed }: { collapsed: boolean }) {
               src={loc.flagSrc}
               alt=""
               aria-hidden="true"
-              className="h-4 w-6 rounded-sm object-cover"
+              className="h-4 w-6 rounded-sm object-cover ring-1 ring-inset ring-black/10 dark:ring-white/10"
             />
             <span>{loc.label}</span>
           </DropdownMenuItem>
@@ -462,7 +466,7 @@ export function ShellNavigationRail({
             onClick={() => onCollapseChange(!collapsed)}
             className={cn(
               "inline-flex shrink-0 items-center justify-center rounded-xl text-muted-foreground/70 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:active:scale-100",
-              collapsed ? "h-8 w-full rounded-2xl bg-background/25 hover:bg-accent/40" : "h-8 w-8",
+              collapsed ? "h-10 w-full rounded-2xl bg-background/25 hover:bg-accent/40" : "h-10 w-10",
             )}
             aria-label={t(collapsed ? "header.nav.expand" : "header.nav.collapse")}
             title={t(collapsed ? "header.nav.expand" : "header.nav.collapse")}
@@ -516,7 +520,7 @@ export function ShellNavigationRail({
             <div className="flex flex-col gap-1.5 pt-4">
               <RailActionButton
                 collapsed={collapsed}
-                icon={copied ? <Check className="h-4 w-4 text-success" /> : <Link className="h-4 w-4" />}
+                icon={<ShareIcon copied={copied} />}
                 label={t(copied ? "header.share.copied" : "header.share.copy")}
                 onClick={handleShare}
                 active={copied}
@@ -559,12 +563,106 @@ export function ShellNavigationRail({
   );
 }
 
+function ShareIcon({ copied }: { copied: boolean }) {
+  const base =
+    "absolute inset-0 transition-[opacity,transform,filter] duration-300 ease-[cubic-bezier(0.2,0,0,1)] motion-reduce:transition-none";
+  return (
+    <span className="relative inline-flex h-4 w-4 shrink-0">
+      <Link
+        aria-hidden="true"
+        className={cn(
+          base,
+          "h-4 w-4",
+          copied ? "scale-[0.25] opacity-0 blur-[4px]" : "scale-100 opacity-100 blur-0",
+        )}
+      />
+      <Check
+        aria-hidden="true"
+        className={cn(
+          base,
+          "h-4 w-4 text-success",
+          copied ? "scale-100 opacity-100 blur-0" : "scale-[0.25] opacity-0 blur-[4px]",
+        )}
+      />
+    </span>
+  );
+}
+
+function MobileTabButton({
+  active,
+  icon: Icon,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  icon: LucideIcon;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 pt-2 pb-1.5 text-[11px] font-medium leading-tight transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
+        active
+          ? "text-primary"
+          : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
+      )}
+    >
+      <span
+        className={cn(
+          "inline-flex h-9 w-9 items-center justify-center rounded-xl transition-[background-color] duration-200",
+          active && "bg-primary/14",
+        )}
+        aria-hidden="true"
+      >
+        <Icon className="h-5 w-5" />
+      </span>
+      <span className="block max-w-full truncate px-0.5">{label}</span>
+    </button>
+  );
+}
+
+function MobileTheme({ onClose }: { onClose: () => void }) {
+  const { t } = useTranslation();
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  });
+
+  const label = t(theme === "light" ? "theme.toggle_to_dark" : "theme.toggle_to_light");
+
+  const toggle = () => {
+    const next = theme === "light" ? "dark" : "light";
+    const root = document.documentElement;
+    root.classList.add("theme-switching");
+    root.classList.toggle("dark", next === "dark");
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    root.offsetHeight;
+    root.classList.remove("theme-switching");
+    setTheme(next);
+    localStorage.setItem("theme", next);
+    track("theme-toggled", { theme: next });
+    onClose();
+  };
+
+  return (
+    <DropdownMenuItem onSelect={(event) => { event.preventDefault(); toggle(); }}>
+      {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+      <span>{label}</span>
+    </DropdownMenuItem>
+  );
+}
+
 export function ShellMobileNav({
   activeView,
   onTabChange,
 }: Pick<ShellNavigationProps, "activeView" | "onTabChange">) {
   const { t, locale, setLocale } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleShare = async () => {
     try {
@@ -577,80 +675,156 @@ export function ShellMobileNav({
     }
   };
 
-  const items: Array<{ tab: AppNavTarget; label: string; icon: LucideIcon }> = [
+  const [localesOpen, setLocalesOpen] = useState(false);
+  const primaryItems: Array<{ tab: AppNavTarget; label: string; icon: LucideIcon }> = [
     { tab: "calculator", label: t("header.nav.calculator"), icon: Calculator },
     { tab: "planner", label: t("header.nav.planner"), icon: Compass },
     { tab: "leather", label: t("header.nav.leather"), icon: Hammer },
+  ];
+  const moreItems: Array<{ tab: AppNavTarget; label: string; icon: LucideIcon }> = [
     { tab: "reference", label: t("header.nav.reference"), icon: BookOpen },
     { tab: "overview", label: t("header.nav.overview"), icon: Info },
   ];
-  const mobileActionClassName =
-    "surface-subtle inline-flex h-10 w-10 items-center justify-center rounded-full bg-card/80 text-muted-foreground ring-1 ring-inset ring-border/20 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100";
+  const moreActive = moreItems.some((item) => item.tab === activeView);
+  const activeLocale = LOCALE_OPTIONS.find((option) => option.id === locale) ?? LOCALE_OPTIONS[0];
+  const closeMenu = () => {
+    setMenuOpen(false);
+    setLocalesOpen(false);
+  };
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 lg:hidden" aria-label={t("header.title")}>
-      <div className="border-t border-border/20 bg-background/92 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-2 backdrop-blur-xl">
-        <div className="mx-auto mb-2 flex w-full max-w-3xl items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={handleShare}
-            aria-label={t(copied ? "header.share.copied" : "header.share.copy")}
-            className={mobileActionClassName}
+      <div className="border-t border-border/20 bg-background/92 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-1.5 backdrop-blur-xl">
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-1">
+          {primaryItems.map((item) => (
+            <MobileTabButton
+              key={item.tab}
+              active={activeView === item.tab}
+              icon={item.icon}
+              label={item.label}
+              onClick={() => onTabChange(item.tab)}
+            />
+          ))}
+          <DropdownMenu
+            open={menuOpen}
+            onOpenChange={(open) => {
+              setMenuOpen(open);
+              if (!open) setLocalesOpen(false);
+            }}
           >
-            {copied ? <Check className="h-4 w-4 text-success" /> : <Link className="h-4 w-4" />}
-          </button>
-          <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button type="button" aria-label={t("header.locale.label")} className={mobileActionClassName}>
-                <Languages className="h-4 w-4" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" side="top" className="w-48 rounded-2xl border-border/20 bg-popover/95 p-2 backdrop-blur-xl">
-              {LOCALE_OPTIONS.map((loc) => (
-                <DropdownMenuItem
-                  key={loc.id}
-                  onClick={() => {
-                    setLocale(loc.id);
-                    track("locale-changed", { locale: loc.id });
-                  }}
-                  className={locale === loc.id ? "bg-accent/60" : ""}
-                >
-                  <img
-                    src={loc.flagSrc}
-                    alt=""
-                    aria-hidden="true"
-                    className="h-4 w-6 rounded-sm object-cover"
-                  />
-                  <span>{loc.label}</span>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <ThemeToggle />
-        </div>
-        <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-2">
-          {items.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeView === item.tab;
-
-            return (
               <button
-                key={item.tab}
                 type="button"
-                onClick={() => onTabChange(item.tab)}
-                aria-current={isActive ? "page" : undefined}
+                aria-current={moreActive ? "page" : undefined}
+                aria-label={t("header.nav.more")}
                 className={cn(
-                  "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
-                  isActive
-                    ? "bg-primary/14 text-primary shadow-[inset_0_0_0_1px_rgba(239,189,141,0.18)]"
-                    : "bg-card/70 text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                  "relative flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 pt-2 pb-1.5 text-[11px] font-medium leading-tight transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
+                  moreActive || menuOpen
+                    ? "text-primary"
+                    : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                 )}
               >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-                <span className="truncate">{item.label}</span>
+                <span
+                  className={cn(
+                    "inline-flex h-9 w-9 items-center justify-center rounded-xl transition-[background-color] duration-200",
+                    (moreActive || menuOpen) && "bg-primary/14",
+                  )}
+                  aria-hidden="true"
+                >
+                  <MoreHorizontal className="h-5 w-5" />
+                </span>
+                <span className="block max-w-full truncate px-0.5">{t("header.nav.more")}</span>
               </button>
-            );
-          })}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="top"
+              align="end"
+              sideOffset={12}
+              collisionPadding={16}
+              className="w-64 rounded-2xl border-border/20 bg-popover/95 p-2 backdrop-blur-xl"
+            >
+              <div className="flex flex-col gap-0.5">
+                  {moreItems.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = activeView === item.tab;
+                    return (
+                      <DropdownMenuItem
+                        key={item.tab}
+                        onSelect={() => {
+                          onTabChange(item.tab);
+                          closeMenu();
+                        }}
+                        className={isActive ? "bg-accent/60 text-primary" : ""}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      void handleShare();
+                    }}
+                  >
+                    <ShareIcon copied={copied} />
+                    <span>{t(copied ? "header.share.copied" : "header.share.copy")}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={(event) => {
+                      event.preventDefault();
+                      setLocalesOpen((value) => !value);
+                    }}
+                    aria-expanded={localesOpen}
+                  >
+                    <Languages className="h-4 w-4" />
+                    <span className="flex min-w-0 flex-1 items-center gap-2 truncate">
+                      <img
+                        src={activeLocale.flagSrc}
+                        alt=""
+                        aria-hidden="true"
+                        className="h-4 w-6 shrink-0 rounded-sm object-cover ring-1 ring-inset ring-black/10 dark:ring-white/10"
+                      />
+                      <span className="truncate">{activeLocale.label}</span>
+                    </span>
+                    <ChevronDown
+                      className={cn(
+                        "ml-auto h-4 w-4 text-muted-foreground transition-transform",
+                        localesOpen && "rotate-180",
+                      )}
+                      aria-hidden="true"
+                    />
+                  </DropdownMenuItem>
+                  {localesOpen && (
+                    <div className="ml-4 flex flex-col gap-0.5 border-l border-border/20 pl-2">
+                      {LOCALE_OPTIONS.map((loc) => (
+                        <DropdownMenuItem
+                          key={loc.id}
+                          onSelect={() => {
+                            setLocale(loc.id);
+                            track("locale-changed", { locale: loc.id });
+                            closeMenu();
+                          }}
+                          className={locale === loc.id ? "bg-accent/60 text-primary" : ""}
+                        >
+                          <img
+                            src={loc.flagSrc}
+                            alt=""
+                            aria-hidden="true"
+                            className="h-4 w-6 rounded-sm object-cover ring-1 ring-inset ring-black/10 dark:ring-white/10"
+                          />
+                          <span className="flex-1 truncate">{loc.label}</span>
+                          {locale === loc.id && <Check className="h-4 w-4" aria-hidden="true" />}
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
+                  )}
+                  <DropdownMenuSeparator />
+                  <MobileTheme onClose={closeMenu} />
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </nav>
