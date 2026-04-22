@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`NumberInput` modifier-key multipliers** — Increment/decrement buttons now respect Ctrl (×10), Shift (×100), and Ctrl+Shift (×1000), so the planner inventory, planner output, and crucible slot rows can adjust large values without repeated clicks. A tooltip and `aria-label` expose the shortcuts.
+- **New shadcn primitives installed** — Added `toggle`, `toggle-group`, and `separator` from the shadcn registry so option-set pickers and section dividers can use first-party components instead of hand-rolled markup.
+- **`Alert` `warning` variant** — Extended the shadcn `Alert` `cva` variants with an amber `warning` scheme so the translation-notice banner reads semantically instead of carrying raw color classes.
+
+### Changed
+- **`TranslationNotice` rebuilt on shadcn primitives** — Replaced the hand-rolled `<div>` + `<button>` + amber classes with `Alert` (`variant="warning"`) + `AlertDescription` + `Button variant="ghost" size="icon"`, keeping the full-width border-bar layout.
+- **`HidePicker` uses `ToggleGroup`** — Family selector (standard vs bear), bear-variant tiles, hide-size tiles, and small-hide animal variants now render as `ToggleGroup` / `ToggleGroupItem` with `data-[state=on]` styling instead of manual active-state tracking on raw buttons.
+- **`CalculatorControls` accessibility parts swapped to shadcn** — Raw `<label>` elements became `Label`, and the max-craftable hint + alloy-amount chip are now `Badge` variants so the controls adopt the project's semantic tokens.
+- **`ShellNavigation` dividers use `Separator`** — Replaced decorative `border-t` divs between rail sections and before locale/theme/external groups with the shadcn `Separator`, dropping the related `space-y-*` stacking in favor of explicit `flex flex-col gap-*`.
+- **`PlannerOutput` "Open in calculator" link is now a `Button`** — The run-card action became `Button asChild` wrapping the `<a>`, using the icon-end slot and the project's outline variant so it matches the rest of the UI.
+
+### Fixed
+- **Import aliases on freshly added shadcn components** — The shadcn CLI emitted `src/lib/utils` / `src/components/ui/toggle` paths for `toggle`, `toggle-group`, and `separator`. Rewrote them to the project's `@/` alias so imports resolve under Vite and Vitest.
+
 ## [1.11.6] - 2026-04-20
 
 ### Added

@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ShellNavigationProps {
@@ -116,11 +117,16 @@ function DomainNavigationMenu({
               }}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex h-11 w-full items-center justify-center rounded-2xl bg-background/45 text-sm font-semibold ring-1 ring-inset ring-border/20 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "flex h-11 w-full items-center justify-center rounded-2xl text-sm font-semibold transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/40 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
                 active ? "text-primary" : "text-foreground",
               )}
             >
-              <DomainIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span className={cn(
+                "inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/45",
+                active && "bg-primary/14 text-primary",
+              )} aria-hidden="true">
+                <DomainIcon className="h-4 w-4 shrink-0" />
+              </span>
             </button>
           );
 
@@ -148,7 +154,7 @@ function DomainNavigationMenu({
                 type="button"
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-11 w-full items-center justify-between rounded-2xl bg-background/45 px-3 text-left text-sm font-semibold ring-1 ring-inset ring-border/20 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "surface-subtle flex h-11 w-full items-center justify-between rounded-2xl bg-background/45 px-3 text-left text-sm font-semibold ring-1 ring-inset ring-border/20 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
                   active ? "text-primary" : "text-foreground",
                   open && "bg-accent/45",
                 )}
@@ -177,6 +183,7 @@ function DomainNavigationMenu({
                       aria-current={toolActive ? "page" : undefined}
                       className={cn(
                         "flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
+                        "transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100",
                         toolActive ? "bg-primary/14 text-primary" : "text-foreground hover:bg-accent/50",
                       )}
                     >
@@ -218,7 +225,7 @@ function RailNavButton({
       onClick={onClick}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "group flex h-11 w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "group flex h-11 w-full items-center gap-3 rounded-2xl px-3 text-left text-sm font-medium transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
         active
           ? "bg-primary/14 text-primary"
           : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
@@ -266,14 +273,14 @@ function ExternalLinkButton({
       rel="noopener noreferrer"
       onClick={onClick}
       className={cn(
-        "group flex h-10 items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-all hover:bg-accent/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        collapsed ? "justify-center px-0" : "w-full",
+        "group flex h-11 items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/30 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
+        collapsed ? "w-full justify-center px-0" : "w-full",
       )}
       aria-label={label}
     >
       <span
         className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/35 transition-colors",
+          "inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/35 transition-colors",
           "group-hover:text-foreground",
         )}
         aria-hidden="true"
@@ -317,12 +324,12 @@ function RailActionButton({
       onClick={onClick}
       aria-label={label}
       className={cn(
-        "group flex h-10 w-full items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-colors hover:bg-accent/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "group flex h-11 w-full items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/30 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
         collapsed && "justify-center px-0",
         active && "text-primary",
       )}
     >
-      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/35" aria-hidden="true">
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/35" aria-hidden="true">
         {icon}
       </span>
       <span className={cn("truncate", collapsed && "sr-only")}>{label}</span>
@@ -352,11 +359,11 @@ function LocaleRailAction({ collapsed }: { collapsed: boolean }) {
       type="button"
       aria-label={t("header.locale.label")}
       className={cn(
-        "group flex h-10 w-full items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-colors hover:bg-accent/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        "group flex h-11 w-full items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/30 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
         collapsed && "justify-center px-0",
       )}
     >
-      <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/35" aria-hidden="true">
+      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/35" aria-hidden="true">
         <Languages className="h-4 w-4" />
       </span>
       <span className={cn("flex min-w-0 items-center gap-2 truncate", collapsed && "sr-only")}>
@@ -440,12 +447,12 @@ export function ShellNavigationRail({
       )}
       aria-label={t("header.title")}
     >
-      <div className="flex h-full flex-col rounded-[1.75rem] bg-card/80 p-3 shadow-md ring-1 ring-inset ring-border/20 backdrop-blur-xl">
+      <div className="surface-panel flex h-full flex-col rounded-[1.75rem] bg-card/82 p-3 ring-1 ring-inset ring-border/20 backdrop-blur-xl">
         <div className={cn("flex shrink-0 items-center gap-3 px-1 pb-4", collapsed && "flex-col gap-2")}>
           <img
             src="/gamelogo-vintagestory-square.webp"
             alt={t("header.logo_alt")}
-            className="h-10 w-10 shrink-0 rounded-2xl object-contain ring-1 ring-inset ring-border/20"
+            className="image-outline h-10 w-10 shrink-0 rounded-2xl bg-background/70 object-contain p-1 ring-1 ring-inset ring-border/20"
           />
           <div className={cn("min-w-0 flex-1", collapsed && "sr-only")}>
             <p className="truncate text-sm font-semibold text-foreground">{t("header.title")}</p>
@@ -454,7 +461,7 @@ export function ShellNavigationRail({
             type="button"
             onClick={() => onCollapseChange(!collapsed)}
             className={cn(
-              "inline-flex shrink-0 items-center justify-center rounded-xl text-muted-foreground/70 transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+              "inline-flex shrink-0 items-center justify-center rounded-xl text-muted-foreground/70 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 motion-reduce:active:scale-100",
               collapsed ? "h-8 w-full rounded-2xl bg-background/25 hover:bg-accent/40" : "h-8 w-8",
             )}
             aria-label={t(collapsed ? "header.nav.expand" : "header.nav.collapse")}
@@ -463,7 +470,7 @@ export function ShellNavigationRail({
             {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
           </button>
         </div>
-        <div className="mb-4 border-t border-border/20" />
+        <Separator className="mb-4 bg-border/20" />
 
         <div className="mb-4">
           <div className={cn("mb-3 px-1", collapsed && "sr-only")}>
@@ -482,7 +489,8 @@ export function ShellNavigationRail({
 
         <ScrollArea className="min-h-0 flex-1">
           <div className="flex min-h-full flex-col pr-2">
-            <div className="space-y-2 border-t border-border/20 pt-4">
+            <Separator className="bg-border/20" />
+            <div className="flex flex-col gap-2 pt-4">
               <div className={cn("mb-2 px-1", collapsed && "sr-only")}>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-muted-foreground/80">
                   {t("header.nav.guides")}
@@ -504,7 +512,8 @@ export function ShellNavigationRail({
               />
             </div>
 
-            <div className="space-y-1.5 border-t border-border/20 pt-4">
+            <Separator className="mt-4 bg-border/20" />
+            <div className="flex flex-col gap-1.5 pt-4">
               <RailActionButton
                 collapsed={collapsed}
                 icon={copied ? <Check className="h-4 w-4 text-success" /> : <Link className="h-4 w-4" />}
@@ -515,11 +524,12 @@ export function ShellNavigationRail({
               <LocaleRailAction collapsed={collapsed} />
               <ThemeToggle
                 showLabel={!collapsed}
-                className="h-10 text-xs font-medium text-muted-foreground/80 hover:bg-accent/30"
+                className="h-11 text-xs font-medium text-muted-foreground/80 hover:bg-accent/30"
               />
             </div>
 
-            <div className="mt-6 space-y-1.5 border-t border-border/20 pt-4">
+            <Separator className="mt-6 bg-border/20" />
+            <div className="flex flex-col gap-1.5 pt-4">
               <ExternalLinkButton
                 href="https://www.vintagestory.at"
                 label={t("header.nav.vs_website")}
@@ -575,7 +585,7 @@ export function ShellMobileNav({
     { tab: "overview", label: t("header.nav.overview"), icon: Info },
   ];
   const mobileActionClassName =
-    "inline-flex h-10 w-10 items-center justify-center rounded-full bg-card/80 text-muted-foreground ring-1 ring-inset ring-border/20 transition-colors hover:bg-accent/50 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+    "surface-subtle inline-flex h-10 w-10 items-center justify-center rounded-full bg-card/80 text-muted-foreground ring-1 ring-inset ring-border/20 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100";
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 lg:hidden" aria-label={t("header.title")}>
@@ -630,7 +640,7 @@ export function ShellMobileNav({
                 onClick={() => onTabChange(item.tab)}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-3 text-sm font-semibold transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
                   isActive
                     ? "bg-primary/14 text-primary shadow-[inset_0_0_0_1px_rgba(239,189,141,0.18)]"
                     : "bg-card/70 text-muted-foreground hover:bg-accent/50 hover:text-foreground",

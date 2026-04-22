@@ -21,7 +21,7 @@ export function CreditsDialog({ trigger }: CreditsDialogProps) {
         <DialogHeader>
           <DialogTitle>{t("credits.title")}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-5 text-sm">
+        <div className="stagger-surface-children space-y-5 text-sm" data-pretty-text>
           <section>
             <h3 className="font-semibold text-foreground mb-1">{t("credits.assets.title")}</h3>
             <p className="text-muted-foreground">

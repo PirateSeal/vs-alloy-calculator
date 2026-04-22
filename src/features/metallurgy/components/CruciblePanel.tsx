@@ -52,35 +52,43 @@ export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }
   };
 
   return (
-    <Card className="overflow-hidden rounded-[1.75rem] border border-border/35 bg-card/90 shadow-sm">
-      <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <FlameKindling className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
-            <CardTitle className="text-lg sm:text-xl">{t("crucible.title")}</CardTitle>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center rounded-full bg-background/50 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-border/30">
-              {occupiedSlots}/{crucible.slots.length} slots
-            </span>
-            <span className="inline-flex items-center rounded-full bg-background/50 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-border/30 font-mono tabular-nums">
-              {filledNuggets} {t(filledNuggets === 1 ? "common.nugget" : "common.nuggets")}
-            </span>
+    <Card className="surface-panel overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92">
+      <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-5 sm:px-6">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FlameKindling className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+                <CardTitle className="text-lg sm:text-xl">{t("crucible.title")}</CardTitle>
+              </div>
+              <p className="max-w-2xl text-sm leading-6 text-muted-foreground" data-pretty-text>
+                {t("crucible.description")}
+              </p>
+            </div>
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={handleClear}
               aria-label={t("crucible.clear_all")}
-              className="h-9 rounded-full border-border/60 bg-background/70 px-3 text-xs"
+              className="rounded-full border-border/60 bg-background/72 px-3 text-xs"
             >
               <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
               {t("crucible.clear_all")}
             </Button>
           </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="surface-chip inline-flex items-center rounded-full bg-background/60 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-border/30">
+              {occupiedSlots}/{crucible.slots.length} slots
+            </span>
+            <span className="surface-chip inline-flex items-center rounded-full bg-background/60 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-border/30 font-mono tabular-nums">
+              {filledNuggets} {t(filledNuggets === 1 ? "common.nugget" : "common.nuggets")}
+            </span>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-5">
+      <CardContent className="p-5 pt-5 sm:p-6 sm:pt-5">
         <div
           className="stagger-surface-children grid grid-cols-1 items-start gap-4 sm:grid-cols-2 xl:gap-5"
           role="group"

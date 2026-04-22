@@ -115,5 +115,11 @@ export default function CountUp({
     return () => unsubscribe();
   }, [springValue, separator, maxDecimals]);
 
-  return <span className={className} ref={ref} />;
+  return (
+    <span
+      data-slot="count-up"
+      className={`tabular-nums ${className}`.trim()}
+      ref={ref}
+    />
+  );
 }

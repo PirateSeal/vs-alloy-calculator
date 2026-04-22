@@ -275,17 +275,17 @@ export const ResultCard = memo(function ResultCard({
   }, [adjustmentSummary, bestMatch, isEmpty, productName, t]);
 
   const toneClasses = {
-    success: "border-success/25 bg-card/90",
-    warning: "border-primary/25 bg-card/90",
-    destructive: "border-destructive/25 bg-card/90",
-    neutral: "border-border/35 bg-card/90",
+    success: "border-success/25 bg-card/92",
+    warning: "border-primary/25 bg-card/92",
+    destructive: "border-destructive/25 bg-card/92",
+    neutral: "border-border/35 bg-card/92",
   }[status.tone];
 
   const badgeClasses = {
-    success: "bg-secondary text-secondary-foreground",
-    warning: "bg-primary/15 text-foreground",
-    destructive: "bg-destructive/15 text-foreground",
-    neutral: "bg-background/65 text-foreground",
+    success: "surface-chip bg-secondary text-secondary-foreground",
+    warning: "surface-chip bg-primary/15 text-foreground",
+    destructive: "surface-chip bg-destructive/15 text-foreground",
+    neutral: "surface-chip bg-background/65 text-foreground",
   }[status.tone];
 
   const heroLead =
@@ -308,29 +308,29 @@ export const ResultCard = memo(function ResultCard({
   };
 
   return (
-    <Card className={`animate-surface-in animate-delay-2 overflow-hidden rounded-[1.75rem] border shadow-sm ${toneClasses}`}>
+    <Card className={`surface-panel animate-surface-in animate-delay-2 overflow-hidden rounded-[1.9rem] border ${toneClasses}`}>
       <div className={`relative ${isEmpty ? "min-h-[12.5rem]" : "min-h-[22rem]"}`}>
         <>
           <img
             src="/crucible.png"
             alt=""
-            className={`absolute inset-0 h-full w-full object-cover ${isEmpty ? "opacity-30 saturate-50" : "opacity-85"}`}
+            className={`absolute inset-0 h-full w-full object-cover ${isEmpty ? "opacity-28 saturate-50" : "opacity-80"}`}
             aria-hidden="true"
           />
           <div
-            className={`absolute inset-0 ${isEmpty ? "bg-gradient-to-t from-background via-background/92 to-background/72" : "bg-gradient-to-t from-background via-background/60 to-background/10"}`}
+            className={`absolute inset-0 ${isEmpty ? "bg-gradient-to-t from-background via-background/92 to-background/72" : "bg-gradient-to-t from-background via-background/72 to-background/14"}`}
           />
         </>
         <div
-          className={`relative flex flex-col justify-between p-5 sm:p-6 ${isEmpty ? "min-h-[12.5rem]" : "min-h-[22rem]"}`}
+          className={`relative flex flex-col justify-between p-6 sm:p-7 ${isEmpty ? "min-h-[12.5rem]" : "min-h-[22rem]"}`}
         >
           <div className="flex flex-wrap gap-2">
-            <Badge className={badgeClasses}>
+            <Badge className={`${badgeClasses} rounded-full px-3 py-1.5`}>
               <span className="mr-1.5 inline-flex items-center">{status.icon}</span>
               {status.label}
             </Badge>
             {productTemperature && (
-              <Badge variant="outline" className="border-border/50 bg-background/70">
+              <Badge variant="outline" className="surface-chip rounded-full border-border/50 bg-background/70 px-3 py-1.5">
                 <Thermometer className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
                 {t("result.melts_at", { temp: productTemperature })}
               </Badge>
@@ -344,16 +344,16 @@ export const ResultCard = memo(function ResultCard({
             <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
               {isEmpty ? t("composition.empty") : productName}
             </h2>
-            <p className="text-sm leading-6 text-muted-foreground">
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground" data-pretty-text>
               {heroLead}
             </p>
-            <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-background/65 px-3 py-1.5">
+            <div className="grid gap-2 sm:max-w-md sm:grid-cols-2">
+              <span className="surface-chip inline-flex items-center gap-1.5 rounded-[1rem] bg-background/68 px-3 py-3 text-xs text-muted-foreground">
                 <FlameKindling className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
                 <span className="font-mono tabular-nums text-foreground">{totalNuggets}</span>
                 {t(totalNuggets === 1 ? "common.nugget" : "common.nuggets")}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-background/65 px-3 py-1.5">
+              <span className="surface-chip inline-flex items-center gap-1.5 rounded-[1rem] bg-background/68 px-3 py-3 text-xs text-muted-foreground">
                 <span className="font-mono tabular-nums text-foreground">{totalUnits}</span>
                 {t(totalUnits === 1 ? "common.unit" : "common.units")}
               </span>
@@ -363,9 +363,9 @@ export const ResultCard = memo(function ResultCard({
       </div>
 
       {!isEmpty && (
-      <CardContent className="space-y-4 border-t border-border/30 bg-background/20 p-5 sm:p-6">
+      <CardContent className="space-y-4 border-t border-border/30 bg-background/24 p-5 sm:p-6">
         {bestMatch?.isExact && totalUnits > 0 && totalUnits < 100 && (
-          <Alert className="border-primary/35 bg-primary/10" role="status" aria-live="polite">
+          <Alert className="rounded-[1.2rem] border-primary/35 bg-primary/10" role="status" aria-live="polite">
             <AlertTriangle className="h-4 w-4 text-primary" aria-hidden="true" />
             <AlertDescription className="text-foreground">
               {t("result.not_enough", {
@@ -377,7 +377,7 @@ export const ResultCard = memo(function ResultCard({
         )}
 
         {totalUnits > 0 && bestMatch && !bestMatch.isExact && adjustmentSummary && (
-          <Alert className="border-primary/35 bg-primary/10" role="status" aria-live="polite">
+          <Alert className="rounded-[1.2rem] border-primary/35 bg-primary/10" role="status" aria-live="polite">
             <AlertTriangle className="h-4 w-4 text-primary" aria-hidden="true" />
             <AlertDescription className="text-foreground">
               <strong>{t("result.valid_mix_hint", { summary: adjustmentSummary, alloy: productName })}</strong>
@@ -386,7 +386,7 @@ export const ResultCard = memo(function ResultCard({
         )}
 
         {bestMatch?.isExact && excessMessage && evaluation.totalUnits >= 100 && evaluation.totalUnits % 100 > 0 && (
-          <Alert className="border-primary/35 bg-primary/10">
+          <Alert className="rounded-[1.2rem] border-primary/35 bg-primary/10">
             <AlertTriangle className="h-4 w-4 text-primary" aria-hidden="true" />
             <AlertDescription className="text-foreground">
               <strong>{t("result.excess_label")}</strong> {excessMessage}
@@ -395,7 +395,7 @@ export const ResultCard = memo(function ResultCard({
         )}
 
         {hasContamination && (
-          <Alert variant="destructive" role="alert" aria-live="assertive">
+          <Alert variant="destructive" className="rounded-[1.2rem]" role="alert" aria-live="assertive">
             <XCircle className="h-4 w-4" aria-hidden="true" />
             <AlertDescription>
               {t("result.contamination", {
@@ -406,14 +406,14 @@ export const ResultCard = memo(function ResultCard({
         )}
 
         {!bestMatch && totalUnits > 0 && (
-          <Alert variant="destructive" role="alert" aria-live="assertive">
+          <Alert variant="destructive" className="rounded-[1.2rem]" role="alert" aria-live="assertive">
             <XCircle className="h-4 w-4" aria-hidden="true" />
             <AlertDescription>{t("result.no_match")}</AlertDescription>
           </Alert>
         )}
 
         {bestMatch?.isExact ? (
-          <Alert className="border-secondary/40 bg-secondary/10" role="status" aria-live="polite">
+          <Alert className="rounded-[1.2rem] border-secondary/40 bg-secondary/10" role="status" aria-live="polite">
             <CheckCircle2 className="h-4 w-4 text-secondary-foreground" aria-hidden="true" />
             <AlertDescription className="text-foreground">
               {t("result.valid_message", { alloy: productName })}
@@ -421,7 +421,7 @@ export const ResultCard = memo(function ResultCard({
           </Alert>
         ) : (
           nuggetAdjustments.length > 0 && (
-            <Button onClick={handleAdjustToValid} className="w-full" size="lg">
+            <Button onClick={handleAdjustToValid} className="w-full rounded-[1.2rem]" size="lg">
               <Wand2 className="mr-2 h-4 w-4" aria-hidden="true" />
               {t("result.adjust_button", { alloy: productName })}
             </Button>

@@ -14,7 +14,6 @@ import type {
 } from "@/features/metallurgy/types/planner";
 import { getLocalePath, useTranslation } from "@/i18n";
 import { trackPlannerOpenInCalculator } from "@/lib/analytics";
-import { cn } from "@/lib/utils";
 
 function formatInventoryList(
   inventory: Record<MetalId, number>,
@@ -81,10 +80,10 @@ export function PlannerOutput({
 
   if (resultList.length === 0) {
     return (
-      <Card className="rounded-[1.75rem] border-border/30 bg-card/90 shadow-sm">
+      <Card className="surface-panel rounded-[1.9rem] border-border/30 bg-card/92">
         <CardContent className="flex min-h-48 flex-col items-center justify-center gap-3 text-center">
           <Pickaxe className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-          <p className="max-w-xl text-sm leading-6 text-muted-foreground">{t("planner.find.empty")}</p>
+          <p className="max-w-xl text-sm leading-6 text-muted-foreground" data-pretty-text>{t("planner.find.empty")}</p>
         </CardContent>
       </Card>
     );
@@ -102,13 +101,13 @@ export function PlannerOutput({
         const targetInputMax = recipePlan?.maxCraftableIngots ?? result.totalIngots;
 
         return (
-          <Card key={result.recipeId} className="rounded-[1.75rem] border-border/30 bg-card/90 shadow-sm">
+          <Card key={result.recipeId} className="surface-panel rounded-[1.9rem] border-border/30 bg-card/92">
             <CardHeader className="gap-3 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-center gap-3">
                 <img
                   src={getIngotImage(result.recipeId)}
                   alt=""
-                  className="h-14 w-14 rounded-2xl bg-background/70 p-2 object-contain ring-1 ring-inset ring-border/25"
+                  className="image-outline h-14 w-14 rounded-2xl bg-background/70 p-2 object-contain ring-1 ring-inset ring-border/25"
                   aria-hidden="true"
                 />
                 <div className="space-y-1">
@@ -138,12 +137,12 @@ export function PlannerOutput({
 
             <CardContent className="space-y-4">
               <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-                <div className="space-y-3 rounded-3xl border border-border/30 bg-background/45 p-4">
+                <div className="surface-subtle space-y-3 rounded-3xl border border-border/30 bg-background/45 p-4">
                   <div className="flex flex-wrap gap-2">
-                    <Badge className="rounded-full bg-primary/12 px-3 py-1.5 text-foreground">
+                    <Badge className="surface-chip rounded-full bg-primary/12 px-3 py-1.5 text-foreground">
                       {t("planner.find.max_output", { n: result.totalIngots })}
                     </Badge>
-                    <Badge variant="secondary" className="rounded-full px-3 py-1.5 text-foreground">
+                    <Badge variant="secondary" className="surface-chip rounded-full px-3 py-1.5 text-foreground">
                       {t("planner.find.limiting_metal", {
                         metal: result.limitingMetalId
                           ? getMetalLabel(result.limitingMetalId)
@@ -164,10 +163,10 @@ export function PlannerOutput({
                   </p>
                 </div>
 
-                <div className="space-y-3 rounded-3xl border border-border/30 bg-background/45 p-4">
+                <div className="surface-subtle space-y-3 rounded-3xl border border-border/30 bg-background/45 p-4">
                   <p className="text-sm font-semibold text-foreground">{t("planner.find.run_summary")}</p>
                   {result.plan.runs.map((run) => (
-                    <div key={`${result.recipeId}-${run.runNumber}`} className="rounded-2xl bg-card/85 px-3 py-2 text-sm">
+                    <div key={`${result.recipeId}-${run.runNumber}`} className="surface-chip rounded-2xl bg-card/85 px-3 py-2 text-sm">
                       <p className="font-semibold text-foreground">
                         {t("planner.run.title", { n: run.runNumber })}
                       </p>
@@ -183,9 +182,9 @@ export function PlannerOutput({
               </div>
 
               {isExpanded && recipePlan && (
-                <div className="space-y-4 rounded-3xl border border-border/30 bg-background/35 p-4">
+                <div className="surface-subtle space-y-4 rounded-3xl border border-border/30 bg-background/35 p-4">
                   <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_12rem]">
-                    <div className="rounded-2xl border border-border/25 bg-card/80 px-4 py-3">
+                    <div className="surface-chip rounded-2xl border border-border/25 bg-card/80 px-4 py-3">
                       <p className="text-sm font-semibold text-foreground">{t("planner.target.recipe")}</p>
                       <p className="mt-1 text-lg font-semibold text-foreground">{getRecipeName(result.recipeId)}</p>
                     </div>
@@ -200,7 +199,7 @@ export function PlannerOutput({
                   </div>
 
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-                    <Card className="rounded-3xl border-border/30 bg-background/40 shadow-none">
+                    <Card className="surface-subtle rounded-3xl border-border/30 bg-background/40 shadow-none">
                       <CardHeader>
                         <CardTitle>{t("planner.plan.summary_title")}</CardTitle>
                         <CardDescription>
@@ -217,10 +216,10 @@ export function PlannerOutput({
                       </CardHeader>
                       <CardContent className="space-y-3">
                         <div className="flex flex-wrap gap-2">
-                          <Badge className="rounded-full bg-primary/12 px-3 py-1.5 text-foreground">
+                          <Badge className="surface-chip rounded-full bg-primary/12 px-3 py-1.5 text-foreground">
                             {t("planner.plan.total_ingots", { n: selectedTargetIngots })}
                           </Badge>
-                          <Badge variant="secondary" className="rounded-full px-3 py-1.5 text-foreground">
+                          <Badge variant="secondary" className="surface-chip rounded-full px-3 py-1.5 text-foreground">
                             {t("planner.plan.total_runs", { n: recipePlan.plan?.runs.length ?? 0 })}
                           </Badge>
                         </div>
@@ -233,7 +232,7 @@ export function PlannerOutput({
                       </CardContent>
                     </Card>
 
-                    <Card className="rounded-3xl border-border/30 bg-background/40 shadow-none">
+                    <Card className="surface-subtle rounded-3xl border-border/30 bg-background/40 shadow-none">
                       <CardHeader>
                         <CardTitle>{t("planner.target.breakpoints")}</CardTitle>
                       </CardHeader>
@@ -258,7 +257,7 @@ export function PlannerOutput({
                   </div>
 
                   {!recipePlan.plan ? (
-                    <Alert className="border-primary/35 bg-primary/10">
+                    <Alert className="rounded-[1.2rem] border-primary/35 bg-primary/10">
                       <AlertTriangle className="h-4 w-4 text-primary" aria-hidden="true" />
                       <AlertDescription className="text-foreground">
                         {t("planner.target.invalid_target", {
@@ -284,7 +283,7 @@ export function PlannerOutput({
                         const calculatorHref = `${getLocalePath(locale, "/")}?${calculatorParams.toString()}`;
 
                         return (
-                          <Card key={`${result.recipeId}-${run.runNumber}-detail`} className="rounded-3xl border-border/30 bg-background/30 shadow-none">
+                          <Card key={`${result.recipeId}-${run.runNumber}-detail`} className="surface-subtle rounded-3xl border-border/30 bg-background/30 shadow-none">
                             <CardHeader className="gap-3 lg:flex-row lg:items-center lg:justify-between">
                               <div className="space-y-1">
                                 <CardTitle className="text-xl">{t("planner.run.title", { n: run.runNumber })}</CardTitle>
@@ -296,25 +295,28 @@ export function PlannerOutput({
                                 </CardDescription>
                               </div>
 
-                              <a
-                                href={calculatorHref}
-                                onClick={() =>
-                                  trackPlannerOpenInCalculator({
-                                    recipe: result.recipeId,
-                                    run: run.runNumber,
-                                    ingots: run.ingotsProduced,
-                                  })}
-                                className={cn(
-                                  "inline-flex h-11 items-center justify-center rounded-full border border-border/45 bg-background/70 px-4 text-sm font-semibold text-foreground transition-colors hover:bg-accent/50",
-                                )}
+                              <Button
+                                asChild
+                                variant="outline"
+                                className="surface-chip h-11 rounded-full border-border/45 bg-background/70 px-4"
                               >
-                                {t("planner.run.open_in_calculator")}
-                                <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
-                              </a>
+                                <a
+                                  href={calculatorHref}
+                                  onClick={() =>
+                                    trackPlannerOpenInCalculator({
+                                      recipe: result.recipeId,
+                                      run: run.runNumber,
+                                      ingots: run.ingotsProduced,
+                                    })}
+                                >
+                                  {t("planner.run.open_in_calculator")}
+                                  <ArrowRight data-icon="inline-end" />
+                                </a>
+                              </Button>
                             </CardHeader>
 
                             <CardContent className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-                              <div className="rounded-2xl border border-border/25 bg-card/80 p-3">
+                              <div className="surface-chip rounded-2xl border border-border/25 bg-card/80 p-3">
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                                   {t("planner.run.crucible_load")}
                                 </p>
@@ -322,7 +324,7 @@ export function PlannerOutput({
                                   {run.crucible.slots
                                     .filter((slot) => slot.metalId && slot.nuggets > 0)
                                     .map((slot) => (
-                                      <div key={slot.id} className="rounded-2xl bg-background/65 px-3 py-2 text-sm">
+                                      <div key={slot.id} className="surface-chip rounded-2xl bg-background/65 px-3 py-2 text-sm">
                                         <p className="font-semibold text-foreground">
                                           {getMetalLabel(slot.metalId as MetalId)}
                                         </p>
@@ -334,7 +336,7 @@ export function PlannerOutput({
                                 </div>
                               </div>
 
-                              <div className="rounded-2xl border border-border/25 bg-card/80 p-3">
+                              <div className="surface-chip rounded-2xl border border-border/25 bg-card/80 p-3">
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                                   {t("planner.run.remaining_inventory")}
                                 </p>

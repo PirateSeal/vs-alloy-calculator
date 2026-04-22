@@ -70,22 +70,22 @@ export function LeatherSummaryCard({
         <div className="rounded-[1.75rem] bg-background/70 p-4 ring-1 ring-inset ring-border/20">
           <div className="grid gap-4 lg:grid-cols-[auto_auto_auto_minmax(0,1fr)] lg:items-center">
             <div className="flex size-16 items-center justify-center rounded-3xl bg-card/90 ring-1 ring-inset ring-border/20">
-              <img src={inputProfile.rawAssetPath} alt="" aria-hidden="true" className="size-12 object-contain" />
+              <img src={inputProfile.rawAssetPath} alt="" aria-hidden="true" className="size-12 object-contain image-outline rounded" />
             </div>
             <div className="hidden justify-center lg:flex">
               <ArrowRight className="h-5 w-5 text-muted-foreground" />
             </div>
             <div className="flex size-16 items-center justify-center rounded-3xl bg-card/90 ring-1 ring-inset ring-border/20">
-              <img src={resultAssetPath} alt="" aria-hidden="true" className="size-12 object-contain" />
+              <img src={resultAssetPath} alt="" aria-hidden="true" className="size-12 object-contain image-outline rounded" />
             </div>
             <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                 {selectionLabel}
               </p>
-              <p className="mt-1 text-2xl font-semibold leading-tight text-foreground">{resultText}</p>
+              <p className="mt-1 text-2xl font-semibold leading-tight text-foreground tabular-nums">{resultText}</p>
               <p className="mt-2 text-sm text-muted-foreground">{subtitle}</p>
               {showTargetNote ? (
-                <p className="mt-2 text-sm text-primary">
+                <p className="mt-2 text-sm text-primary tabular-nums">
                   {t("leather.summary.target", { target: calculation.targetLeather })}
                 </p>
               ) : null}
@@ -102,14 +102,14 @@ export function LeatherSummaryCard({
               <div className="flex items-start gap-3">
                 {metric.assetPath ? (
                   <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                    <img src={metric.assetPath} alt="" aria-hidden="true" className="size-8 object-contain" />
+                    <img src={metric.assetPath} alt="" aria-hidden="true" className="size-8 object-contain image-outline rounded" />
                   </div>
                 ) : null}
                 <div className="min-w-0">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted-foreground">
                     {metric.label}
                   </p>
-                  <p className="mt-1 text-lg font-semibold text-foreground">{metric.value}</p>
+                  <p className="mt-1 text-lg font-semibold text-foreground tabular-nums">{metric.value}</p>
                   {metric.hint ? <p className="mt-1 text-xs text-muted-foreground">{metric.hint}</p> : null}
                 </div>
               </div>

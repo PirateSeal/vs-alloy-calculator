@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
-import { Maximize2, Wand2 } from "lucide-react";
+import { Maximize2, Sparkles, Wand2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -10,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
@@ -141,138 +142,173 @@ export function CalculatorControls({
 
   return (
     <section
-      className="rounded-[1.75rem] border border-border/35 bg-card/90 p-5 shadow-sm"
+      className="surface-panel overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92"
       aria-label={t("result.load_preset")}
     >
-      <div className="grid gap-4 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)] xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_auto] xl:items-end">
-        <div className="space-y-2">
-          <label htmlFor="preset-select" className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("result.load_preset")}
-          </label>
-          <Select value={selectedRecipeId} onValueChange={handlePresetChange}>
-            <SelectTrigger
-              id="preset-select"
-              aria-label={t("result.choose_alloy")}
-              className="h-12 w-full rounded-xl border-border/50 bg-background/70"
-            >
-              <SelectValue placeholder={t("result.choose_alloy")}>
-                {currentRecipe && (
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={getIngotImage(currentRecipe.id)}
-                      alt=""
-                      className="h-8 w-8 object-contain"
-                      aria-hidden="true"
-                    />
-                    <span className="text-base">{getRecipeName(currentRecipe.id)}</span>
-                  </div>
-                )}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              {recipes.map((recipe) => (
-                <SelectItem key={recipe.id} value={recipe.id} className="py-2">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={getIngotImage(recipe.id)}
-                      alt=""
-                      className="h-8 w-8 object-contain"
-                      aria-hidden="true"
-                    />
-                    <span className="text-base">{getRecipeName(recipe.id)}</span>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {!controlsEnabled && (
-            <p className="text-xs text-muted-foreground">
-              {t("result.choose_alloy")}
-            </p>
-          )}
-        </div>
-
-        <div className={cn("space-y-2 transition-opacity", !controlsEnabled && "opacity-45")}>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{t("result.amount")}</span>
-            <span className="font-medium text-foreground">
-              {ingotAmount === 1
-                ? t("result.ingots", { n: 1 })
-                : t("result.ingots_plural", { n: ingotAmount })}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="flex min-h-[44px] flex-1 items-center"
-              style={sliderStyle}
-            >
-              <Slider
-                value={[ingotAmount]}
-                onValueChange={handleIngotChange}
-                min={1}
-                max={maxIngots}
-                step={1}
-                aria-label={t("result.ingot_amount_aria")}
-                disabled={!selectedRecipe}
-                className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
-              />
+      <div className="relative overflow-hidden px-5 py-4 sm:px-6">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,189,141,0.14),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(143,103,62,0.08),transparent_34%)]" />
+        <div className="relative space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-primary/90">
+                {t("result.load_preset")}
+              </p>
+              {controlsEnabled ? (
+                <span className="text-xs text-muted-foreground tabular-nums">
+                  · {t("planner.target.max_craftable", { n: maxIngots })}
+                </span>
+              ) : null}
             </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleMaximize}
-                    disabled={!selectedRecipe}
-                    className="h-11 w-11 px-2"
-                    title={t("result.maximize_title")}
-                  >
-                    <Maximize2 className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("result.maximize_title")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </div>
 
-        <div
-          className={cn(
-            "flex min-h-12 flex-wrap items-center gap-3 rounded-2xl bg-background/35 p-3 ring-1 ring-inset ring-border/25 transition-opacity",
-            !controlsEnabled && "opacity-45",
-          )}
-        >
-          <Switch id="economical-mode" checked={useEconomical} onCheckedChange={setUseEconomical} disabled={!selectedRecipe} />
-          <label htmlFor="economical-mode" className={cn("text-sm", controlsEnabled && "cursor-pointer")}>
-            {t("result.economical_label")}
-          </label>
-          {useEconomical && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleEconomicalOptimize}
-                    disabled={!selectedRecipe}
-                    className="ml-auto h-11 w-11 p-0"
-                  >
-                    <Wand2 className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {ingotAmount === 1
-                      ? t("result.economical_tooltip", { n: 1 })
-                      : t("result.economical_tooltip_plural", { n: ingotAmount })}
+            <div
+              className={cn(
+                "surface-subtle flex min-h-12 flex-wrap items-center gap-3 rounded-[1.4rem] bg-background/45 p-3 ring-1 ring-inset ring-border/25 transition-opacity",
+                !controlsEnabled && "opacity-45",
+              )}
+            >
+              <Switch
+                id="economical-mode"
+                checked={useEconomical}
+                onCheckedChange={setUseEconomical}
+                disabled={!selectedRecipe}
+              />
+              <Label
+                htmlFor="economical-mode"
+                className={cn(controlsEnabled && "cursor-pointer")}
+              >
+                {t("result.economical_label")}
+              </Label>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleEconomicalOptimize}
+                disabled={!selectedRecipe || !useEconomical}
+                className="ml-auto rounded-full px-3"
+              >
+                <Wand2 className="h-4 w-4" aria-hidden="true" />
+                {t("planner.mode.economical")}
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.95fr)]">
+            <div className="surface-subtle flex flex-col gap-2 rounded-[1.5rem] bg-background/42 p-4 ring-1 ring-inset ring-border/25">
+              <Label
+                htmlFor="preset-select"
+                className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                {t("result.choose_alloy")}
+              </Label>
+              <Select value={selectedRecipeId} onValueChange={handlePresetChange}>
+                <SelectTrigger
+                  id="preset-select"
+                  aria-label={t("result.choose_alloy")}
+                  className="h-14 w-full rounded-[1rem] border-border/50 bg-background/78"
+                >
+                  <SelectValue placeholder={t("result.choose_alloy")}>
+                    {currentRecipe && (
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={getIngotImage(currentRecipe.id)}
+                          alt=""
+                          className="image-outline h-9 w-9 rounded-xl bg-background/75 p-1.5 object-contain"
+                          aria-hidden="true"
+                        />
+                        <span className="text-base">{getRecipeName(currentRecipe.id)}</span>
+                      </div>
+                    )}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {recipes.map((recipe) => (
+                    <SelectItem key={recipe.id} value={recipe.id} className="py-2">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={getIngotImage(recipe.id)}
+                          alt=""
+                          className="image-outline h-8 w-8 rounded-lg bg-background/75 p-1 object-contain"
+                          aria-hidden="true"
+                        />
+                        <span className="text-base">{getRecipeName(recipe.id)}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!controlsEnabled && (
+                <p className="text-xs text-muted-foreground" data-pretty-text>
+                  {t("result.choose_alloy")}
+                </p>
+              )}
+            </div>
+
+            <div className={cn("surface-subtle rounded-[1.5rem] bg-background/42 p-4 ring-1 ring-inset ring-border/25 transition-opacity", !controlsEnabled && "opacity-45")}>
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    {t("result.amount")}
                   </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+                  <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
+                    {ingotAmount === 1
+                      ? t("result.ingots", { n: 1 })
+                      : t("result.ingots_plural", { n: ingotAmount })}
+                  </p>
+                </div>
+                <Badge variant="secondary" className="rounded-full bg-background/72 px-3 py-1 ring-1 ring-inset ring-border/25">
+                  {t("planner.target.max_craftable", { n: maxIngots })}
+                </Badge>
+              </div>
+
+              <div className="mt-4 flex items-center gap-3">
+                <div className="flex min-h-[44px] flex-1 items-center" style={sliderStyle}>
+                  <Slider
+                    value={[ingotAmount]}
+                    onValueChange={handleIngotChange}
+                    min={1}
+                    max={maxIngots}
+                    step={1}
+                    aria-label={t("result.ingot_amount_aria")}
+                    disabled={!selectedRecipe}
+                    className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleMaximize}
+                  disabled={!selectedRecipe}
+                  className="h-11 rounded-full px-3"
+                  title={t("result.maximize_title")}
+                >
+                  <Maximize2 className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{t("result.maximize_title")}</span>
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {controlsEnabled && currentRecipe ? (
+            <div className="surface-subtle flex flex-wrap items-center gap-3 rounded-[1.4rem] bg-background/35 p-3 ring-1 ring-inset ring-border/20">
+              <img
+                src={getIngotImage(currentRecipe.id)}
+                alt=""
+                className="image-outline h-10 w-10 rounded-2xl bg-background/75 p-1.5 object-contain"
+                aria-hidden="true"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-foreground">{getRecipeName(currentRecipe.id)}</p>
+                <p className="text-xs text-muted-foreground" data-pretty-text>
+                  {useEconomical ? t("result.economical_label") : t("result.maximize_title")}
+                </p>
+              </div>
+              <Badge className="gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-primary hover:bg-primary/10">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                {ingotAmount === 1
+                  ? t("result.ingots", { n: 1 })
+                  : t("result.ingots_plural", { n: ingotAmount })}
+              </Badge>
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

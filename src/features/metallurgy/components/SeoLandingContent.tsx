@@ -64,7 +64,7 @@ export function SeoLandingContent() {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="stagger-surface-children grid gap-4 lg:grid-cols-3">
         <Card className="rounded-[1.75rem] border-border/30 bg-card/90 shadow-sm">
           <CardHeader className="space-y-2">
             <h2 className="text-xl font-semibold tracking-tight">{seo.supportedAlloysHeading}</h2>

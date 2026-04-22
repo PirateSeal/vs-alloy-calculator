@@ -32,7 +32,7 @@ export function CompositionCard({
 
   if (totalUnits === 0) {
     return (
-      <Card className="overflow-hidden rounded-[1.75rem] border border-border/35 bg-card/90 shadow-sm">
+      <Card className="surface-panel overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92">
         <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-4">
           <div className="flex items-center gap-2">
             <FlaskConical className="h-5 w-5 text-primary" aria-hidden="true" />
@@ -40,7 +40,7 @@ export function CompositionCard({
           </div>
         </CardHeader>
         <CardContent className="p-5">
-          <p className="rounded-2xl bg-background/30 px-4 py-6 text-center text-sm text-muted-foreground ring-1 ring-inset ring-border/25">
+          <p className="surface-subtle rounded-[1.4rem] bg-background/30 px-4 py-6 text-center text-sm text-muted-foreground ring-1 ring-inset ring-border/25" data-pretty-text>
             {t("composition.empty")}
           </p>
         </CardContent>
@@ -60,7 +60,7 @@ export function CompositionCard({
     .join(", ");
 
   return (
-    <Card className="animate-surface-in animate-delay-3 overflow-hidden rounded-[1.75rem] border border-border/35 bg-card/90 shadow-sm">
+    <Card className="surface-panel animate-surface-in animate-delay-3 overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92">
       <CardHeader className="border-b border-border/30 bg-background/20 px-5 py-4">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -78,7 +78,7 @@ export function CompositionCard({
           </div>
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-background/60 transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:hidden"
+            className="surface-chip inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/60 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:hidden motion-reduce:active:scale-100"
             onClick={() => setIsExpanded((current) => !current)}
             aria-expanded={isExpanded}
             aria-controls={contentId}
@@ -97,7 +97,7 @@ export function CompositionCard({
         className={`space-y-4 p-5 ${isExpanded ? "block" : "hidden sm:block"}`}
       >
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl bg-background/30 p-4 ring-1 ring-inset ring-border/25">
+          <div className="surface-subtle rounded-[1.4rem] bg-background/30 p-4 ring-1 ring-inset ring-border/25">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {t("composition.total_amount")}
             </p>
@@ -111,7 +111,7 @@ export function CompositionCard({
             </p>
           </div>
 
-          <div className="rounded-2xl bg-background/30 p-4 ring-1 ring-inset ring-border/25">
+          <div className="surface-subtle rounded-[1.4rem] bg-background/30 p-4 ring-1 ring-inset ring-border/25">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
               {t("composition.rarity_cost")}
             </p>
@@ -126,7 +126,7 @@ export function CompositionCard({
 
         <section className="space-y-3" aria-label={t("composition.title")}>
           <div
-            className="flex h-4 overflow-hidden rounded-full bg-background/65 ring-1 ring-inset ring-border/30"
+            className="surface-subtle flex h-5 overflow-hidden rounded-full bg-background/65 ring-1 ring-inset ring-border/30"
             role="img"
             aria-label={t("composition.bar_chart_aria", { segments: chartLabel })}
           >
@@ -161,7 +161,7 @@ export function CompositionCard({
                 <Badge
                   key={amount.metalId}
                   variant="secondary"
-                  className="h-7 rounded-full border border-border/45 px-2.5 text-[11px] font-semibold"
+                  className="surface-chip h-8 rounded-full border border-border/45 px-2.5 text-[11px] font-semibold"
                   style={
                     metal
                       ? {
@@ -191,7 +191,7 @@ export function CompositionCard({
               </h3>
               <div className="flex items-center gap-2">
                 {bestMatch.isExact && (
-                  <Badge variant="secondary" className="h-7 rounded-full border border-success/30 bg-success/10 px-2.5 text-[11px] font-semibold text-success">
+                  <Badge variant="secondary" className="surface-chip h-8 rounded-full border border-success/30 bg-success/10 px-2.5 text-[11px] font-semibold text-success">
                     <Check className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
                     {t("composition.status_valid")}
                   </Badge>
@@ -199,7 +199,7 @@ export function CompositionCard({
                 <button
                   type="button"
                   onClick={() => setShowValidSweetSpots((current) => !current)}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/50 text-muted-foreground transition-colors hover:bg-accent/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="surface-chip inline-flex h-9 w-9 items-center justify-center rounded-full bg-background/50 text-muted-foreground transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/40 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:active:scale-100"
                   aria-expanded={sweetSpotsExpanded}
                   aria-label={t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}
                 >
@@ -223,14 +223,14 @@ export function CompositionCard({
                 return (
                   <div
                     key={component.metalId}
-                    className="space-y-2 rounded-2xl bg-background/25 p-3 ring-1 ring-inset ring-border/25"
+                    className="surface-subtle space-y-2 rounded-[1.35rem] bg-background/25 p-3 ring-1 ring-inset ring-border/25"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-2">
                         <img
                           src={metal?.nuggetImage}
                           alt=""
-                          className="h-5 w-5 object-contain"
+                          className="image-outline h-5 w-5 rounded-md bg-background/70 p-0.5 object-contain"
                           aria-hidden="true"
                         />
                         <span className="min-w-0 truncate text-sm font-medium">
