@@ -8,9 +8,11 @@ import { PlannerView } from "./components/PlannerView";
 import { ResultCard } from "./components/ResultCard";
 import { useMetallurgyUrlSync } from "./store/useMetallurgyUrlSync";
 import { useMetallurgyView } from "./store/useMetallurgyView";
+import { useTranslation } from "@/i18n";
 import type { AlloyRecipe } from "./types/alloys";
 
 export function MetallurgyApp() {
+  const { t } = useTranslation();
   const {
     activeView,
     calculatorCrucible,
@@ -48,8 +50,18 @@ export function MetallurgyApp() {
 
   return (
     activeView === "calculator" ? (
-      <div className="grid w-full gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] xl:items-start">
-        <section className="flex min-w-0 flex-col gap-4">
+      <div className="space-y-4">
+        <header className="animate-surface-in flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-1">
+          <h1 id="calculator-title" className="text-xl font-semibold tracking-tight sm:text-2xl">
+            {t("header.nav.calculator")}
+          </h1>
+          <p className="text-sm text-muted-foreground" data-pretty-text>
+            {t("header.nav.calculator_desc")}
+          </p>
+        </header>
+
+        <div className="grid w-full gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] xl:items-start">
+          <section className="flex min-w-0 flex-col gap-4" aria-labelledby="calculator-title">
           <div className="order-2 animate-surface-in animate-delay-1 xl:order-1">
             <CalculatorControls
               evaluation={evaluation}
@@ -86,6 +98,7 @@ export function MetallurgyApp() {
             bestMatch={evaluation.bestMatch}
           />
         </aside>
+        </div>
       </div>
     ) : activeView === "planner" ? (
       <PlannerView recipes={ALLOY_RECIPES} state={plannerState} onStateChange={setPlannerState} />

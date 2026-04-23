@@ -26,7 +26,11 @@ export function AppShellLayout({
   mainClassName,
 }: AppShellLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="relative min-h-dvh overflow-x-clip bg-background text-foreground">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[28rem] bg-[radial-gradient(ellipse_90%_100%_at_50%_0%,rgba(239,189,141,0.18),rgba(239,189,141,0.06)_40%,transparent_85%)]"
+      />
       <ShellNavigationRail
         activeView={activeView}
         activeDomain={activeDomain}
@@ -47,12 +51,12 @@ export function AppShellLayout({
         <TranslationNotice />
         <main
           className={cn(
-            "mx-auto w-full max-w-[1680px] flex-1 px-4 pb-36 pt-4 sm:px-6 lg:px-8 lg:pb-8 lg:pt-5",
+            "relative mx-auto w-full max-w-[1680px] flex-1 px-4 pb-36 pt-5 sm:px-6 lg:px-8 lg:pb-8 lg:pt-6",
             mainClassName,
           )}
           role="main"
         >
-          {children}
+          <div className="space-y-5">{children}</div>
         </main>
         <Footer />
       </div>

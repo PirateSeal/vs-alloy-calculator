@@ -10,7 +10,7 @@ export function Footer() {
       <div className="mx-auto flex w-full max-w-[1680px] flex-col gap-2 px-4 py-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span>{t("footer.copyright")}</span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] opacity-70">
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] opacity-70 tabular-nums">
             v{__APP_VERSION__}
           </span>
         </span>
@@ -19,7 +19,7 @@ export function Footer() {
             trigger={
               <button
                 type="button"
-                className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {t("footer.credits")}
               </button>
@@ -29,7 +29,7 @@ export function Footer() {
             trigger={
               <button
                 type="button"
-                className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {t("footer.privacy")}
               </button>
@@ -39,7 +39,7 @@ export function Footer() {
             href="https://github.com/PirateSeal/vs-alloy-calculator/blob/master/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("footer.license")}
           </a>
@@ -47,7 +47,7 @@ export function Footer() {
             href="https://github.com/PirateSeal/vs-alloy-calculator"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            className="inline-flex min-h-10 items-center rounded-full px-2.5 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             {t("footer.github")}
           </a>

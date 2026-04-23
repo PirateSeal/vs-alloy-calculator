@@ -1,7 +1,7 @@
 import { Info } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { NumberInput } from "@/components/ui/number-input";
 import {
   Select,
@@ -54,11 +54,7 @@ export function LeatherInputsCard({
 
   return (
     <Card className="h-full border-border/20 bg-card/70 shadow-sm ring-1 ring-inset ring-border/20">
-      <CardHeader className="pb-4">
-        <CardTitle>{t("leather.title")}</CardTitle>
-        <CardDescription>{t("leather.description")}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-6">
+      <CardContent className="flex flex-col gap-6 p-6">
         <div className="flex flex-col gap-2">
           <p className="text-sm font-medium text-foreground">{t("leather.inputs.workflow")}</p>
           <div className="grid gap-2 sm:grid-cols-2">

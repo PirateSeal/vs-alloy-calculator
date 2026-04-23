@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Maximize2, Wand2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -8,9 +8,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { track } from "@/lib/analytics";
@@ -29,6 +29,8 @@ interface CalculatorControlsProps {
   onCrucibleChange: (crucible: CrucibleState) => void;
 }
 
+type OptimizationMode = "economical" | "maximize";
+
 export function CalculatorControls({
   evaluation,
   recipes,
@@ -41,6 +43,7 @@ export function CalculatorControls({
   const [useEconomical, setUseEconomical] = useState(true);
   const selectedRecipeId = selectedRecipe?.id || "";
   const controlsEnabled = Boolean(selectedRecipe);
+  const mode: OptimizationMode = useEconomical ? "economical" : "maximize";
 
   const currentIngotAmount = useMemo(() => {
     if (evaluation.totalNuggets === 0) return 1;
@@ -62,14 +65,11 @@ export function CalculatorControls({
   }, [selectedRecipe, currentIngotAmount, maxIngots]);
 
   const currentRecipe = recipes.find((recipe) => recipe.id === selectedRecipeId);
+  const accentColor = currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333";
 
-  const sliderStyle = useMemo(
-    () =>
-      ({
-        "--slider-color": currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333",
-      }) as React.CSSProperties,
-    [currentRecipe],
-  );
+  const sliderStyle = {
+    "--slider-color": accentColor,
+  } as React.CSSProperties;
 
   const handlePresetChange = (recipeId: string) => {
     const recipe = recipes.find((item) => item.id === recipeId);
@@ -101,16 +101,16 @@ export function CalculatorControls({
     onLoadPreset(selectedRecipe, newAmount);
   };
 
-  const handleMaximize = () => {
+  const runMaximize = () => {
     if (!selectedRecipe) return;
 
-    setUseEconomical(false);
     const result = optimizeRecipe({
       recipe: selectedRecipe,
       mode: "maximize",
     });
 
     if (result.success && result.crucible) {
+      setUseEconomical(false);
       onCrucibleChange(result.crucible);
       track("optimize-clicked", {
         strategy: "maximize",
@@ -120,7 +120,7 @@ export function CalculatorControls({
     }
   };
 
-  const handleEconomicalOptimize = () => {
+  const runEconomical = () => {
     if (!selectedRecipe) return;
 
     const result = optimizeRecipe({
@@ -130,6 +130,7 @@ export function CalculatorControls({
     });
 
     if (result.success && result.crucible) {
+      setUseEconomical(true);
       onCrucibleChange(result.crucible);
       track("optimize-clicked", {
         strategy: "economical",
@@ -139,140 +140,162 @@ export function CalculatorControls({
     }
   };
 
+  const handleModeChange = (value: string) => {
+    if (!value || value === mode) return;
+    if (value === "maximize") runMaximize();
+    else runEconomical();
+  };
+
+  const ingotLabel =
+    ingotAmount === 1
+      ? t("result.ingots", { n: 1 })
+      : t("result.ingots_plural", { n: ingotAmount });
+  const sliderDisabled = !selectedRecipe || mode === "maximize";
+
   return (
     <section
-      className="rounded-[1.75rem] border border-border/35 bg-card/90 p-5 shadow-sm"
+      className="surface-panel overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92"
       aria-label={t("result.load_preset")}
     >
-      <div className="grid gap-4 sm:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)] xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)_auto] xl:items-end">
-        <div className="space-y-2">
-          <label htmlFor="preset-select" className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            {t("result.load_preset")}
-          </label>
+      <div className="relative overflow-hidden px-5 py-5 sm:px-6 sm:py-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,189,141,0.14),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(143,103,62,0.08),transparent_34%)]" />
+
+        <div className="relative flex flex-col gap-5">
           <Select value={selectedRecipeId} onValueChange={handlePresetChange}>
             <SelectTrigger
               id="preset-select"
               aria-label={t("result.choose_alloy")}
-              className="h-12 w-full rounded-xl border-border/50 bg-background/70"
+              className="relative h-20 w-full overflow-hidden rounded-[1.5rem] border-0 bg-background/70 px-5 ring-1 ring-inset ring-border/30 transition-[background-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-background/82 focus-visible:ring-primary/45 active:scale-[0.995] motion-reduce:active:scale-100 [&_svg]:size-5 [&_svg]:text-muted-foreground"
             >
-              <SelectValue placeholder={t("result.choose_alloy")}>
+              <SelectValue
+                placeholder={
+                  <span className="flex w-full items-center gap-3">
+                    <span className="flex size-11 items-center justify-center rounded-xl border border-dashed border-border/50 bg-background/55 text-muted-foreground">
+                      <Wand2 className="h-5 w-5" aria-hidden="true" />
+                    </span>
+                    <span className="flex flex-col text-left">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        {t("result.load_preset")}
+                      </span>
+                      <span className="text-base text-muted-foreground/85">
+                        {t("result.choose_alloy")}
+                      </span>
+                    </span>
+                  </span>
+                }
+              >
                 {currentRecipe && (
-                  <div className="flex items-center gap-3">
+                  <span className="flex w-full items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: accentColor }}
+                    />
                     <img
                       src={getIngotImage(currentRecipe.id)}
                       alt=""
-                      className="h-8 w-8 object-contain"
+                      className="image-outline size-11 rounded-xl bg-background/85 p-1 object-contain"
                       aria-hidden="true"
                     />
-                    <span className="text-base">{getRecipeName(currentRecipe.id)}</span>
-                  </div>
+                    <span className="flex min-w-0 flex-col text-left">
+                      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                        {t("result.load_preset")}
+                      </span>
+                      <span className="truncate text-balance text-lg font-semibold leading-tight text-foreground">
+                        {getRecipeName(currentRecipe.id)}
+                      </span>
+                    </span>
+                  </span>
                 )}
               </SelectValue>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-2xl">
               {recipes.map((recipe) => (
                 <SelectItem key={recipe.id} value={recipe.id} className="py-2">
-                  <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="size-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: getAlloyColor(recipe.id) }}
+                    />
                     <img
                       src={getIngotImage(recipe.id)}
                       alt=""
-                      className="h-8 w-8 object-contain"
+                      className="image-outline h-8 w-8 rounded-lg bg-background/75 p-1 object-contain"
                       aria-hidden="true"
                     />
                     <span className="text-base">{getRecipeName(recipe.id)}</span>
-                  </div>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {!controlsEnabled && (
-            <p className="text-xs text-muted-foreground">
-              {t("result.choose_alloy")}
-            </p>
-          )}
-        </div>
 
-        <div className={cn("space-y-2 transition-opacity", !controlsEnabled && "opacity-45")}>
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{t("result.amount")}</span>
-            <span className="font-medium text-foreground">
-              {ingotAmount === 1
-                ? t("result.ingots", { n: 1 })
-                : t("result.ingots_plural", { n: ingotAmount })}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div
-              className="flex min-h-[44px] flex-1 items-center"
-              style={sliderStyle}
-            >
+          <div
+            className={cn(
+              "surface-subtle flex flex-col gap-4 rounded-[1.5rem] bg-background/45 p-4 ring-1 ring-inset ring-border/25 transition-[opacity] duration-200 sm:p-5",
+              !controlsEnabled && "opacity-55",
+            )}
+          >
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex min-w-0 flex-col gap-1">
+                <Label
+                  htmlFor="amount-slider"
+                  className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground"
+                >
+                  {t("result.amount")}
+                </Label>
+                <p className="text-balance text-3xl font-semibold leading-none tracking-tight tabular-nums text-foreground">
+                  {ingotLabel}
+                </p>
+              </div>
+              <span className="text-xs text-muted-foreground tabular-nums">
+                {t("planner.target.max_craftable", { n: maxIngots })}
+              </span>
+            </div>
+
+            <div className="flex min-h-[44px] items-center" style={sliderStyle}>
               <Slider
+                id="amount-slider"
                 value={[ingotAmount]}
                 onValueChange={handleIngotChange}
                 min={1}
                 max={maxIngots}
                 step={1}
                 aria-label={t("result.ingot_amount_aria")}
-                disabled={!selectedRecipe}
+                disabled={sliderDisabled}
                 className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
               />
             </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleMaximize}
-                    disabled={!selectedRecipe}
-                    className="h-11 w-11 px-2"
-                    title={t("result.maximize_title")}
-                  >
-                    <Maximize2 className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>{t("result.maximize_title")}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </div>
 
-        <div
-          className={cn(
-            "flex min-h-12 flex-wrap items-center gap-3 rounded-2xl bg-background/35 p-3 ring-1 ring-inset ring-border/25 transition-opacity",
-            !controlsEnabled && "opacity-45",
-          )}
-        >
-          <Switch id="economical-mode" checked={useEconomical} onCheckedChange={setUseEconomical} disabled={!selectedRecipe} />
-          <label htmlFor="economical-mode" className={cn("text-sm", controlsEnabled && "cursor-pointer")}>
-            {t("result.economical_label")}
-          </label>
-          {useEconomical && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleEconomicalOptimize}
-                    disabled={!selectedRecipe}
-                    className="ml-auto h-11 w-11 p-0"
-                  >
-                    <Wand2 className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {ingotAmount === 1
-                      ? t("result.economical_tooltip", { n: 1 })
-                      : t("result.economical_tooltip_plural", { n: ingotAmount })}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
+            <Separator className="bg-border/30" />
+
+            <ToggleGroup
+              type="single"
+              value={mode}
+              onValueChange={handleModeChange}
+              disabled={!controlsEnabled}
+              className="grid w-full grid-cols-2 gap-2"
+              aria-label={t("result.load_preset")}
+            >
+              <ToggleGroupItem
+                value="economical"
+                variant="outline"
+                className="h-11 gap-2 rounded-full border-border/45 bg-background/55 px-4 text-sm font-medium transition-[background-color,color,border-color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 data-[state=on]:border-primary/60 data-[state=on]:bg-primary/15 data-[state=on]:text-foreground"
+              >
+                <Wand2 data-icon="inline-start" className="h-4 w-4" aria-hidden="true" />
+                {t("result.economical_label")}
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="maximize"
+                variant="outline"
+                className="h-11 gap-2 rounded-full border-border/45 bg-background/55 px-4 text-sm font-medium transition-[background-color,color,border-color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100 data-[state=on]:border-primary/60 data-[state=on]:bg-primary/15 data-[state=on]:text-foreground"
+              >
+                <Maximize2 data-icon="inline-start" className="h-4 w-4" aria-hidden="true" />
+                {t("result.maximize_title")}
+              </ToggleGroupItem>
+            </ToggleGroup>
+          </div>
         </div>
       </div>
     </section>

@@ -60,7 +60,16 @@ export function LeatherApp() {
   });
 
   return (
-    <div className="animate-surface-in space-y-4">
+    <div className="animate-surface-in stagger-surface-children space-y-4">
+      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-1">
+        <h1 id="leather-title" className="text-xl font-semibold tracking-tight sm:text-2xl">
+          {t("leather.title")}
+        </h1>
+        <p className="text-sm text-muted-foreground" data-pretty-text>
+          {t("leather.description")}
+        </p>
+      </header>
+
       <div className="grid gap-4 xl:grid-cols-[minmax(20rem,0.88fr)_minmax(0,1.12fr)] xl:items-stretch">
         <section className="flex flex-col gap-4">
           <LeatherInputsCard

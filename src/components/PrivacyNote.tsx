@@ -21,7 +21,7 @@ export function PrivacyNote({ trigger }: PrivacyNoteProps) {
         <DialogHeader>
           <DialogTitle>{t("privacy.title")}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 text-sm">
+        <div className="stagger-surface-children space-y-4 text-sm" data-pretty-text>
           <section>
             <h3 className="font-semibold text-foreground mb-1">{t("privacy.analytics.title")}</h3>
             <p className="text-muted-foreground">

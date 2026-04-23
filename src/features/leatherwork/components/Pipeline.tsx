@@ -29,24 +29,24 @@ export function Pipeline({ calculation }: PipelineProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-3">
+          <div className="stagger-surface-children flex flex-col gap-3">
             {calculation.pipeline.map((step, index) => (
               <div key={step.id} className="flex flex-col gap-3">
                 <div className="grid gap-3 rounded-[1.75rem] border border-border/20 bg-background/55 p-4 lg:grid-cols-[auto_minmax(0,1.1fr)_minmax(16rem,0.9fr)]">
                   <div className="flex items-start gap-3">
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/12 text-sm font-semibold text-primary">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/12 text-sm font-semibold text-primary tabular-nums">
                       {index + 1}
                     </div>
                     {step.stageAsset ? (
                       <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                        <img src={step.stageAsset} alt="" aria-hidden="true" className="size-10 object-contain" />
+                        <img src={step.stageAsset} alt="" aria-hidden="true" className="size-10 object-contain image-outline rounded" />
                       </div>
                     ) : null}
                   </div>
 
                   <div className="min-w-0">
                     <h3 className="text-base font-semibold text-foreground">{step.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">{step.duration} · {step.summary}</p>
+                    <p className="mt-1 text-sm text-muted-foreground"><span className="tabular-nums">{step.duration}</span> · {step.summary}</p>
                     {step.note ? (
                       <div className="mt-3 flex items-start gap-2 rounded-2xl bg-card/75 px-3 py-2.5 ring-1 ring-inset ring-border/20">
                         <PackageOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary" />

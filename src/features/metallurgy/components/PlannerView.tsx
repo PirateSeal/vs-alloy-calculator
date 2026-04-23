@@ -117,16 +117,15 @@ export function PlannerView({ recipes, state, onStateChange }: PlannerViewProps)
   );
 
   return (
-    <section className="animate-surface-in space-y-4" aria-labelledby="planner-title">
-      <PlannerRecipeSelector
-        scarcityMode={state.scarcityMode}
-        onScarcityModeChange={setScarcityMode}
-      />
+    <section className="animate-surface-in stagger-surface-children space-y-4" aria-labelledby="planner-title">
+      <PlannerRecipeSelector />
 
       <PlannerInventory
         inventory={inventory}
         totalNuggets={totalInventoryNuggets}
+        scarcityMode={state.scarcityMode}
         onMetalChange={updateInventory}
+        onScarcityModeChange={setScarcityMode}
         onClear={clearInventory}
       />
 

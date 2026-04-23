@@ -97,14 +97,14 @@ export const AlloyTableRow = memo(function AlloyTableRow({ recipe, metalById }: 
   const temperature = getTemperatureLabel(recipe.meltTempC ?? null);
 
   return (
-    <article className="animate-surface-in-soft group overflow-hidden rounded-3xl bg-background/60 ring-1 ring-inset ring-border/25 transition-colors hover:bg-background/75 hover:ring-border/35">
+    <article className="animate-surface-in-soft group overflow-hidden rounded-3xl bg-background/60 ring-1 ring-inset ring-border/25 transition-[background-color,box-shadow] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-background/75 hover:ring-border/35">
       <div className="grid gap-4 p-4 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.9fr)_minmax(7.5rem,auto)_4rem] md:items-start md:gap-4 md:p-5">
         <div className="flex min-w-0 gap-3 md:items-start">
           <div
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-background/70 p-1 ring-1 ring-inset ring-border/30"
             aria-hidden="true"
           >
-            <img src={getIngotImage(recipe.id)} alt="" className="h-full w-full object-contain" />
+            <img src={getIngotImage(recipe.id)} alt="" className="h-full w-full object-contain image-outline rounded" />
           </div>
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">

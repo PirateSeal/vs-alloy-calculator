@@ -11,47 +11,44 @@ import {
   BEAR_OPTIONS,
   HIDE_SIZE_OPTIONS,
 } from "@/features/leatherwork/data/hideOptions";
-import { Button } from "@/components/ui/button";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/i18n";
 import { trackLeatherInputChange } from "@/lib/analytics";
 
-interface OptionTileProps {
-  active: boolean;
+interface OptionTileContentProps {
   assetPath: string;
   title: string;
   subtitle: string;
-  onClick: () => void;
 }
 
-const OptionTile = memo(function OptionTile({
-  active,
+const OptionTileContent = memo(function OptionTileContent({
   assetPath,
   title,
   subtitle,
-  onClick,
-}: OptionTileProps) {
+}: OptionTileContentProps) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "flex min-h-[7.5rem] flex-col gap-3 rounded-3xl border px-4 py-4 text-left transition-all",
-        active
-          ? "border-primary/40 bg-primary/10 text-foreground shadow-[inset_0_0_0_1px_rgba(239,189,141,0.16)]"
-          : "border-border/30 bg-background/50 text-muted-foreground hover:border-border/60 hover:bg-background/80 hover:text-foreground",
-      )}
-    >
+    <div className="flex w-full flex-col gap-3 text-left">
       <div className="flex items-center gap-3">
         <div className="flex size-12 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-          <img src={assetPath} alt="" aria-hidden="true" className="size-9 object-contain" />
+          <img src={assetPath} alt="" aria-hidden="true" className="size-9 object-contain image-outline rounded" />
         </div>
         <p className="text-sm font-semibold">{title}</p>
       </div>
       <p className="text-xs leading-relaxed text-muted-foreground">{subtitle}</p>
-    </button>
+    </div>
   );
 });
+
+const tileItemClassName = cn(
+  "flex h-auto min-h-[7.5rem] flex-col items-start justify-start gap-3 rounded-3xl border px-4 py-4 text-left",
+  "transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)]",
+  "active:scale-[0.98] motion-reduce:active:scale-100",
+  "border-border/30 bg-background/50 text-muted-foreground",
+  "hover:border-border/60 hover:bg-background/80 hover:text-foreground",
+  "data-[state=on]:border-primary/40 data-[state=on]:bg-primary/10 data-[state=on]:text-foreground",
+  "data-[state=on]:shadow-[inset_0_0_0_1px_rgba(239,189,141,0.16)]",
+);
 
 function getHideSubtitle(
   workflow: LeatherWorkflow,
@@ -125,39 +122,42 @@ export function HidePicker({
 }: HidePickerProps) {
   const { t } = useTranslation();
   const isBearSelection = bearVariant !== null;
+  const familyValue: "standard" | "bear" = isBearSelection ? "bear" : "standard";
 
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
         <p className="text-sm font-medium text-foreground">{t("leather.inputs.hide_family")}</p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <Button
-            type="button"
-            variant={isBearSelection ? "outline" : "default"}
-            className="justify-start"
-            onClick={() => {
-              if (isBearSelection) {
-                trackLeatherInputChange("family", { value: "standard", workflow });
-              }
+        <ToggleGroup
+          type="single"
+          value={familyValue}
+          onValueChange={(value) => {
+            if (!value || value === familyValue) return;
+            if (value === "standard") {
+              trackLeatherInputChange("family", { value: "standard", workflow });
               onBearVariantChange(null);
-            }}
+            } else {
+              trackLeatherInputChange("family", { value: "bear", workflow });
+              onBearVariantChange(bearVariant ?? "sun");
+            }
+          }}
+          className="grid grid-cols-2 gap-2"
+        >
+          <ToggleGroupItem
+            value="standard"
+            variant="outline"
+            className="h-10 justify-start px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary"
           >
             {t("leather.family.standard")}
-          </Button>
-          <Button
-            type="button"
-            variant={isBearSelection ? "default" : "outline"}
-            className="justify-start"
-            onClick={() => {
-              if (!isBearSelection) {
-                trackLeatherInputChange("family", { value: "bear", workflow });
-              }
-              onBearVariantChange(bearVariant ?? "sun");
-            }}
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value="bear"
+            variant="outline"
+            className="h-10 justify-start px-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground data-[state=on]:border-primary"
           >
             {t("leather.family.bear")}
-          </Button>
-        </div>
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
       {isBearSelection ? (
@@ -166,45 +166,61 @@ export function HidePicker({
             <p className="text-sm font-medium text-foreground">{t("leather.inputs.bear_type")}</p>
             <p className="text-xs text-muted-foreground">{t("leather.notes.bear_supported")}</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <ToggleGroup
+            type="single"
+            value={bearVariant ?? ""}
+            onValueChange={(value) => {
+              if (!value || value === bearVariant) return;
+              const next = value as BearVariant;
+              trackLeatherInputChange("bear_variant", { value: next, workflow });
+              onBearVariantChange(next);
+            }}
+            className="grid grid-cols-2 gap-3 xl:grid-cols-3"
+          >
             {BEAR_OPTIONS.map((option) => (
-              <OptionTile
+              <ToggleGroupItem
                 key={option.variant}
-                active={bearVariant === option.variant}
-                assetPath={option.assetPath}
-                title={t(`leather.bear.${option.variant}`)}
-                subtitle={getBearSubtitle(workflow, option.variant, t)}
-                onClick={() => {
-                  if (bearVariant !== option.variant) {
-                    trackLeatherInputChange("bear_variant", { value: option.variant, workflow });
-                  }
-                  onBearVariantChange(option.variant);
-                }}
-              />
+                value={option.variant}
+                className={tileItemClassName}
+              >
+                <OptionTileContent
+                  assetPath={option.assetPath}
+                  title={t(`leather.bear.${option.variant}`)}
+                  subtitle={getBearSubtitle(workflow, option.variant, t)}
+                />
+              </ToggleGroupItem>
             ))}
-          </div>
+          </ToggleGroup>
         </div>
       ) : (
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-3">
             <p className="text-sm font-medium text-foreground">{t("leather.inputs.hide_type")}</p>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <ToggleGroup
+              type="single"
+              value={size}
+              onValueChange={(value) => {
+                if (!value || value === size) return;
+                const next = value as HideSize;
+                trackLeatherInputChange("hide_size", { value: next, workflow });
+                onSizeChange(next);
+              }}
+              className="grid grid-cols-2 gap-3 xl:grid-cols-4"
+            >
               {HIDE_SIZE_OPTIONS.map((option) => (
-                <OptionTile
+                <ToggleGroupItem
                   key={option.size}
-                  active={size === option.size}
-                  assetPath={option.assetPath}
-                  title={t(`leather.hide_size.${option.size}`)}
-                  subtitle={getHideSubtitle(workflow, option, t)}
-                  onClick={() => {
-                    if (size !== option.size) {
-                      trackLeatherInputChange("hide_size", { value: option.size, workflow });
-                    }
-                    onSizeChange(option.size);
-                  }}
-                />
+                  value={option.size}
+                  className={tileItemClassName}
+                >
+                  <OptionTileContent
+                    assetPath={option.assetPath}
+                    title={t(`leather.hide_size.${option.size}`)}
+                    subtitle={getHideSubtitle(workflow, option, t)}
+                  />
+                </ToggleGroupItem>
               ))}
-            </div>
+            </ToggleGroup>
           </div>
 
           {size === "small" ? (
@@ -213,23 +229,31 @@ export function HidePicker({
                 <p className="text-sm font-medium text-foreground">{t("leather.inputs.animal")}</p>
                 <p className="text-xs text-muted-foreground">{t("leather.notes.small_variants")}</p>
               </div>
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <ToggleGroup
+                type="single"
+                value={animalVariant}
+                onValueChange={(value) => {
+                  if (!value || value === animalVariant) return;
+                  const next = value as AnimalVariant;
+                  trackLeatherInputChange("animal_variant", { value: next, workflow });
+                  onAnimalChange(next);
+                }}
+                className="grid grid-cols-2 gap-3 xl:grid-cols-4"
+              >
                 {ANIMAL_OPTIONS.map((option) => (
-                  <OptionTile
+                  <ToggleGroupItem
                     key={option.variant}
-                    active={animalVariant === option.variant}
-                    assetPath={option.assetPath}
-                    title={t(`leather.animal.${option.variant}`)}
-                    subtitle={getAnimalSubtitle(option, t)}
-                    onClick={() => {
-                      if (animalVariant !== option.variant) {
-                        trackLeatherInputChange("animal_variant", { value: option.variant, workflow });
-                      }
-                      onAnimalChange(option.variant);
-                    }}
-                  />
+                    value={option.variant}
+                    className={tileItemClassName}
+                  >
+                    <OptionTileContent
+                      assetPath={option.assetPath}
+                      title={t(`leather.animal.${option.variant}`)}
+                      subtitle={getAnimalSubtitle(option, t)}
+                    />
+                  </ToggleGroupItem>
                 ))}
-              </div>
+              </ToggleGroup>
             </div>
           ) : null}
         </div>

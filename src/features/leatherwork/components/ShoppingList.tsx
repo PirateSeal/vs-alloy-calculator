@@ -16,7 +16,7 @@ export function ShoppingList({ calculation }: ShoppingListProps) {
         <CardDescription>{t("leather.shopping.description")}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-3">
+        <div className="stagger-surface-children flex flex-col gap-3">
           {calculation.shoppingList.map((item) => (
             <div
               key={item.id}
@@ -25,7 +25,7 @@ export function ShoppingList({ calculation }: ShoppingListProps) {
               <div className="flex items-center gap-3">
                 {item.assetPath ? (
                   <div className="flex size-11 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                    <img src={item.assetPath} alt="" aria-hidden="true" className="size-8 object-contain" />
+                    <img src={item.assetPath} alt="" aria-hidden="true" className="size-8 object-contain image-outline rounded" />
                   </div>
                 ) : null}
                 <div className="min-w-0">
@@ -34,7 +34,7 @@ export function ShoppingList({ calculation }: ShoppingListProps) {
                 </div>
               </div>
               <div className="flex items-center justify-start text-left sm:justify-end sm:text-right">
-                <p className="text-base font-semibold text-foreground">{item.amount}</p>
+                <p className="text-base font-semibold text-foreground tabular-nums">{item.amount}</p>
               </div>
             </div>
           ))}

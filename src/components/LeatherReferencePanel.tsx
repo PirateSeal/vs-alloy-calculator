@@ -76,7 +76,7 @@ export function LeatherReferencePanel() {
               >
                 <div className="flex items-center gap-3">
                   <div className="flex size-12 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                    <img src={option.assetPath} alt="" aria-hidden="true" className="size-9 object-contain" />
+                    <img src={option.assetPath} alt="" aria-hidden="true" className="size-9 object-contain image-outline rounded" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-foreground">{t(`leather.hide_size.${option.size}`)}</p>
@@ -105,7 +105,7 @@ export function LeatherReferencePanel() {
             <div className="rounded-[1.5rem] border border-border/30 bg-background/45 p-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-11 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                  <img src={getMaterialAssetPath("weak-tannin")} alt="" aria-hidden="true" className="size-7 object-contain" />
+                  <img src={getMaterialAssetPath("weak-tannin")} alt="" aria-hidden="true" className="size-7 object-contain image-outline rounded" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{t("reference.leather.tannin_chain.weak_title")}</p>
@@ -119,7 +119,7 @@ export function LeatherReferencePanel() {
             <div className="rounded-[1.5rem] border border-border/30 bg-background/45 p-4">
               <div className="flex items-center gap-3">
                 <div className="flex size-11 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                  <img src={getMaterialAssetPath("strong-tannin")} alt="" aria-hidden="true" className="size-7 object-contain" />
+                  <img src={getMaterialAssetPath("strong-tannin")} alt="" aria-hidden="true" className="size-7 object-contain image-outline rounded" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-foreground">{t("reference.leather.tannin_chain.strong_title")}</p>
@@ -169,7 +169,7 @@ export function LeatherReferencePanel() {
               <div key={option.variant} className="rounded-[1.5rem] border border-border/30 bg-background/45 p-4">
                 <div className="flex items-center gap-3">
                   <div className="flex size-11 items-center justify-center rounded-2xl bg-card/90 ring-1 ring-inset ring-border/20">
-                    <img src={option.assetPath} alt="" aria-hidden="true" className="size-7 object-contain" />
+                    <img src={option.assetPath} alt="" aria-hidden="true" className="size-7 object-contain image-outline rounded" />
                   </div>
                   <p className="text-sm font-semibold text-foreground">{t(`leather.bear.${option.variant}`)}</p>
                 </div>

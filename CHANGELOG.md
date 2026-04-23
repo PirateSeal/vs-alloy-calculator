@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-04-23
+
+### Added
+- **`NumberInput` modifier-key multipliers** — Increment/decrement buttons now respect Ctrl (×10), Shift (×100), and Ctrl+Shift (×1000), so the planner inventory, planner output, and crucible slot rows can adjust large values without repeated clicks. A tooltip and `aria-label` expose the shortcuts.
+- **New shadcn primitives installed** — Added `toggle`, `toggle-group`, and `separator` from the shadcn registry so option-set pickers and section dividers can use first-party components instead of hand-rolled markup.
+- **`Alert` `warning` variant** — Extended the shadcn `Alert` `cva` variants with an amber `warning` scheme so the translation-notice banner reads semantically instead of carrying raw color classes.
+- **Smooth light/dark theme transition** — Theme toggles now ride the browser's View Transitions API (when available and motion is not reduced), fading between color schemes instead of snapping. Falls back to an instant swap on browsers without View Transitions or when `prefers-reduced-motion` is set.
+- **Animated mobile locale unfold** — The locale selector inside the mobile "More" menu now expands with a `framer-motion` spring (no bounce) and reveals a scrollable flag+label list, replacing the instant open/close.
+- **Polymorphic `CardTitle`** — `CardTitle` accepts an `as` prop so nested cards and pages with page-level `<h1>`s can choose the right heading level instead of every card rendering an `<h3>`. Default stays `<h3>` so existing callers are unchanged.
+- **Shared `useTheme` hook** — New `src/lib/useTheme.ts` built on `useSyncExternalStore` + a `MutationObserver` on `<html>` class, so every theme-aware control subscribes to the same live signal and stays consistent across viewport changes.
+- **`number_input.*` i18n keys** — Added `number_input.increment`, `number_input.decrement`, and `number_input.modifier_hint` to all 10 shipped locales so the NumberInput modifier buttons no longer ship English strings to non-English users.
+
+### Changed
+- **`TranslationNotice` rebuilt on shadcn primitives** — Replaced the hand-rolled `<div>` + `<button>` + amber classes with `Alert` (`variant="warning"`) + `AlertDescription` + `Button variant="ghost" size="icon"`, keeping the full-width border-bar layout.
+- **`HidePicker` uses `ToggleGroup`** — Family selector (standard vs bear), bear-variant tiles, hide-size tiles, and small-hide animal variants now render as `ToggleGroup` / `ToggleGroupItem` with `data-[state=on]` styling instead of manual active-state tracking on raw buttons.
+- **`CalculatorControls` accessibility parts swapped to shadcn** — Raw `<label>` elements became `Label`, and the max-craftable hint + alloy-amount chip are now `Badge` variants so the controls adopt the project's semantic tokens.
+- **`ShellNavigation` dividers use `Separator`** — Replaced decorative `border-t` divs between rail sections and before locale/theme/external groups with the shadcn `Separator`, dropping the related `space-y-*` stacking in favor of explicit `flex flex-col gap-*`.
+- **`PlannerOutput` "Open in calculator" link is now a `Button`** — The run-card action became `Button asChild` wrapping the `<a>`, using the icon-end slot and the project's outline variant so it matches the rest of the UI.
+- **Mobile navigation reworked** — The bottom mobile nav now bundles secondary tabs, share-link, locale switcher, and theme toggle into a single dropdown-driven "More" menu with an animated locale submenu, replacing the earlier stacked layout and cramped rail-parity surfaces.
+- **Calculator preset card simplified** — Collapsed the separate amount/mode controls into a single preset card with a shared slider, mode toggle, and inline live summary, dropping redundant headings and chrome so the calculator's primary surface reads at a glance.
+- **Nested heading levels demoted** — `CompositionCard`'s inline "sweet spots" heading is now `<h4>` (peer of the card's `<h3>` title), and `PlannerOutput`'s nested `CardTitle`s now render as `<h4>`/`<h5>` via the new `as` prop, fixing h3-inside-h3 and double-h3 document outlines.
+
+### Fixed
+- **Import aliases on freshly added shadcn components** — The shadcn CLI emitted `src/lib/utils` / `src/components/ui/toggle` paths for `toggle`, `toggle-group`, and `separator`. Rewrote them to the project's `@/` alias so imports resolve under Vite and Vitest.
+- **Optimize-mode toggle no longer desyncs on failure** — `CalculatorControls.runMaximize` / `runEconomical` used to flip `useEconomical` before running the optimizer, so a `success: false` result would visibly switch the `ToggleGroup` while the crucible still held the previous loadout. The state flip now happens only after a successful optimization.
+- **`Alert` default variant renders a visible edge again** — The cva refactor had pulled `border` out of the base and left it on `destructive` / `warning` only, so callers passing just `border-{color}` utilities rendered edge-less tinted panels (`ResultCard`, `PlannerOutput`, `Pipeline`, `LeatherInputsCard`). Restored `border` on the base and reduced the variants to color-only modifiers.
+- **`Button` `sm` / `icon-sm` sizes render at the intended height again** — The base cva carried `min-h-10` while `sm` set `h-9` and `icon-sm` set `size-9`; CSS `min-height` won and tailwind-merge doesn't reconcile `min-h-*` with `h-*`/`size-*`, so small buttons (CruciblePanel clear-all, PlannerInventory clear, CrucibleSlotRow trash, AlloyTableRow actions) rendered at 40px (and icon-sm as 36×40 rectangles). Moved the 40px floor into the default size variant only.
+- **`NumberInput` no longer ships English modifier strings to non-English users** — Hardcoded `aria-label="Increment"`/`"Decrement"` and the `Ctrl ×10 · Shift ×100 · Ctrl+Shift ×1000` tooltip now resolve through `useTranslation()` with dedicated keys across all locales.
+- **`MobileTheme` / `ThemeToggle` stale-state bug** — The mobile "More" menu forked its own `useState` for theme, so toggling via mobile and then crossing the `lg` breakpoint left the desktop rail's `ThemeToggle` (and vice-versa) with a stale value that could no-op the next click. Both components now derive their state from the shared `useTheme` hook, which tracks the `<html>` class via `MutationObserver`.
+- **Redundant `transition-colors` class in `ShellNavigation`** — The tool sub-nav button carried both `transition-colors` and a matching arbitrary `transition-[background-color,color,box-shadow,transform]` in the same `cn()` call; tailwind-merge already dropped the former, so the dead token was removed.
+- **Leather `HidePicker` grids fit 2 columns on mobile** — Hide-family toggle, bear-variant tiles, hide-size tiles, and small-hide animal tiles no longer wait for the `sm` breakpoint to split into 2 columns; they render as 2 columns at all widths, cutting the amount of scrolling required to reach the next input on phones.
+- **`CalculatorControls` slider style no longer trips React Compiler** — Dropped the `useMemo`-over-`accentColor` wrapper that the `react-hooks/preserve-manual-memoization` rule flagged; the CSS-variable style object is cheap enough to recreate per render and React Compiler now handles any memoization the component needs.
+
 ## [1.11.6] - 2026-04-20
 
 ### Added
