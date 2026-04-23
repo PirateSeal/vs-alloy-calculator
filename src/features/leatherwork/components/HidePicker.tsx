@@ -141,7 +141,7 @@ export function HidePicker({
               onBearVariantChange(bearVariant ?? "sun");
             }
           }}
-          className="grid gap-2 sm:grid-cols-2"
+          className="grid grid-cols-2 gap-2"
         >
           <ToggleGroupItem
             value="standard"
@@ -175,7 +175,7 @@ export function HidePicker({
               trackLeatherInputChange("bear_variant", { value: next, workflow });
               onBearVariantChange(next);
             }}
-            className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
+            className="grid grid-cols-2 gap-3 xl:grid-cols-3"
           >
             {BEAR_OPTIONS.map((option) => (
               <ToggleGroupItem
@@ -205,7 +205,7 @@ export function HidePicker({
                 trackLeatherInputChange("hide_size", { value: next, workflow });
                 onSizeChange(next);
               }}
-              className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+              className="grid grid-cols-2 gap-3 xl:grid-cols-4"
             >
               {HIDE_SIZE_OPTIONS.map((option) => (
                 <ToggleGroupItem
@@ -238,7 +238,7 @@ export function HidePicker({
                   trackLeatherInputChange("animal_variant", { value: next, workflow });
                   onAnimalChange(next);
                 }}
-                className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+                className="grid grid-cols-2 gap-3 xl:grid-cols-4"
               >
                 {ANIMAL_OPTIONS.map((option) => (
                   <ToggleGroupItem
