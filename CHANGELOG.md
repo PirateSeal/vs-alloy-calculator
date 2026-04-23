@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-04-23
+
 ### Added
 - **`NumberInput` modifier-key multipliers** — Increment/decrement buttons now respect Ctrl (×10), Shift (×100), and Ctrl+Shift (×1000), so the planner inventory, planner output, and crucible slot rows can adjust large values without repeated clicks. A tooltip and `aria-label` expose the shortcuts.
 - **New shadcn primitives installed** — Added `toggle`, `toggle-group`, and `separator` from the shadcn registry so option-set pickers and section dividers can use first-party components instead of hand-rolled markup.
@@ -35,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`NumberInput` no longer ships English modifier strings to non-English users** — Hardcoded `aria-label="Increment"`/`"Decrement"` and the `Ctrl ×10 · Shift ×100 · Ctrl+Shift ×1000` tooltip now resolve through `useTranslation()` with dedicated keys across all locales.
 - **`MobileTheme` / `ThemeToggle` stale-state bug** — The mobile "More" menu forked its own `useState` for theme, so toggling via mobile and then crossing the `lg` breakpoint left the desktop rail's `ThemeToggle` (and vice-versa) with a stale value that could no-op the next click. Both components now derive their state from the shared `useTheme` hook, which tracks the `<html>` class via `MutationObserver`.
 - **Redundant `transition-colors` class in `ShellNavigation`** — The tool sub-nav button carried both `transition-colors` and a matching arbitrary `transition-[background-color,color,box-shadow,transform]` in the same `cn()` call; tailwind-merge already dropped the former, so the dead token was removed.
+- **Leather `HidePicker` grids fit 2 columns on mobile** — Hide-family toggle, bear-variant tiles, hide-size tiles, and small-hide animal tiles no longer wait for the `sm` breakpoint to split into 2 columns; they render as 2 columns at all widths, cutting the amount of scrolling required to reach the next input on phones.
+- **`CalculatorControls` slider style no longer trips React Compiler** — Dropped the `useMemo`-over-`accentColor` wrapper that the `react-hooks/preserve-manual-memoization` rule flagged; the CSS-variable style object is cheap enough to recreate per render and React Compiler now handles any memoization the component needs.
 
 ## [1.11.6] - 2026-04-20
 

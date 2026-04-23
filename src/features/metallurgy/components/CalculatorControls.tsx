@@ -67,13 +67,9 @@ export function CalculatorControls({
   const currentRecipe = recipes.find((recipe) => recipe.id === selectedRecipeId);
   const accentColor = currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333";
 
-  const sliderStyle = useMemo(
-    () =>
-      ({
-        "--slider-color": accentColor,
-      }) as React.CSSProperties,
-    [accentColor],
-  );
+  const sliderStyle = {
+    "--slider-color": accentColor,
+  } as React.CSSProperties;
 
   const handlePresetChange = (recipeId: string) => {
     const recipe = recipes.find((item) => item.id === recipeId);
