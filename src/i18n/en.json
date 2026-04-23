@@ -9,6 +9,10 @@
   "theme.toggle_to_dark": "Switch to dark theme",
   "theme.toggle_to_light": "Switch to light theme",
 
+  "number_input.increment": "Increment",
+  "number_input.decrement": "Decrement",
+  "number_input.modifier_hint": "Ctrl ×10 · Shift ×100 · Ctrl+Shift ×1000",
+
   "header.title": "Vintage Story Alloy Calculator",
   "header.subtitle": "Calculate valid alloy compositions for your crucible. Alloy data sourced from the Vintage Story Wiki.",
   "header.logo_alt": "Vintage Story Alloy Calculator",

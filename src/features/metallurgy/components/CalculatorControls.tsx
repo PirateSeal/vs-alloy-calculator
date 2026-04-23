@@ -108,13 +108,13 @@ export function CalculatorControls({
   const runMaximize = () => {
     if (!selectedRecipe) return;
 
-    setUseEconomical(false);
     const result = optimizeRecipe({
       recipe: selectedRecipe,
       mode: "maximize",
     });
 
     if (result.success && result.crucible) {
+      setUseEconomical(false);
       onCrucibleChange(result.crucible);
       track("optimize-clicked", {
         strategy: "maximize",
@@ -127,7 +127,6 @@ export function CalculatorControls({
   const runEconomical = () => {
     if (!selectedRecipe) return;
 
-    setUseEconomical(true);
     const result = optimizeRecipe({
       recipe: selectedRecipe,
       mode: "economical",
@@ -135,6 +134,7 @@ export function CalculatorControls({
     });
 
     if (result.success && result.crucible) {
+      setUseEconomical(true);
       onCrucibleChange(result.crucible);
       track("optimize-clicked", {
         strategy: "economical",

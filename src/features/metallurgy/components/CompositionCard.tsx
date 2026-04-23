@@ -186,9 +186,9 @@ export function CompositionCard({
         {bestMatch ? (
           <section className="space-y-3 border-t border-border/30 pt-4" aria-label={t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}>
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+              <h4 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                 {t("composition.sweet_spots", { alloy: getRecipeName(bestMatch.recipe.id) })}
-              </h3>
+              </h4>
               <div className="flex items-center gap-2">
                 {bestMatch.isExact && (
                   <Badge variant="secondary" className="surface-chip h-8 rounded-full border border-success/30 bg-success/10 px-2.5 text-[11px] font-semibold text-success">

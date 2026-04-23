@@ -23,7 +23,7 @@ import type { AppDomain, AppNavTarget } from "@/types/app";
 import { LOCALE_OPTIONS, useTranslation } from "@/i18n";
 import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@/lib/analytics";
-import { applyTheme } from "@/lib/themeTransition";
+import { useTheme } from "@/lib/useTheme";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -188,7 +188,7 @@ function DomainNavigationMenu({
                       onClick={() => onSelect(tool.tab)}
                       aria-current={toolActive ? "page" : undefined}
                       className={cn(
-                        "flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left transition-colors",
+                        "flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left",
                         "transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] active:scale-[0.96] motion-reduce:active:scale-100",
                         toolActive ? "bg-primary/14 text-primary" : "text-foreground hover:bg-accent/50",
                       )}
@@ -629,24 +629,17 @@ function MobileTabButton({
 
 function MobileTheme({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    if (typeof window === "undefined") return "light";
-    return document.documentElement.classList.contains("dark") ? "dark" : "light";
-  });
+  const { theme, toggle } = useTheme();
 
   const label = t(theme === "light" ? "theme.toggle_to_dark" : "theme.toggle_to_light");
 
-  const toggle = () => {
-    const next = theme === "light" ? "dark" : "light";
-    applyTheme(next);
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    track("theme-toggled", { theme: next });
+  const handleToggle = () => {
+    toggle();
     onClose();
   };
 
   return (
-    <DropdownMenuItem onSelect={(event) => { event.preventDefault(); toggle(); }}>
+    <DropdownMenuItem onSelect={(event) => { event.preventDefault(); handleToggle(); }}>
       {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
       <span>{label}</span>
     </DropdownMenuItem>

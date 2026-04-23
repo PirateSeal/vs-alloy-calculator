@@ -201,7 +201,7 @@ export function PlannerOutput({
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
                     <Card className="surface-subtle rounded-3xl border-border/30 bg-background/40 shadow-none">
                       <CardHeader>
-                        <CardTitle>{t("planner.plan.summary_title")}</CardTitle>
+                        <CardTitle as="h4">{t("planner.plan.summary_title")}</CardTitle>
                         <CardDescription>
                           {getScarcityReason(
                             scarcityMode,
@@ -234,7 +234,7 @@ export function PlannerOutput({
 
                     <Card className="surface-subtle rounded-3xl border-border/30 bg-background/40 shadow-none">
                       <CardHeader>
-                        <CardTitle>{t("planner.target.breakpoints")}</CardTitle>
+                        <CardTitle as="h4">{t("planner.target.breakpoints")}</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-3 text-sm text-muted-foreground">
                         <p>
@@ -286,7 +286,7 @@ export function PlannerOutput({
                           <Card key={`${result.recipeId}-${run.runNumber}-detail`} className="surface-subtle rounded-3xl border-border/30 bg-background/30 shadow-none">
                             <CardHeader className="gap-3 lg:flex-row lg:items-center lg:justify-between">
                               <div className="space-y-1">
-                                <CardTitle className="text-xl">{t("planner.run.title", { n: run.runNumber })}</CardTitle>
+                                <CardTitle as="h5" className="text-xl">{t("planner.run.title", { n: run.runNumber })}</CardTitle>
                                 <CardDescription>
                                   {t("planner.run.subtitle", {
                                     ingots: run.ingotsProduced,

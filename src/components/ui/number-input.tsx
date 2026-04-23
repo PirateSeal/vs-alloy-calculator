@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/i18n";
 
 interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "onChange"> {
   value: number;
@@ -21,6 +22,10 @@ function getModifierMultiplier(event: React.MouseEvent | React.KeyboardEvent) {
 
 const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
   ({ className, value, onChange, min = 0, max = 100, step = 1, ...props }, ref) => {
+    const { t } = useTranslation();
+    const modifierHint = t("number_input.modifier_hint");
+    const incrementLabel = t("number_input.increment");
+    const decrementLabel = t("number_input.decrement");
     const handleDecrement = (event: React.MouseEvent<HTMLButtonElement>) => {
       const delta = step * getModifierMultiplier(event);
       onChange(Math.max(min, value - delta));
@@ -58,8 +63,8 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
             type="button"
             onClick={handleIncrement}
             disabled={value >= max}
-            title="Ctrl ×10 · Shift ×100 · Ctrl+Shift ×1000"
-            aria-label="Increment"
+            title={modifierHint}
+            aria-label={incrementLabel}
             className="flex h-1/2 min-h-[22px] w-9 items-center justify-center border-b border-input/70 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-muted active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100"
           >
             <Plus className="h-3 w-3" />
@@ -68,8 +73,8 @@ const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
             type="button"
             onClick={handleDecrement}
             disabled={value <= min}
-            title="Ctrl ×10 · Shift ×100 · Ctrl+Shift ×1000"
-            aria-label="Decrement"
+            title={modifierHint}
+            aria-label={decrementLabel}
             className="flex h-1/2 min-h-[22px] w-9 items-center justify-center transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-muted active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:scale-100"
           >
             <Minus className="h-3 w-3" />
