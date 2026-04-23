@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.1] - 2026-04-23
+
+### Changed
+- **Calculator entry flow prioritized on mobile** — The preset and amount controls now stay above the crucible below the `xl` breakpoint, so first-time users see the alloy selector before the empty slot editor.
+- **Sidebar external links compacted** — Vintage Story, wiki, and GitHub links now sit in a low-emphasis icon group in the desktop rail, with a compact dropdown when the rail is collapsed.
+- **Composition panel controls improved** — The composition card no longer repeats the nugget total in its header, the rarity-cost metric has an explanatory tooltip, and the collapse control works on desktop as well as mobile.
+
+### Fixed
+- **Duplicate valid-alloy success message removed** — `ResultCard` now keeps the hero success copy and drops the redundant green alert while preserving shortage, excess, contamination, and no-match alerts.
+- **Preset slider context clarified** — The ingot slider now shows the required nugget breakdown for the selected recipe, and maximize mode explains that the slider is intentionally locked.
+- **Empty crucible header noise reduced** — The `0/6 slots` and `0 nuggets` chips are hidden until at least one crucible slot is occupied.
+- **Calculator controls landmark renamed** — The controls section now announces as recipe and amount controls instead of the button-like “Load Preset” label.
+
 ## [1.12.0] - 2026-04-23
 
 ### Added

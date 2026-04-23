@@ -62,7 +62,7 @@ export function MetallurgyApp() {
 
         <div className="grid w-full gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(22rem,0.95fr)] xl:items-start">
           <section className="flex min-w-0 flex-col gap-4" aria-labelledby="calculator-title">
-          <div className="order-2 animate-surface-in animate-delay-1 xl:order-1">
+          <div className="order-1 animate-surface-in animate-delay-1">
             <CalculatorControls
               evaluation={evaluation}
               recipes={ALLOY_RECIPES}
@@ -72,7 +72,7 @@ export function MetallurgyApp() {
               onCrucibleChange={setCrucible}
             />
           </div>
-          <div className="order-1 animate-surface-in animate-delay-2 xl:order-2">
+          <div className="order-2 animate-surface-in animate-delay-2">
             <CruciblePanel
               crucible={calculatorCrucible}
               onCrucibleChange={setCrucible}

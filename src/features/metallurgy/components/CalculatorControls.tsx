@@ -39,7 +39,7 @@ export function CalculatorControls({
   onRecipeSelect,
   onCrucibleChange,
 }: CalculatorControlsProps) {
-  const { t, getRecipeName } = useTranslation();
+  const { t, getMetalShortLabel, getRecipeName } = useTranslation();
   const [useEconomical, setUseEconomical] = useState(true);
   const selectedRecipeId = selectedRecipe?.id || "";
   const controlsEnabled = Boolean(selectedRecipe);
@@ -66,6 +66,32 @@ export function CalculatorControls({
 
   const currentRecipe = recipes.find((recipe) => recipe.id === selectedRecipeId);
   const accentColor = currentRecipe ? getAlloyColor(currentRecipe.id) : "#B87333";
+  const ingredientPreview = useMemo(() => {
+    if (!selectedRecipe) return "";
+
+    const result = optimizeRecipe({
+      recipe: selectedRecipe,
+      mode: "economical",
+      targetIngots: ingotAmount,
+    });
+    if (!result.success || !result.crucible) return "";
+
+    const nuggetCounts = new Map<string, number>();
+    for (const slot of result.crucible.slots) {
+      if (slot.metalId && slot.nuggets > 0) {
+        nuggetCounts.set(slot.metalId, (nuggetCounts.get(slot.metalId) || 0) + slot.nuggets);
+      }
+    }
+
+    return selectedRecipe.components
+      .map((component) => {
+        const nuggets = nuggetCounts.get(component.metalId) || 0;
+        if (nuggets === 0) return null;
+        return `${getMetalShortLabel(component.metalId)} ${nuggets} ${t(nuggets === 1 ? "common.nugget" : "common.nuggets")}`;
+      })
+      .filter(Boolean)
+      .join(" / ");
+  }, [getMetalShortLabel, ingotAmount, selectedRecipe, t]);
 
   const sliderStyle = {
     "--slider-color": accentColor,
@@ -151,11 +177,12 @@ export function CalculatorControls({
       ? t("result.ingots", { n: 1 })
       : t("result.ingots_plural", { n: ingotAmount });
   const sliderDisabled = !selectedRecipe || mode === "maximize";
+  const sliderLocked = Boolean(selectedRecipe && mode === "maximize");
 
   return (
     <section
       className="surface-panel overflow-hidden rounded-[1.9rem] border border-border/35 bg-card/92"
-      aria-label={t("result.load_preset")}
+      aria-label={t("result.controls_aria")}
     >
       <div className="relative overflow-hidden px-5 py-5 sm:px-6 sm:py-6">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(239,189,141,0.14),transparent_38%),radial-gradient(circle_at_bottom_right,rgba(143,103,62,0.08),transparent_34%)]" />
@@ -267,6 +294,22 @@ export function CalculatorControls({
                 className="w-full [&_[role=slider]]:border-[var(--slider-color)] [&_span[data-orientation]>span:last-child]:bg-[var(--slider-color)]"
               />
             </div>
+
+            {selectedRecipe && (ingredientPreview || sliderLocked) ? (
+              <div className="surface-subtle rounded-[1.1rem] bg-background/35 px-3 py-2 text-xs leading-5 text-muted-foreground ring-1 ring-inset ring-border/20">
+                {sliderLocked ? (
+                  <p className="font-medium text-foreground">{t("result.slider_locked_maximize")}</p>
+                ) : null}
+                {ingredientPreview ? (
+                  <p>
+                    <span className="font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                      {t("result.ingredients_required_label")}
+                    </span>{" "}
+                    <span className="font-mono text-foreground tabular-nums">{ingredientPreview}</span>
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             <Separator className="bg-border/30" />
 

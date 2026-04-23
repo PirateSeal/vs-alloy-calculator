@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
-import { ArrowDown, ArrowUp, Check, ChevronDown, FlaskConical } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronDown, FlaskConical, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { METALS } from "../data/alloys";
 import { useTranslation } from "@/i18n";
 import { getRarityScore } from "../lib/metalRarity";
@@ -65,20 +66,11 @@ export function CompositionCard({
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <FlaskConical className="h-5 w-5 text-primary" aria-hidden="true" />
-            <div className="space-y-1">
-              <CardTitle className="text-lg">{t("composition.title")}</CardTitle>
-              <p className="text-xs text-muted-foreground">
-                {t("composition.total_amount")}:{" "}
-                <span className="font-mono text-foreground tabular-nums">
-                  {totalNuggets}
-                </span>{" "}
-                {t(totalNuggets === 1 ? "common.nugget" : "common.nuggets")}
-              </p>
-            </div>
+            <CardTitle className="text-lg">{t("composition.title")}</CardTitle>
           </div>
           <button
             type="button"
-            className="surface-chip inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/60 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:hidden motion-reduce:active:scale-100"
+            className="surface-chip inline-flex h-10 w-10 items-center justify-center rounded-full bg-background/60 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/50 active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:active:scale-100"
             onClick={() => setIsExpanded((current) => !current)}
             aria-expanded={isExpanded}
             aria-controls={contentId}
@@ -94,7 +86,7 @@ export function CompositionCard({
 
       <CardContent
         id={contentId}
-        className={`space-y-4 p-5 ${isExpanded ? "block" : "hidden sm:block"}`}
+        className={`space-y-4 p-5 ${isExpanded ? "block" : "hidden"}`}
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="surface-subtle rounded-[1.4rem] bg-background/30 p-4 ring-1 ring-inset ring-border/25">
@@ -112,9 +104,21 @@ export function CompositionCard({
           </div>
 
           <div className="surface-subtle rounded-[1.4rem] bg-background/30 p-4 ring-1 ring-inset ring-border/25">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t("composition.rarity_cost")}
-            </p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="-my-2 -ml-2 inline-flex min-h-10 items-center gap-1.5 rounded-full px-2 text-left text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-[background-color,color] duration-200 hover:bg-accent/35 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  aria-label={t("composition.rarity_cost_tooltip")}
+                >
+                  {t("composition.rarity_cost")}
+                  <Info className="h-3.5 w-3.5" aria-hidden="true" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-64">
+                <p>{t("composition.rarity_cost_tooltip")}</p>
+              </TooltipContent>
+            </Tooltip>
             <p className="mt-2 font-mono text-lg font-semibold text-foreground tabular-nums">
               {totalRarityCost.toFixed(1)}
             </p>

@@ -78,14 +78,16 @@ export function CruciblePanel({ crucible, onCrucibleChange, allMetals, recipes }
             </Button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="surface-chip inline-flex items-center rounded-full bg-background/60 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-border/30">
-              {occupiedSlots}/{crucible.slots.length} slots
-            </span>
-            <span className="surface-chip inline-flex items-center rounded-full bg-background/60 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-border/30 font-mono tabular-nums">
-              {filledNuggets} {t(filledNuggets === 1 ? "common.nugget" : "common.nuggets")}
-            </span>
-          </div>
+          {occupiedSlots > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="surface-chip inline-flex items-center rounded-full bg-background/60 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-border/30">
+                {occupiedSlots}/{crucible.slots.length} slots
+              </span>
+              <span className="surface-chip inline-flex items-center rounded-full bg-background/60 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-border/30 font-mono tabular-nums">
+                {filledNuggets} {t(filledNuggets === 1 ? "common.nugget" : "common.nuggets")}
+              </span>
+            </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="p-5 pt-5 sm:p-6 sm:pt-5">

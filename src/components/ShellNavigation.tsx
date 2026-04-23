@@ -259,56 +259,103 @@ function RailNavButton({
   return button;
 }
 
-function ExternalLinkButton({
-  href,
-  label,
-  icon: Icon,
-  collapsed,
-  onClick,
-}: {
-  href: string;
-  label: string;
-  icon: LucideIcon;
-  collapsed: boolean;
-  onClick: () => void;
-}) {
-  const anchor = (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={onClick}
-      className={cn(
-        "group flex h-11 items-center gap-3 rounded-2xl px-3 text-xs font-medium text-muted-foreground/80 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/30 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100",
-        collapsed ? "w-full justify-center px-0" : "w-full",
-      )}
-      aria-label={label}
-    >
-      <span
-        className={cn(
-          "inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/35 transition-colors",
-          "group-hover:text-foreground",
-        )}
-        aria-hidden="true"
-      >
-        <Icon className="h-4 w-4" />
-      </span>
-      <span className={cn("truncate", collapsed && "sr-only")}>{label}</span>
-    </a>
-  );
+function CompactExternalLinks({ collapsed }: { collapsed: boolean }) {
+  const { t } = useTranslation();
+  const links: Array<{ href: string; label: string; icon: LucideIcon; destination: string }> = [
+    {
+      href: "https://www.vintagestory.at",
+      label: t("header.nav.vs_website"),
+      icon: Globe,
+      destination: "vintage-story",
+    },
+    {
+      href: "https://wiki.vintagestory.at",
+      label: t("header.nav.wiki"),
+      icon: BookOpen,
+      destination: "wiki",
+    },
+    {
+      href: "https://github.com/PirateSeal/vs-alloy-calculator",
+      label: t("header.nav.github"),
+      icon: ExternalLink,
+      destination: "github",
+    },
+  ];
 
   if (collapsed) {
+    const trigger = (
+      <button
+        type="button"
+        aria-label={t("header.nav.external")}
+        className="group flex h-11 w-full items-center justify-center rounded-2xl px-0 text-muted-foreground/80 transition-[background-color,color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/30 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100"
+      >
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-background/35" aria-hidden="true">
+          <MoreHorizontal className="h-4 w-4" />
+        </span>
+      </button>
+    );
+
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>{anchor}</TooltipTrigger>
-        <TooltipContent side="right">
-          <p>{label}</p>
-        </TooltipContent>
-      </Tooltip>
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{t("header.nav.external")}</p>
+          </TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent side="right" align="end" className="w-56 rounded-2xl border-border/20 bg-popover/95 p-2 backdrop-blur-xl">
+          {links.map((link) => {
+            const Icon = link.icon;
+            return (
+              <DropdownMenuItem key={link.href} asChild>
+                <a
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => track("external-link", { destination: link.destination })}
+                >
+                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <span>{link.label}</span>
+                </a>
+              </DropdownMenuItem>
+            );
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
-  return anchor;
+  return (
+    <nav
+      aria-label={t("header.nav.external")}
+      className="surface-subtle flex items-center justify-between gap-1 rounded-2xl bg-background/30 p-1 ring-1 ring-inset ring-border/20"
+    >
+      {links.map((link) => {
+        const Icon = link.icon;
+        return (
+          <Tooltip key={link.href}>
+            <TooltipTrigger asChild>
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.label}
+                onClick={() => track("external-link", { destination: link.destination })}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground/75 transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent/40 hover:text-foreground active:scale-[0.96] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:active:scale-100"
+              >
+                <Icon className="h-4 w-4" aria-hidden="true" />
+              </a>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>{link.label}</p>
+            </TooltipContent>
+          </Tooltip>
+        );
+      })}
+    </nav>
+  );
 }
 
 function RailActionButton({
@@ -535,28 +582,8 @@ export function ShellNavigationRail({
             </div>
 
             <Separator className="mt-6 bg-border/20" />
-            <div className="flex flex-col gap-1.5 pt-4">
-              <ExternalLinkButton
-                href="https://www.vintagestory.at"
-                label={t("header.nav.vs_website")}
-                icon={Globe}
-                collapsed={collapsed}
-                onClick={() => track("external-link", { destination: "vintage-story" })}
-              />
-              <ExternalLinkButton
-                href="https://wiki.vintagestory.at"
-                label={t("header.nav.wiki")}
-                icon={BookOpen}
-                collapsed={collapsed}
-                onClick={() => track("external-link", { destination: "wiki" })}
-              />
-              <ExternalLinkButton
-                href="https://github.com/PirateSeal/vs-alloy-calculator"
-                label={t("header.nav.github")}
-                icon={ExternalLink}
-                collapsed={collapsed}
-                onClick={() => track("external-link", { destination: "github" })}
-              />
+            <div className="pt-4">
+              <CompactExternalLinks collapsed={collapsed} />
             </div>
           </div>
         </ScrollArea>

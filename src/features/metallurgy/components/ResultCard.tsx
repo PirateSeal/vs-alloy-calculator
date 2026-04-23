@@ -412,14 +412,7 @@ export const ResultCard = memo(function ResultCard({
           </Alert>
         )}
 
-        {bestMatch?.isExact ? (
-          <Alert className="rounded-[1.2rem] border-secondary/40 bg-secondary/10" role="status" aria-live="polite">
-            <CheckCircle2 className="h-4 w-4 text-secondary-foreground" aria-hidden="true" />
-            <AlertDescription className="text-foreground">
-              {t("result.valid_message", { alloy: productName })}
-            </AlertDescription>
-          </Alert>
-        ) : (
+        {!bestMatch?.isExact && (
           nuggetAdjustments.length > 0 && (
             <Button onClick={handleAdjustToValid} className="w-full rounded-[1.2rem]" size="lg">
               <Wand2 className="mr-2 h-4 w-4" aria-hidden="true" />
