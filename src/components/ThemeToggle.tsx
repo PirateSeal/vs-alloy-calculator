@@ -1,6 +1,7 @@
 import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { track } from "@/lib/analytics";
+import { applyTheme } from "@/lib/themeTransition";
 import { useTranslation } from "@/i18n";
 import { cn } from "@/lib/utils";
 
@@ -27,18 +28,7 @@ export function ThemeToggle({ showLabel = false, className }: ThemeToggleProps) 
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
-
-    // Suppress all CSS transitions while the theme class is applied so text,
-    // icons, and backgrounds all flip together instead of at different rates.
-    const root = document.documentElement;
-    root.classList.add("theme-switching");
-    root.classList.toggle("dark", newTheme === "dark");
-    // Force a synchronous reflow so the class changes are flushed before we
-    // remove the suppression flag.
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    root.offsetHeight;
-    root.classList.remove("theme-switching");
-
+    applyTheme(newTheme);
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     track("theme-toggled", { theme: newTheme });

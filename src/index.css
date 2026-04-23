@@ -68,11 +68,18 @@
     scrollbar-gutter: stable;
   }
 
-  /* Global shadcn-style scrollbars for any native scroll surface */
-  * {
+  /* Global shadcn-style scrollbars — Firefox rule scoped to real scroll containers
+     only, so `*` does not reserve scrollbar layout on every element. */
+  html,
+  body,
+  [data-radix-scroll-area-viewport],
+  [data-radix-menu-content],
+  [data-radix-popper-content-wrapper] > * {
     scrollbar-width: thin;
     scrollbar-color: var(--color-border) transparent;
   }
+  /* WebKit pseudo-elements materialize only on elements that actually scroll,
+     so `*` here is safe and does not trigger layout/paint elsewhere. */
   *::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -104,10 +111,11 @@
     margin-right: 0 !important;
   }
 
-  /* Suppress all transitions while the theme class is being applied */
-  .theme-switching,
-  .theme-switching * {
-    transition: none !important;
+  /* Theme swap uses the View Transitions API — cross-fade root snapshot. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 320ms;
+    animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
   }
 
   body {

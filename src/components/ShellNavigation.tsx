@@ -21,7 +21,9 @@ import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import type { AppDomain, AppNavTarget } from "@/types/app";
 import { LOCALE_OPTIONS, useTranslation } from "@/i18n";
+import { AnimatePresence, motion } from "framer-motion";
 import { track } from "@/lib/analytics";
+import { applyTheme } from "@/lib/themeTransition";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
@@ -636,12 +638,7 @@ function MobileTheme({ onClose }: { onClose: () => void }) {
 
   const toggle = () => {
     const next = theme === "light" ? "dark" : "light";
-    const root = document.documentElement;
-    root.classList.add("theme-switching");
-    root.classList.toggle("dark", next === "dark");
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    root.offsetHeight;
-    root.classList.remove("theme-switching");
+    applyTheme(next);
     setTheme(next);
     localStorage.setItem("theme", next);
     track("theme-toggled", { theme: next });
@@ -771,14 +768,13 @@ export function ShellMobileNav({
                     <ShareIcon copied={copied} />
                     <span>{t(copied ? "header.share.copied" : "header.share.copy")}</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onSelect={(event) => {
-                      event.preventDefault();
-                      setLocalesOpen((value) => !value);
-                    }}
+                  <button
+                    type="button"
+                    onClick={() => setLocalesOpen((value) => !value)}
                     aria-expanded={localesOpen}
+                    className="relative flex min-h-11 w-full select-none items-center gap-2 rounded-md px-3 py-2 text-left text-sm outline-none transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)] hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground active:scale-[0.98] motion-reduce:active:scale-100"
                   >
-                    <Languages className="h-4 w-4" />
+                    <Languages className="h-4 w-4 shrink-0" aria-hidden="true" />
                     <span className="flex min-w-0 flex-1 items-center gap-2 truncate">
                       <img
                         src={activeLocale.flagSrc}
@@ -790,36 +786,47 @@ export function ShellMobileNav({
                     </span>
                     <ChevronDown
                       className={cn(
-                        "ml-auto h-4 w-4 text-muted-foreground transition-transform",
+                        "ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ease-[cubic-bezier(0.2,0,0,1)]",
                         localesOpen && "rotate-180",
                       )}
                       aria-hidden="true"
                     />
-                  </DropdownMenuItem>
-                  {localesOpen && (
-                    <div className="ml-4 flex flex-col gap-0.5 border-l border-border/20 pl-2">
-                      {LOCALE_OPTIONS.map((loc) => (
-                        <DropdownMenuItem
-                          key={loc.id}
-                          onSelect={() => {
-                            setLocale(loc.id);
-                            track("locale-changed", { locale: loc.id });
-                            closeMenu();
-                          }}
-                          className={locale === loc.id ? "bg-accent/60 text-primary" : ""}
-                        >
-                          <img
-                            src={loc.flagSrc}
-                            alt=""
-                            aria-hidden="true"
-                            className="h-4 w-6 rounded-sm object-cover ring-1 ring-inset ring-black/10 dark:ring-white/10"
-                          />
-                          <span className="flex-1 truncate">{loc.label}</span>
-                          {locale === loc.id && <Check className="h-4 w-4" aria-hidden="true" />}
-                        </DropdownMenuItem>
-                      ))}
-                    </div>
-                  )}
+                  </button>
+                  <AnimatePresence initial={false}>
+                    {localesOpen && (
+                      <motion.div
+                        key="locales"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ type: "spring", duration: 0.3, bounce: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="ml-4 flex flex-col gap-0.5 border-l border-border/20 pl-2 pt-0.5">
+                          {LOCALE_OPTIONS.map((loc) => (
+                            <DropdownMenuItem
+                              key={loc.id}
+                              onSelect={() => {
+                                setLocale(loc.id);
+                                track("locale-changed", { locale: loc.id });
+                                closeMenu();
+                              }}
+                              className={locale === loc.id ? "bg-accent/60 text-primary" : ""}
+                            >
+                              <img
+                                src={loc.flagSrc}
+                                alt=""
+                                aria-hidden="true"
+                                className="h-4 w-6 rounded-sm object-cover ring-1 ring-inset ring-black/10 dark:ring-white/10"
+                              />
+                              <span className="flex-1 truncate">{loc.label}</span>
+                              {locale === loc.id && <Check className="h-4 w-4" aria-hidden="true" />}
+                            </DropdownMenuItem>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   <DropdownMenuSeparator />
                   <MobileTheme onClose={closeMenu} />
               </div>
