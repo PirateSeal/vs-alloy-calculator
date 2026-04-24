@@ -6,74 +6,10 @@ import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { SUPPORTED_LOCALES } from './src/i18n/routing'
 import { localizeHtmlDocument } from './src/i18n/seo'
+import { generateSitemapXml } from './src/i18n/sitemap'
 import { APP_STATIC_ROUTES } from './src/routing/routes'
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
-const SITE_URL = 'https://vs-calculator.tcousin.com'
-function getLocalizedRoutePath(locale: string, route: (typeof APP_STATIC_ROUTES)[number]) {
-  if (locale === 'en') {
-    return route
-  }
-
-  return route === '/' ? `/${locale}/` : `/${locale}${route}`
-}
-
-function getRoutePriority(route: (typeof APP_STATIC_ROUTES)[number], locale: string) {
-  if (route === '/') {
-    return locale === 'en' ? '1.0' : '0.9'
-  }
-
-  return '0.8'
-}
-
-function generateSitemapXml() {
-  const now = new Date()
-  const lastmod = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0'),
-  ].join('-')
-  const urls = APP_STATIC_ROUTES.flatMap((route) =>
-    SUPPORTED_LOCALES.map((locale) => {
-      const loc = new URL(getLocalizedRoutePath(locale, route), `${SITE_URL}/`).toString()
-      const alternates = [
-        ...SUPPORTED_LOCALES.map((alternateLocale) => ({
-          hrefLang: alternateLocale,
-          href: new URL(getLocalizedRoutePath(alternateLocale, route), `${SITE_URL}/`).toString(),
-        })),
-        {
-          hrefLang: 'x-default',
-          href: new URL(route, `${SITE_URL}/`).toString(),
-        },
-      ]
-
-      const alternateMarkup = alternates
-        .map(
-          (alternate) =>
-            `    <xhtml:link rel="alternate" hreflang="${alternate.hrefLang}" href="${alternate.href}" />`,
-        )
-        .join('\n')
-
-      return [
-        '  <url>',
-        `    <loc>${loc}</loc>`,
-        `    <lastmod>${lastmod}</lastmod>`,
-        '    <changefreq>weekly</changefreq>',
-        `    <priority>${getRoutePriority(route, locale)}</priority>`,
-        alternateMarkup,
-        '  </url>',
-      ].join('\n')
-    }),
-  )
-
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
-    ...urls,
-    '</urlset>',
-    '',
-  ].join('\n')
-}
 
 function localizedHtmlPlugin() {
   return {

@@ -1,4 +1,5 @@
 import { METALLURGY_APP_ROUTES, METALLURGY_VIEW_PATHS } from "../features/metallurgy/routing/routes";
+import { POTTERY_APP_ROUTES, POTTERY_VIEW_PATHS } from "../features/pottery/routing/routes";
 import { getLocaleFromPath, normalizeAppPath, stripLocalePrefix } from "../i18n/routing";
 import type { AppDomain, AppNavTarget, ReferenceTab } from "../types/app";
 
@@ -12,6 +13,7 @@ export const APP_STATIC_ROUTES = [
   OVERVIEW_ROUTE_PATH,
   REFERENCE_ROUTE_PATH,
   ...METALLURGY_APP_ROUTES,
+  ...POTTERY_APP_ROUTES,
   LEATHER_ROUTE_PATH,
 ] as const;
 
@@ -42,6 +44,14 @@ export function getCanonicalAppPath(pathname: string): string {
     return METALLURGY_VIEW_PATHS.planner;
   }
 
+  if (normalized === POTTERY_VIEW_PATHS["pottery-calculator"]) {
+    return POTTERY_VIEW_PATHS["pottery-calculator"];
+  }
+
+  if (normalized === POTTERY_VIEW_PATHS["pottery-planner"]) {
+    return POTTERY_VIEW_PATHS["pottery-planner"];
+  }
+
   if (normalized === REFERENCE_ROUTE_PATH || isLegacyReferencePath(normalized)) {
     return REFERENCE_ROUTE_PATH;
   }
@@ -68,6 +78,14 @@ export function getAppNavTargetFromPath(pathname: string): AppNavTarget {
     return "planner";
   }
 
+  if (canonicalPath === POTTERY_VIEW_PATHS["pottery-calculator"]) {
+    return "pottery-calculator";
+  }
+
+  if (canonicalPath === POTTERY_VIEW_PATHS["pottery-planner"]) {
+    return "pottery-planner";
+  }
+
   if (canonicalPath === REFERENCE_ROUTE_PATH) {
     return "reference";
   }
@@ -76,6 +94,10 @@ export function getAppNavTargetFromPath(pathname: string): AppNavTarget {
 }
 
 export function getReferenceTabFromHash(hash: string, fallback: ReferenceTab = "metallurgy"): ReferenceTab {
+  if (hash === "#pottery") {
+    return "pottery";
+  }
+
   if (hash === "#leather") {
     return "leather";
   }
@@ -100,6 +122,10 @@ export function getAppDomainFromPath(
 
   if (target === "calculator" || target === "planner") {
     return "metallurgy";
+  }
+
+  if (target === "pottery-calculator" || target === "pottery-planner") {
+    return "pottery";
   }
 
   if (target === "reference") {
@@ -134,6 +160,13 @@ export function getLocalizedLeatherPath(currentPathname: string): string {
 export function getLocalizedMetallurgyPath(
   currentPathname: string,
   viewPath: string = METALLURGY_VIEW_PATHS.calculator,
+): string {
+  return getLocalizedAppPath(currentPathname, viewPath);
+}
+
+export function getLocalizedPotteryPath(
+  currentPathname: string,
+  viewPath: string = POTTERY_VIEW_PATHS["pottery-calculator"],
 ): string {
   return getLocalizedAppPath(currentPathname, viewPath);
 }

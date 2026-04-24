@@ -1,53 +1,156 @@
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES, getLocalePath } from "./routing";
 import type { Locale } from "./types";
+import enCopy from "./en.json";
+import frCopy from "./fr.json";
+import deCopy from "./de.json";
+import esCopy from "./es.json";
+import ruCopy from "./ru.json";
+import zhCopy from "./zh.json";
+import jaCopy from "./ja.json";
+import koCopy from "./ko.json";
+import plCopy from "./pl.json";
+import ptCopy from "./pt.json";
 import { METALLURGY_VIEW_PATHS } from "../features/metallurgy/routing/routes";
+import { POTTERY_VIEW_PATHS } from "../features/pottery/routing/routes";
 import { getCanonicalAppPath, LEATHER_ROUTE_PATH, OVERVIEW_ROUTE_PATH, REFERENCE_ROUTE_PATH } from "../routing/routes";
 
 export const SITE_URL = "https://vs-calculator.tcousin.com";
 const SITE_NAME = "Vintage Story Alloy Calculator";
 const SITE_IMAGE_URL = new URL("/Grid_Copper_anvil.png", `${SITE_URL}/`).toString();
-const LEATHER_ROUTE_TITLE = "Vintage Story Leather Planner";
+const SEO_COPY: Record<Locale, Record<string, string>> = {
+  en: enCopy as Record<string, string>,
+  fr: frCopy as Record<string, string>,
+  de: deCopy as Record<string, string>,
+  es: esCopy as Record<string, string>,
+  ru: ruCopy as Record<string, string>,
+  zh: zhCopy as Record<string, string>,
+  ja: jaCopy as Record<string, string>,
+  ko: koCopy as Record<string, string>,
+  pl: plCopy as Record<string, string>,
+  pt: ptCopy as Record<string, string>,
+};
+
+function seoT(locale: Locale, key: string): string {
+  return SEO_COPY[locale][key] ?? SEO_COPY.en[key] ?? key;
+}
+const GENERAL_TOOL_KEYWORDS = [
+  "Vintage Story tool",
+  "Vintage Story tools",
+  "Vintage Story calculator",
+  "Vintage Story calculators",
+  "Vintage Story crafting calculator",
+  "Vintage Story production planner",
+  "VS calculator",
+  "VS tools",
+];
+const ALLOY_ROUTE_KEYWORDS =
+  "Vintage Story alloy calculator, Vintage Story metallurgy calculator, Vintage Story bronze calculator, Vintage Story bismuth bronze calculator, Vintage Story black bronze calculator, Vintage Story crucible calculator, Vintage Story ingot calculator, Vintage Story nugget calculator";
+const LEATHER_ROUTE_TITLE = "Vintage Story Leather Calculator";
 const LEATHER_ROUTE_DESCRIPTION =
-  "Plan raw hides, soaking liquid, tannin logs, water, and barrel steps for the full Vintage Story leatherworking pipeline.";
+  "Calculate raw hides, soaking liquid, tannin logs, water, barrels, lime, borax, and pelt curing steps for the full Vintage Story leatherworking pipeline.";
+const LEATHER_ROUTE_KEYWORDS =
+  "Vintage Story leather calculator, Vintage Story leather planner, Vintage Story hide calculator, Vintage Story tanning calculator, Vintage Story pelt calculator, Vintage Story leatherworking tool, hide tanning planner, tannin calculator";
 const LEATHER_FEATURE_LIST = [
+  "Vintage Story leather calculator",
   "Vintage Story leatherworking planner",
   "Hide-to-leather material planning",
   "Barrel and tannin workflow breakdown",
   "Lime and powdered borax shopping list",
 ];
-const OVERVIEW_ROUTE_TITLE = "Vintage Story Alloy Calculator";
+const POTTERY_CALCULATOR_ROUTE_KEYWORDS =
+  "Vintage Story pottery calculator, Vintage Story clay calculator, Vintage Story clay forming calculator, Vintage Story clay cost calculator, clay oven fire clay calculator, pottery molds calculator, shingles clay calculator";
+const POTTERY_PLANNER_ROUTE_KEYWORDS =
+  "Vintage Story pottery planner, clay inventory planner, clay forming shopping list, fire clay calculator, pottery mold planner, Vintage Story pottery batches";
+const POTTERY_FEATURE_LIST = [
+  "Vintage Story pottery calculator",
+  "Vintage Story pottery clay calculator",
+  "Clay forming item and mold planner",
+  "General clay and fire clay inventory checks",
+  "Pottery recipe and firing reference",
+];
+const POTTERY_CALCULATOR_FAQ_ITEMS: SeoFaqItem[] = [
+  {
+    question: "How much clay do pottery items need in Vintage Story?",
+    answer:
+      "The calculator uses the clay forming costs for each supported item and mold, including 1 clay for bowls, 3 for ingot molds, 4 for a shingles batch, and 69 fire clay for a clay oven.",
+  },
+  {
+    question: "Does the clay oven require fire clay?",
+    answer:
+      "Yes. The clay oven is treated as fire-clay-only, while general pottery items can use common clay types or surplus fire clay if you choose to spend it that way.",
+  },
+  {
+    question: "Do pottery recipes need firing after clay forming?",
+    answer:
+      "Most pottery items and molds need kiln firing after clay forming. The planner keeps the firing requirement visible so the material plan does not stop at raw clay cost.",
+  },
+];
+const POTTERY_PLANNER_FAQ_ITEMS: SeoFaqItem[] = [
+  {
+    question: "How does the pottery planner handle fire clay?",
+    answer:
+      "It reserves fire clay for fire-clay-only recipes first, then can count remaining fire clay toward general clay demand so inventory shortfalls are easier to spot.",
+  },
+  {
+    question: "Can I plan molds and pottery items together?",
+    answer:
+      "Yes. The planner covers pottery items, storage vessels, shingles, and clay molds together, then totals the complete clay requirement for the selected batch.",
+  },
+  {
+    question: "How are clay shingles calculated?",
+    answer:
+      "Shingles are planned as the in-game batch output: 4 clay produces 12 shingles, so the planner tracks both the number of batches and the resulting item count.",
+  },
+];
+const OVERVIEW_ROUTE_TITLE = "Vintage Story Calculator";
 const OVERVIEW_ROUTE_DESCRIPTION =
-  "Plan metallurgy alloys, leatherworking hides, pelt curing, and reference lookups for Vintage Story from one shared toolkit.";
+  "Use one Vintage Story calculator toolkit for alloy ratios, metallurgy planning, pottery clay forming, leatherworking hides, pelt curing, and reference lookups.";
+const OVERVIEW_ROUTE_KEYWORDS = [
+  ...GENERAL_TOOL_KEYWORDS,
+  "Vintage Story alloy calculator",
+  "Vintage Story leather calculator",
+  "Vintage Story pottery calculator",
+  "Vintage Story metallurgy calculator",
+  "Vintage Story clay calculator",
+  "Vintage Story hide calculator",
+].join(", ");
 const OVERVIEW_FEATURE_LIST = [
+  "Vintage Story tool",
+  "Vintage Story calculator",
+  "Vintage Story alloy calculator",
+  "Vintage Story leather calculator",
+  "Vintage Story pottery calculator",
   "Metallurgy calculator and planner",
-  "Leatherworking and pelt-curing planner",
-  "Shared metallurgy and leatherwork reference",
+  "Pottery clay forming calculator and planner",
+  "Leatherworking and pelt-curing calculator",
+  "Shared metallurgy, pottery, and leatherwork reference",
   "Vintage Story production planning toolkit",
 ];
 const OVERVIEW_FAQ_ITEMS: SeoFaqItem[] = [
   {
     question: "What can this Vintage Story toolset help me plan?",
     answer:
-      "It covers both metallurgy and leatherwork: alloy ratios, crucible batches, hide tanning, pelt curing, tanning liquid, barrel usage, and material shopping lists.",
+      "It covers metallurgy, pottery, and leatherwork: alloy ratios, crucible batches, clay forming costs, hide tanning, pelt curing, tanning liquid, barrel usage, and material shopping lists.",
   },
   {
     question: "Does the reference cover both metallurgy and leatherwork now?",
     answer:
-      "Yes. The shared reference page groups metallurgy and leatherwork information in one place so you can switch between alloy data and hide-processing rules without leaving the reference surface.",
+      "Yes. The shared reference page groups metallurgy, pottery, and leatherwork information in one place so you can switch between alloy data, clay forming recipes, and hide-processing rules without leaving the reference surface.",
   },
   {
     question: "Can I still deep-link directly to the metallurgy tools?",
     answer:
-      "Yes. Calculator and planner URLs remain shareable under the /metallurgy/ path, while leatherwork remains under /leather/.",
+      "Yes. Calculator and planner URLs remain shareable under the /metallurgy/ and /pottery/ paths, while leatherwork remains under /leather/.",
   },
 ];
 const REFERENCE_ROUTE_TITLE = "Vintage Story Reference";
 const REFERENCE_ROUTE_DESCRIPTION =
-  "Browse shared metallurgy and leatherwork reference data for Vintage Story, including alloy ranges, hide workflow rules, solvents, tannin, and bear-hide notes.";
+  "Browse shared metallurgy, pottery, and leatherwork reference data for Vintage Story, including alloy ranges, clay recipes, hide workflow rules, solvents, tannin, and bear-hide notes.";
 const REFERENCE_FEATURE_LIST = [
   "Alloy recipe and smelting reference",
+  "Pottery clay forming recipe reference",
   "Leatherwork hide, solvent, and tannin reference",
-  "Shared reference tabs for metallurgy and leatherwork",
+  "Shared reference tabs for metallurgy, pottery, and leatherwork",
 ];
 
 export interface SeoFaqItem {
@@ -559,17 +662,43 @@ function isReferencePath(pathname: string): boolean {
   return getCanonicalAppPath(pathname) === REFERENCE_ROUTE_PATH;
 }
 
+function isPotteryCalculatorPath(pathname: string): boolean {
+  return pathname === POTTERY_VIEW_PATHS["pottery-calculator"];
+}
+
+function isPotteryPlannerPath(pathname: string): boolean {
+  return pathname === POTTERY_VIEW_PATHS["pottery-planner"];
+}
+
+function isPotteryPath(pathname: string): boolean {
+  return isPotteryCalculatorPath(pathname) || isPotteryPlannerPath(pathname);
+}
+
 function getPageTitle(locale: Locale, title: string, pathname: string): string {
   if (pathname === LEATHER_ROUTE_PATH) {
-    return `${LEATHER_ROUTE_TITLE} | Hide, Tannin & Barrel Workflow`;
+    return `${LEATHER_ROUTE_TITLE} | Hide, Tannin & Pelt Planner`;
+  }
+
+  if (isPotteryCalculatorPath(pathname)) {
+    if (locale === "en") {
+      return "Vintage Story Pottery Calculator | Clay Forming Costs";
+    }
+    return `${seoT(locale, "pottery.calculator.title")} | Vintage Story ${seoT(locale, "header.domain.pottery")}`;
+  }
+
+  if (isPotteryPlannerPath(pathname)) {
+    if (locale === "en") {
+      return "Vintage Story Pottery Planner | Clay Inventory Planning";
+    }
+    return `${seoT(locale, "pottery.planner.title")} | Vintage Story ${seoT(locale, "header.domain.pottery")}`;
   }
 
   if (isAboutPath(pathname)) {
-    return `${OVERVIEW_ROUTE_TITLE} | Overview, Leatherwork & Reference`;
+    return `${OVERVIEW_ROUTE_TITLE} | Alloy, Leather & Pottery Tools`;
   }
 
   if (isReferencePath(pathname)) {
-    return `${REFERENCE_ROUTE_TITLE} | Metallurgy & Leatherwork`;
+    return `${REFERENCE_ROUTE_TITLE} | Metallurgy, Pottery & Leatherwork`;
   }
 
   if (pathname === METALLURGY_VIEW_PATHS.planner) {
@@ -582,6 +711,20 @@ function getPageTitle(locale: Locale, title: string, pathname: string): string {
 function getPageDescription(locale: Locale, content: SeoContent, pathname: string): string {
   if (pathname === LEATHER_ROUTE_PATH) {
     return LEATHER_ROUTE_DESCRIPTION;
+  }
+
+  if (isPotteryCalculatorPath(pathname)) {
+    if (locale === "en") {
+      return "Calculate exact clay costs for Vintage Story pottery items, molds, shingles, clay ovens, and firing requirements.";
+    }
+    return `Vintage Story: ${seoT(locale, "pottery.calculator.description")}`;
+  }
+
+  if (isPotteryPlannerPath(pathname)) {
+    if (locale === "en") {
+      return "Build a Vintage Story clay forming shopping list, check general and fire clay inventory, and plan pottery batches with shortfalls and leftovers.";
+    }
+    return `Vintage Story: ${seoT(locale, "pottery.planner.description")}`;
   }
 
   if (isAboutPath(pathname)) {
@@ -599,8 +742,120 @@ function getPageDescription(locale: Locale, content: SeoContent, pathname: strin
   return content.description;
 }
 
+function getPageKeywords(content: SeoContent, pathname: string): string {
+  if (pathname === LEATHER_ROUTE_PATH) {
+    return LEATHER_ROUTE_KEYWORDS;
+  }
+
+  if (isPotteryCalculatorPath(pathname)) {
+    return POTTERY_CALCULATOR_ROUTE_KEYWORDS;
+  }
+
+  if (isPotteryPlannerPath(pathname)) {
+    return POTTERY_PLANNER_ROUTE_KEYWORDS;
+  }
+
+  if (isAboutPath(pathname)) {
+    return OVERVIEW_ROUTE_KEYWORDS;
+  }
+
+  if (isReferencePath(pathname)) {
+    return [
+      ...GENERAL_TOOL_KEYWORDS,
+      "Vintage Story reference",
+      "Vintage Story alloy reference",
+      "Vintage Story leather reference",
+      "Vintage Story pottery reference",
+      "Vintage Story recipes",
+    ].join(", ");
+  }
+
+  if (pathname === METALLURGY_VIEW_PATHS.calculator || pathname === METALLURGY_VIEW_PATHS.planner) {
+    return [...GENERAL_TOOL_KEYWORDS, ALLOY_ROUTE_KEYWORDS].join(", ");
+  }
+
+  return content.keywords;
+}
+
+function getSchemaAlternateNames(pathname: string): string[] {
+  if (isAboutPath(pathname)) {
+    return [
+      "Vintage Story tool",
+      "Vintage Story calculator",
+      "Vintage Story alloy calculator",
+      "Vintage Story leather calculator",
+      "Vintage Story pottery calculator",
+    ];
+  }
+
+  if (pathname === METALLURGY_VIEW_PATHS.calculator || pathname === METALLURGY_VIEW_PATHS.planner) {
+    return [
+      "Vintage Story alloy calculator",
+      "Vintage Story metallurgy calculator",
+      "Vintage Story bronze calculator",
+      "Vintage Story crucible calculator",
+    ];
+  }
+
+  if (pathname === LEATHER_ROUTE_PATH) {
+    return [
+      "Vintage Story leather calculator",
+      "Vintage Story leather planner",
+      "Vintage Story hide calculator",
+      "Vintage Story tanning calculator",
+    ];
+  }
+
+  if (isPotteryPath(pathname)) {
+    return [
+      "Vintage Story pottery calculator",
+      "Vintage Story clay calculator",
+      "Vintage Story clay forming calculator",
+      "Vintage Story pottery planner",
+    ];
+  }
+
+  return [SITE_NAME];
+}
+
+function getRouteFeatureList(content: SeoContent, pathname: string): string[] {
+  if (pathname === LEATHER_ROUTE_PATH) {
+    return LEATHER_FEATURE_LIST;
+  }
+
+  if (isPotteryPath(pathname)) {
+    return POTTERY_FEATURE_LIST;
+  }
+
+  if (isReferencePath(pathname)) {
+    return REFERENCE_FEATURE_LIST;
+  }
+
+  if (isAboutPath(pathname)) {
+    return OVERVIEW_FEATURE_LIST;
+  }
+
+  return content.featureList;
+}
+
+function getRouteFaqItems(content: SeoContent, pathname: string): SeoFaqItem[] {
+  if (isPotteryCalculatorPath(pathname)) {
+    return POTTERY_CALCULATOR_FAQ_ITEMS;
+  }
+
+  if (isPotteryPlannerPath(pathname)) {
+    return POTTERY_PLANNER_FAQ_ITEMS;
+  }
+
+  if (isAboutPath(pathname)) {
+    return OVERVIEW_FAQ_ITEMS;
+  }
+
+  return content.faqItems;
+}
+
 function shouldIncludeFaqSchema(pathname: string): boolean {
-  return isAboutPath(pathname);
+  return isAboutPath(pathname) || isPotteryPath(pathname);
 }
 
 export function getCanonicalUrlForPath(locale: Locale, pathname: string = "/"): string {
@@ -626,27 +881,25 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
   const normalizedPath = pathname === "/" ? "/" : pathname.endsWith("/") ? pathname : `${pathname}/`;
   const description = getPageDescription(locale, content, normalizedPath);
   const title = getPageTitle(locale, content.title, normalizedPath);
+  const keywords = getPageKeywords(content, normalizedPath);
   const canonicalUrl = getCanonicalUrlForPath(locale, normalizedPath);
-  const featureList = normalizedPath === LEATHER_ROUTE_PATH
-    ? LEATHER_FEATURE_LIST
-    : isReferencePath(normalizedPath)
-      ? REFERENCE_FEATURE_LIST
-      : isAboutPath(normalizedPath)
-        ? OVERVIEW_FEATURE_LIST
-        : content.featureList;
-  const faqItems = isAboutPath(normalizedPath) ? OVERVIEW_FAQ_ITEMS : content.faqItems;
+  const featureList = getRouteFeatureList(content, normalizedPath);
+  const faqItems = getRouteFaqItems(content, normalizedPath);
 
   const schema: Array<Record<string, unknown>> = [
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      name: SITE_NAME,
+      name: title,
+      alternateName: getSchemaAlternateNames(normalizedPath),
       url: canonicalUrl,
       description: description,
       applicationCategory: "GameApplication",
       operatingSystem: "Any",
       inLanguage: locale,
       image: SITE_IMAGE_URL,
+      keywords,
+      mainEntityOfPage: canonicalUrl,
       offers: {
         "@type": "Offer",
         price: "0",
@@ -676,6 +929,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
     ...content,
     title,
     description,
+    keywords,
     siteName: SITE_NAME,
     socialImageUrl: SITE_IMAGE_URL,
     canonicalUrl,
@@ -707,11 +961,160 @@ function renderFaqList(items: SeoFaqItem[]): string {
     .join("\n");
 }
 
+function getPotteryPrerenderedSeoBody(locale: Locale, pathname: string, title: string, description: string): string | null {
+  if (isPotteryCalculatorPath(pathname)) {
+    if (locale === "en") {
+      return [
+        '    <main class="seo-prerender" data-seo-prerender>',
+        `      <h1>${escapeHtml(title)}</h1>`,
+        `      <p class="seo-prerender__lead">${escapeHtml(description)}</p>`,
+        "      <section>",
+        "        <h2>Clay forming recipe coverage</h2>",
+        "        <p>Use the calculator to total Vintage Story clay costs for pottery items, storage vessels, shingles, cooking vessels, crucibles, and clay molds before committing inventory.</p>",
+        "      </section>",
+        "      <section>",
+        "        <h2>Fire clay and kiln planning</h2>",
+        "        <p>The pottery calculator separates fire-clay-only demand from general clay demand, calls out the 69 fire clay clay oven, and keeps kiln firing requirements visible for formed items.</p>",
+        "      </section>",
+        "      <section>",
+        "        <h2>FAQ</h2>",
+        renderFaqList(POTTERY_CALCULATOR_FAQ_ITEMS),
+        "      </section>",
+        "    </main>",
+      ].join("\n");
+    }
+
+    return [
+      '    <main class="seo-prerender" data-seo-prerender>',
+      `      <h1>${escapeHtml(title)}</h1>`,
+      `      <p class="seo-prerender__lead">${escapeHtml(description)}</p>`,
+      "      <section>",
+      `        <h2>${escapeHtml(seoT(locale, "pottery.reference.title"))}</h2>`,
+      `        <p>${escapeHtml(seoT(locale, "pottery.reference.description"))}</p>`,
+      "      </section>",
+      "      <section>",
+      `        <h2>${escapeHtml(seoT(locale, "pottery.inventory.title"))}</h2>`,
+      `        <p>${escapeHtml(seoT(locale, "pottery.inventory.fire_clay_note"))}</p>`,
+      "      </section>",
+      "      <section>",
+      "        <h2>FAQ</h2>",
+      renderFaqList(POTTERY_CALCULATOR_FAQ_ITEMS),
+      "      </section>",
+      "    </main>",
+    ].join("\n");
+  }
+
+  if (isPotteryPlannerPath(pathname)) {
+    if (locale === "en") {
+      return [
+        '    <main class="seo-prerender" data-seo-prerender>',
+        `      <h1>${escapeHtml(title)}</h1>`,
+        `      <p class="seo-prerender__lead">${escapeHtml(description)}</p>`,
+        "      <section>",
+        "        <h2>Clay inventory planning</h2>",
+        "        <p>Build a pottery batch from selected recipes, compare the totals against general clay and fire clay on hand, and review remaining inventory or missing clay before crafting.</p>",
+        "      </section>",
+        "      <section>",
+        "        <h2>Batch and mold planning</h2>",
+        "        <p>The planner supports pottery items and clay molds together, including shingles as 4 clay for 12 output items, so larger building and tool-prep sessions can be planned from one list.</p>",
+        "      </section>",
+        "      <section>",
+        "        <h2>FAQ</h2>",
+        renderFaqList(POTTERY_PLANNER_FAQ_ITEMS),
+        "      </section>",
+        "    </main>",
+      ].join("\n");
+    }
+
+    return [
+      '    <main class="seo-prerender" data-seo-prerender>',
+      `      <h1>${escapeHtml(title)}</h1>`,
+      `      <p class="seo-prerender__lead">${escapeHtml(description)}</p>`,
+      "      <section>",
+      `        <h2>${escapeHtml(seoT(locale, "pottery.inventory.title"))}</h2>`,
+      `        <p>${escapeHtml(seoT(locale, "pottery.inventory.description"))}</p>`,
+      "      </section>",
+      "      <section>",
+      `        <h2>${escapeHtml(seoT(locale, "pottery.plan.title"))}</h2>`,
+      `        <p>${escapeHtml(seoT(locale, "pottery.planner.description"))}</p>`,
+      "      </section>",
+      "      <section>",
+      "        <h2>FAQ</h2>",
+      renderFaqList(POTTERY_PLANNER_FAQ_ITEMS),
+      "      </section>",
+      "    </main>",
+    ].join("\n");
+  }
+
+  return null;
+}
+
+function getOverviewPrerenderedSeoBody(): string {
+  return [
+    '    <main class="seo-prerender" data-seo-prerender>',
+    `      <h1>${escapeHtml(`${OVERVIEW_ROUTE_TITLE} | Alloy, Leather & Pottery Tools`)}</h1>`,
+    `      <p class="seo-prerender__lead">${escapeHtml(OVERVIEW_ROUTE_DESCRIPTION)}</p>`,
+    "      <section>",
+    "        <h2>Vintage Story toolset</h2>",
+    "        <p>This Vintage Story tool collection combines the Vintage Story alloy calculator, Vintage Story leather calculator, Vintage Story pottery calculator, shared production planners, and reference data in one searchable site.</p>",
+    "      </section>",
+    "      <section>",
+    "        <h2>Available calculators</h2>",
+    "        <p>Use the metallurgy calculator for alloy and crucible ratios, the leather calculator for hides, tannin, barrels, and pelts, and the pottery calculator for clay forming costs, molds, shingles, and clay ovens.</p>",
+    "      </section>",
+    "      <section>",
+    "        <h2>FAQ</h2>",
+    renderFaqList(OVERVIEW_FAQ_ITEMS),
+    "      </section>",
+    "    </main>",
+  ].join("\n");
+}
+
+function getToolPrerenderedSeoBody(pathname: string, title: string, description: string): string | null {
+  if (pathname === METALLURGY_VIEW_PATHS.calculator || pathname === METALLURGY_VIEW_PATHS.planner) {
+    return [
+      '    <main class="seo-prerender" data-seo-prerender>',
+      `      <h1>${escapeHtml(title)}</h1>`,
+      `      <p class="seo-prerender__lead">${escapeHtml(description)}</p>`,
+      "      <section>",
+      "        <h2>Vintage Story alloy calculator</h2>",
+      "        <p>Calculate Vintage Story alloy ratios for tin bronze, bismuth bronze, black bronze, brass, solder, electrum, cupronickel, and other crucible recipes with exact nuggets and ingot yield.</p>",
+      "      </section>",
+      "    </main>",
+    ].join("\n");
+  }
+
+  if (pathname === LEATHER_ROUTE_PATH) {
+    return [
+      '    <main class="seo-prerender" data-seo-prerender>',
+      `      <h1>${escapeHtml(title)}</h1>`,
+      `      <p class="seo-prerender__lead">${escapeHtml(description)}</p>`,
+      "      <section>",
+      "        <h2>Vintage Story leather calculator</h2>",
+      "        <p>Calculate hide tanning, pelt curing, tannin, barrel, water, lime, borax, and fat requirements for Vintage Story leatherworking workflows.</p>",
+      "      </section>",
+      "    </main>",
+    ].join("\n");
+  }
+
+  return null;
+}
+
 export function getPrerenderedSeoBody(locale: Locale, pathname: string = "/"): string {
   const content = SEO_CONTENT[locale];
   const normalizedPath = pathname === "/" ? "/" : pathname.endsWith("/") ? pathname : `${pathname}/`;
   const title = getPageTitle(locale, content.title, normalizedPath);
   const description = getPageDescription(locale, content, normalizedPath);
+  const potteryBody = getPotteryPrerenderedSeoBody(locale, normalizedPath, title, description);
+  const toolBody = getToolPrerenderedSeoBody(normalizedPath, title, description);
+
+  if (potteryBody) {
+    return potteryBody;
+  }
+
+  if (toolBody) {
+    return toolBody;
+  }
 
   if (!isAboutPath(normalizedPath)) {
     return [
@@ -722,30 +1125,7 @@ export function getPrerenderedSeoBody(locale: Locale, pathname: string = "/"): s
     ].join("\n");
   }
 
-  const faqItems = OVERVIEW_FAQ_ITEMS;
-
-  return [
-    '    <main class="seo-prerender" data-seo-prerender>',
-    `      <h1>${escapeHtml(content.heroTitle)}</h1>`,
-    `      <p class="seo-prerender__lead">${escapeHtml(content.heroDescription)}</p>`,
-    "      <section>",
-    `        <h2>${escapeHtml(content.howItWorksHeading)}</h2>`,
-    `        <p>${escapeHtml(content.howItWorksBody)}</p>`,
-    "      </section>",
-    "      <section>",
-    `        <h2>${escapeHtml(content.supportedAlloysHeading)}</h2>`,
-    `        <p>${escapeHtml(content.supportedAlloysBody)}</p>`,
-    "      </section>",
-    "      <section>",
-    `        <h2>${escapeHtml(content.planningHeading)}</h2>`,
-    `        <p>${escapeHtml(content.planningBody)}</p>`,
-    "      </section>",
-    "      <section>",
-    `        <h2>${escapeHtml(content.faqHeading)}</h2>`,
-    renderFaqList(faqItems),
-    "      </section>",
-    "    </main>",
-  ].join("\n");
+  return getOverviewPrerenderedSeoBody();
 }
 
 export function localizeHtmlDocument(html: string, locale: Locale, pathname: string = "/"): string {

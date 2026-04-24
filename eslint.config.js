@@ -40,7 +40,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/features/metallurgy/**/*.{ts,tsx}', 'src/i18n/seo.ts', 'src/routing/routes.ts'],
+    files: ['src/features/metallurgy/**/*.{ts,tsx}', 'src/i18n/seo.ts', 'src/i18n/sitemap.ts', 'src/routing/routes.ts'],
     rules: {
       'no-restricted-imports': 'off',
     },

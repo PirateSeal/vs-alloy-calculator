@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Pottery calculator and planner** - Added a pottery feature with clay-cost calculation, batch planning, inventory shortfall/leftover summaries, pottery reference content, route support, localized copy, and item artwork.
+
+### Changed
+- **Sitemap generation centralized** - Moved sitemap XML creation out of the Vite config and into a shared i18n module that reuses canonical URL and hreflang alternate helpers, so route indexing stays aligned with page metadata.
+
+### Tests
+- **Pottery calculation coverage added** - Added direct pottery logic and URL-state routing tests alongside app, route, head, and SEO coverage for the new pottery pages.
+- **Sitemap regression coverage added** - Added tests for route and locale URL coverage, canonical helper consistency, `x-default` alternates, and optional explicit `lastmod` output.
+
 ## [1.12.1] - 2026-04-23
 
 ### Changed

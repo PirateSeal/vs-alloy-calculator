@@ -31,13 +31,17 @@ describe("localized SEO documents", () => {
   });
 
   it("rewrites HTML metadata for a localized route", () => {
-    const localized = localizeHtmlDocument(BASE_HTML, "fr");
+    const localized = localizeHtmlDocument(
+      BASE_HTML.replace("<body></body>", '<body><div id="root"></div></body>'),
+      "fr",
+    );
 
     expect(localized).toContain('<html lang="fr">');
     expect(localized).toContain('https://vs-calculator.tcousin.com/fr/');
     expect(localized).toContain('hreflang="de"');
-    expect(localized).toContain("Overview, Leatherwork & Reference");
-    expect(localized).toContain("Plan metallurgy alloys, leatherworking hides");
+    expect(localized).toContain("Alloy, Leather &amp; Pottery Tools");
+    expect(localized).toContain("Vintage Story tool collection");
+    expect(localized).toContain("Vintage Story leather calculator");
     expect(localized).toContain('"inLanguage": "fr"');
     expect(localized).toContain('"@type": "FAQPage"');
     expect(localized).toContain("https://vs-calculator.tcousin.com/Grid_Copper_anvil.png");
@@ -48,9 +52,14 @@ describe("localized SEO documents", () => {
     const schema = JSON.parse(seo.schema) as Array<Record<string, unknown>>;
 
     expect(seo.socialImageUrl).toBe("https://vs-calculator.tcousin.com/Grid_Copper_anvil.png");
-    expect(seo.title).toContain("Vintage Story Alloy Calculator");
+    expect(seo.title).toContain("Vintage Story Calculator");
+    expect(seo.keywords).toContain("Vintage Story tool");
+    expect(seo.keywords).toContain("Vintage Story alloy calculator");
+    expect(seo.keywords).toContain("Vintage Story leather calculator");
+    expect(seo.keywords).toContain("Vintage Story pottery calculator");
     expect(schema).toHaveLength(2);
     expect(schema[0]["@type"]).toBe("WebApplication");
+    expect(schema[0].alternateName).toContain("Vintage Story calculator");
     expect(schema[1]["@type"]).toBe("FAQPage");
   });
 
@@ -59,7 +68,7 @@ describe("localized SEO documents", () => {
     const schema = JSON.parse(seo.schema) as Array<Record<string, unknown>>;
 
     expect(seo.canonicalUrl).toBe("https://vs-calculator.tcousin.com/");
-    expect(seo.title).toContain("Overview");
+    expect(seo.title).toContain("Alloy, Leather & Pottery Tools");
     expect(seo.alternates.find((alternate) => alternate.hrefLang === "fr")?.href).toBe(
       "https://vs-calculator.tcousin.com/fr/",
     );
@@ -77,5 +86,17 @@ describe("localized SEO documents", () => {
     expect(seo.alternates.find((alternate) => alternate.hrefLang === "en")?.href).toBe(
       "https://vs-calculator.tcousin.com/metallurgy/planner/",
     );
+  });
+
+  it("rewrites route metadata and prerendered content for the pottery calculator", () => {
+    const html = BASE_HTML.replace("<body></body>", '<body><div id="root"></div></body>');
+    const localized = localizeHtmlDocument(html, "en", "/pottery/");
+
+    expect(localized).toContain("https://vs-calculator.tcousin.com/pottery/");
+    expect(localized).toContain("Vintage Story Pottery Calculator");
+    expect(localized).toContain("Clay forming recipe coverage");
+    expect(localized).toContain("69 fire clay");
+    expect(localized).toContain('"@type": "FAQPage"');
+    expect(localized).toContain("Vintage Story pottery calculator");
   });
 });
