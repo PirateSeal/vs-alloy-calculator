@@ -663,11 +663,11 @@ function isReferencePath(pathname: string): boolean {
 }
 
 function isPotteryCalculatorPath(pathname: string): boolean {
-  return pathname === POTTERY_VIEW_PATHS["pottery-calculator"];
+  return getCanonicalAppPath(pathname) === POTTERY_VIEW_PATHS["pottery-calculator"];
 }
 
 function isPotteryPlannerPath(pathname: string): boolean {
-  return pathname === POTTERY_VIEW_PATHS["pottery-planner"];
+  return getCanonicalAppPath(pathname) === POTTERY_VIEW_PATHS["pottery-planner"];
 }
 
 function isPotteryPath(pathname: string): boolean {

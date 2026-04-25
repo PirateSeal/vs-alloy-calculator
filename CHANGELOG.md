@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`CLAUDE.md` updated for three-domain architecture** - Added pottery feature layout table, pottery and leatherwork domain concepts, full URL contract summary across all features, a skills section documenting `/shadcn` and `/make-interfaces-feel-better` usage, updated `App.tsx` description, corrected import policy, and expanded test location list.
 - **`AGENTS.md` rewritten** - Replaced stale metallurgy-only content with a comprehensive three-feature guide covering: feature boundary pattern, import policy table, URL contracts table for all features, domain-specific gotchas (constants invariants, pottery clay rules, storage vessel fuel exception, bear override behavior, asset builder rules, routing/locale mechanics), UI skills section (`/shadcn` and `/make-interfaces-feel-better`), and full test location index by feature.
 
+### Fixed
+- **Localized pottery SEO and non-English pottery copy** - Canonicalized locale-prefixed pottery routes before SEO lookup and replaced stray Russian/English pottery text across non-English locale files.
+
 ### Tests
 - **Pottery calculation coverage added** - Added direct pottery logic and URL-state routing tests alongside app, route, head, and SEO coverage for the new pottery pages.
 - **Sitemap regression coverage added** - Added tests for route and locale URL coverage, canonical helper consistency, `x-default` alternates, and optional explicit `lastmod` output.
