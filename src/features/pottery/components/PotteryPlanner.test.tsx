@@ -18,6 +18,21 @@ function PlannerHarness() {
   return <PotteryPlanner state={state} onStateChange={setState} />;
 }
 
+function MixedClayHarness() {
+  const [state, setState] = useState<PotteryPlannerState>({
+    plan: [
+      { recipeId: "clay-oven", quantity: 1 },
+      { recipeId: "crock", quantity: 10 },
+    ],
+    invAny: 0,
+    invFire: 70,
+    kilnMode: "pit",
+    fuelType: "firewood",
+  });
+
+  return <PotteryPlanner state={state} onStateChange={setState} />;
+}
+
 describe("PotteryPlanner", () => {
   it("switches kiln mode and fuel summaries", async () => {
     const user = userEvent.setup();
@@ -41,5 +56,15 @@ describe("PotteryPlanner", () => {
     expect(screen.getByText("Beehive firings")).toBeInTheDocument();
     expect(screen.getByText("21.8 in-game hours")).toBeInTheDocument();
     expect(screen.getByText("80 / 72, 2 firings")).toBeInTheDocument();
+  });
+
+  it("marks any-clay rows short after reserving fire clay for fire-only rows", () => {
+    render(
+      <I18nProvider>
+        <MixedClayHarness />
+      </I18nProvider>,
+    );
+
+    expect(screen.getByText("max 0")).toBeInTheDocument();
   });
 });

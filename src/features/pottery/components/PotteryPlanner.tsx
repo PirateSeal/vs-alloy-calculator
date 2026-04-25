@@ -6,7 +6,7 @@ import {
   calcBeehiveKilnPlan,
   calcClayCost,
   calcFeasibility,
-  calcMaxCraftable,
+  calcPlanAvailability,
   calcPitKilnPlan,
   clampPositiveInt,
   getKilnFuelOption,
@@ -44,6 +44,10 @@ export function PotteryPlanner({ state, onStateChange }: PotteryPlannerProps) {
   const plan = useMemo(() => hydratePlanItems(state.plan, POTTERY_RECIPE_BY_ID), [state.plan]);
   const feasibility = useMemo(
     () => calcFeasibility({ any: state.invAny, fire: state.invFire }, plan),
+    [plan, state.invAny, state.invFire],
+  );
+  const planAvailability = useMemo(
+    () => calcPlanAvailability({ any: state.invAny, fire: state.invFire }, plan),
     [plan, state.invAny, state.invFire],
   );
   const pitKilnPlan = useMemo(() => calcPitKilnPlan(plan, state.fuelType), [plan, state.fuelType]);
@@ -185,14 +189,13 @@ export function PotteryPlanner({ state, onStateChange }: PotteryPlannerProps) {
                   {plan.map((item, index) => {
                     const cost = calcClayCost(item.recipe, item.quantity);
                     const itemName = t(`pottery.recipe.${item.recipe.id}`);
-                    const maxCraftable = calcMaxCraftable({ any: state.invAny, fire: state.invFire }, item.recipe);
-                    const short = maxCraftable < item.quantity;
+                    const availability = planAvailability[index] ?? { maxCraftable: 0, short: true };
                     return (
                       <div
                         key={`${item.recipe.id}-${index}`}
                         className={cn(
                           "animate-surface-in-soft grid gap-3 rounded-2xl border p-3 sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center",
-                          short ? "border-destructive/25 bg-destructive/7" : "border-border/25 bg-background/40",
+                          availability.short ? "border-destructive/25 bg-destructive/7" : "border-border/25 bg-background/40",
                         )}
                       >
                         <div className="flex min-w-0 items-center gap-3">
@@ -219,8 +222,8 @@ export function PotteryPlanner({ state, onStateChange }: PotteryPlannerProps) {
                         <div className="flex items-center justify-between gap-3 sm:justify-end">
                           <div className="text-right">
                             <p className="font-mono text-lg font-bold tabular-nums">{cost}</p>
-                            <p className={cn("text-xs", short ? "text-destructive" : "text-muted-foreground")}>
-                              {short ? t("pottery.max_value", { max: maxCraftable }) : t("pottery.clay")}
+                            <p className={cn("text-xs", availability.short ? "text-destructive" : "text-muted-foreground")}>
+                              {availability.short ? t("pottery.max_value", { max: availability.maxCraftable }) : t("pottery.clay")}
                             </p>
                           </div>
                           <Button type="button" variant="ghost" size="icon" className="size-10 rounded-[1rem] text-muted-foreground hover:text-destructive" onClick={() => removeItem(index)}>

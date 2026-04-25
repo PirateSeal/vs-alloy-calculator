@@ -7,6 +7,7 @@ import {
   calcCraftedOutput,
   calcFeasibility,
   calcMaxCraftable,
+  calcPlanAvailability,
   calcPitKilnPlan,
 } from "@/features/pottery/lib/potteryLogic";
 
@@ -67,6 +68,22 @@ describe("pottery logic", () => {
   it("calculates max craftable with fire clay substitution for general recipes", () => {
     expect(calcMaxCraftable({ any: 3, fire: 3 }, recipe("crock"))).toBe(3);
     expect(calcMaxCraftable({ any: 200, fire: 68 }, recipe("clay-oven"))).toBe(0);
+  });
+
+  it("reserves fire clay before row-level availability checks", () => {
+    const plan = [
+      { recipe: recipe("clay-oven"), quantity: 1 },
+      { recipe: recipe("crock"), quantity: 10 },
+    ];
+
+    expect(calcPlanAvailability({ any: 0, fire: 70 }, plan)).toEqual([
+      { maxCraftable: 1, short: false },
+      { maxCraftable: 0, short: true },
+    ]);
+    expect(calcPlanAvailability({ any: 0, fire: 89 }, plan)[1]).toEqual({
+      maxCraftable: 10,
+      short: false,
+    });
   });
 
   it("calculates pit kiln cycles and materials for mixed pottery plans", () => {

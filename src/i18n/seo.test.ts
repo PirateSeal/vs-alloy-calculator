@@ -99,4 +99,14 @@ describe("localized SEO documents", () => {
     expect(localized).toContain('"@type": "FAQPage"');
     expect(localized).toContain("Vintage Story pottery calculator");
   });
+
+  it("does not prerender English pottery FAQ content on localized pottery pages", () => {
+    const html = BASE_HTML.replace("<body></body>", '<body><div id="root"></div></body>');
+    const localized = localizeHtmlDocument(html, "fr", "/pottery/planner/");
+
+    expect(localized).toContain("Planificateur de poterie");
+    expect(localized).toContain('"inLanguage": "fr"');
+    expect(localized).not.toContain('"@type": "FAQPage"');
+    expect(localized).not.toContain("How does the pottery planner handle fire clay?");
+  });
 });

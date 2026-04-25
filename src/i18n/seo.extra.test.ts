@@ -64,4 +64,14 @@ describe('SEO route variants', () => {
       'https://vs-calculator.tcousin.com/fr/pottery/planner/',
     );
   });
+
+  it('omits English pottery FAQ schema on localized pottery routes', () => {
+    const seo = getSeoContent('fr', '/pottery/planner/');
+    const schema = JSON.parse(seo.schema) as Array<Record<string, unknown>>;
+
+    expect(seo.faqItems).toEqual([]);
+    expect(schema).toHaveLength(1);
+    expect(schema[0].inLanguage).toBe('fr');
+    expect(seo.schema).not.toContain('How does the pottery planner handle fire clay?');
+  });
 });

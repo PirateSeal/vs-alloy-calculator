@@ -838,13 +838,13 @@ function getRouteFeatureList(content: SeoContent, pathname: string): string[] {
   return content.featureList;
 }
 
-function getRouteFaqItems(content: SeoContent, pathname: string): SeoFaqItem[] {
+function getRouteFaqItems(locale: Locale, content: SeoContent, pathname: string): SeoFaqItem[] {
   if (isPotteryCalculatorPath(pathname)) {
-    return POTTERY_CALCULATOR_FAQ_ITEMS;
+    return locale === "en" ? POTTERY_CALCULATOR_FAQ_ITEMS : [];
   }
 
   if (isPotteryPlannerPath(pathname)) {
-    return POTTERY_PLANNER_FAQ_ITEMS;
+    return locale === "en" ? POTTERY_PLANNER_FAQ_ITEMS : [];
   }
 
   if (isAboutPath(pathname)) {
@@ -884,7 +884,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
   const keywords = getPageKeywords(content, normalizedPath);
   const canonicalUrl = getCanonicalUrlForPath(locale, normalizedPath);
   const featureList = getRouteFeatureList(content, normalizedPath);
-  const faqItems = getRouteFaqItems(content, normalizedPath);
+  const faqItems = getRouteFaqItems(locale, content, normalizedPath);
 
   const schema: Array<Record<string, unknown>> = [
     {
@@ -909,7 +909,7 @@ export function getSeoContent(locale: Locale, pathname: string = "/") {
     },
   ];
 
-  if (shouldIncludeFaqSchema(normalizedPath)) {
+  if (faqItems.length > 0 && shouldIncludeFaqSchema(normalizedPath)) {
     schema.push({
       "@context": "https://schema.org",
       "@type": "FAQPage",
@@ -996,10 +996,6 @@ function getPotteryPrerenderedSeoBody(locale: Locale, pathname: string, title: s
       `        <h2>${escapeHtml(seoT(locale, "pottery.inventory.title"))}</h2>`,
       `        <p>${escapeHtml(seoT(locale, "pottery.inventory.fire_clay_note"))}</p>`,
       "      </section>",
-      "      <section>",
-      "        <h2>FAQ</h2>",
-      renderFaqList(POTTERY_CALCULATOR_FAQ_ITEMS),
-      "      </section>",
       "    </main>",
     ].join("\n");
   }
@@ -1037,10 +1033,6 @@ function getPotteryPrerenderedSeoBody(locale: Locale, pathname: string, title: s
       "      <section>",
       `        <h2>${escapeHtml(seoT(locale, "pottery.plan.title"))}</h2>`,
       `        <p>${escapeHtml(seoT(locale, "pottery.planner.description"))}</p>`,
-      "      </section>",
-      "      <section>",
-      "        <h2>FAQ</h2>",
-      renderFaqList(POTTERY_PLANNER_FAQ_ITEMS),
       "      </section>",
       "    </main>",
     ].join("\n");

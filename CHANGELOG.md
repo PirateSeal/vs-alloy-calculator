@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **Localized pottery SEO and non-English pottery copy** - Canonicalized locale-prefixed pottery routes before SEO lookup and replaced stray Russian/English pottery text across non-English locale files.
+- **Pottery FAQ SEO and row shortfall badges** - Omitted English-only pottery FAQ schema from localized pottery routes and made planner row shortage badges reserve fire clay for fire-only recipes before checking general-clay rows.
 
 ### Tests
 - **Pottery calculation coverage added** - Added direct pottery logic and URL-state routing tests alongside app, route, head, and SEO coverage for the new pottery pages.

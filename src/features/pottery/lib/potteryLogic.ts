@@ -21,6 +21,11 @@ export interface PotteryFeasibility {
   leftoverFire: number;
 }
 
+export interface PotteryPlanAvailability {
+  maxCraftable: number;
+  short: boolean;
+}
+
 export interface KilnFuelOption {
   type: KilnFuelType;
   labelKey: string;
@@ -124,6 +129,35 @@ export function calcMaxCraftable(inventory: PotteryInventory, recipe: PotteryRec
   }
 
   return Math.floor(available / recipe.clayCost);
+}
+
+export function calcPlanAvailability(
+  inventory: PotteryInventory,
+  plan: PotteryPlanInput[],
+): PotteryPlanAvailability[] {
+  const costs = plan.map((item) => calcClayCost(item.recipe, item.quantity));
+  const totalFire = plan.reduce((sum, item, index) => sum + (item.recipe.clayType === "fire" ? costs[index] : 0), 0);
+  const totalAny = plan.reduce((sum, item, index) => sum + (item.recipe.clayType === "any" ? costs[index] : 0), 0);
+  const spareFireForAny = Math.max(0, inventory.fire - totalFire);
+  const anyInventoryForGeneralRecipes = inventory.any + spareFireForAny;
+
+  return plan.map((item, index) => {
+    const cost = costs[index];
+    const reservedByOtherRows = item.recipe.clayType === "fire" ? totalFire - cost : totalAny - cost;
+    const availableForRow =
+      item.recipe.clayType === "fire"
+        ? Math.max(0, inventory.fire - reservedByOtherRows)
+        : Math.max(0, anyInventoryForGeneralRecipes - reservedByOtherRows);
+    const maxCraftable =
+      item.recipe.clayType === "fire"
+        ? calcMaxCraftable({ any: 0, fire: availableForRow }, item.recipe)
+        : calcMaxCraftable({ any: availableForRow, fire: 0 }, item.recipe);
+
+    return {
+      maxCraftable,
+      short: maxCraftable < item.quantity,
+    };
+  });
 }
 
 export function calcFeasibility(inventory: PotteryInventory, plan: PotteryPlanInput[]): PotteryFeasibility {
