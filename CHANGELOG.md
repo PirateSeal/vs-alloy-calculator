@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-04-25
+
 ### Added
 - **Pottery calculator and planner** - Added a pottery feature with clay-cost calculation, batch planning, inventory shortfall/leftover summaries, pottery reference content, route support, localized copy, and item artwork.
 - **Exhaustive agent documentation** - Created and updated `docs/agent/` with feature deep-dives for all three domains (`metallurgy-feature.md`, `leatherwork-feature.md`, `pottery-feature.md`), a consolidated URL contracts spec (`url-contracts.md`), a step-by-step guide for adding new domain features (`adding-a-feature.md`), and a top-level index (`README.md`). Existing docs (`codebase-map.md`, `ui-plan-status.md`, `ui-redesign-audit.md`) updated to reflect the pottery launch and three-domain architecture.
