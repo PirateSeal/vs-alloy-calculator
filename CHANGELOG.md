@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.1] - 2026-04-25
+
+### Changed
+- **README refreshed for the current app** - Updated the project README to describe the current multi-tool suite across metallurgy, pottery, and leatherwork, including live routes, URL-state contracts, i18n/SEO behavior, maintainer docs, and tag-based deployment.
+
+### Security
+- **PostCSS patched for CVE-2026-41305** - Updated `postcss` from `8.5.8` to `8.5.10` to resolve GHSA-qx2v-qp2m-jg93, the moderate XSS advisory for unescaped `</style>` sequences in stringified CSS output.
+
 ## [1.13.0] - 2026-04-25
 
 ### Added
