@@ -1,4 +1,7 @@
 export type ClayType = "any" | "fire";
+export type KilnMode = "pit" | "beehive";
+export type KilnFuelType = "firewood" | "peat" | "brown-coal" | "black-coal" | "charcoal" | "coke";
+export type BeehiveClass = "small" | "full-block" | "storage-vessel" | "shingles";
 
 export type PotteryCategory =
   | "cooking"
@@ -28,6 +31,9 @@ export interface PotteryRecipe {
     clayCost: number;
     outputCount: number;
   };
+  pitKilnCapacity?: number;
+  beehiveClass?: BeehiveClass;
+  firingNotes?: string[];
   clayPerItem: number;
 }
 
@@ -45,6 +51,8 @@ export interface PotteryPlannerState {
   plan: PotteryPlanItem[];
   invAny: number;
   invFire: number;
+  kilnMode: KilnMode;
+  fuelType: KilnFuelType;
 }
 
 export type PotteryView = "pottery-calculator" | "pottery-planner";

@@ -9,9 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **Pottery calculator and planner** - Added a pottery feature with clay-cost calculation, batch planning, inventory shortfall/leftover summaries, pottery reference content, route support, localized copy, and item artwork.
+- **Exhaustive agent documentation** - Created and updated `docs/agent/` with feature deep-dives for all three domains (`metallurgy-feature.md`, `leatherwork-feature.md`, `pottery-feature.md`), a consolidated URL contracts spec (`url-contracts.md`), a step-by-step guide for adding new domain features (`adding-a-feature.md`), and a top-level index (`README.md`). Existing docs (`codebase-map.md`, `ui-plan-status.md`, `ui-redesign-audit.md`) updated to reflect the pottery launch and three-domain architecture.
 
 ### Changed
 - **Sitemap generation centralized** - Moved sitemap XML creation out of the Vite config and into a shared i18n module that reuses canonical URL and hreflang alternate helpers, so route indexing stays aligned with page metadata.
+- **`CLAUDE.md` updated for three-domain architecture** - Added pottery feature layout table, pottery and leatherwork domain concepts, full URL contract summary across all features, a skills section documenting `/shadcn` and `/make-interfaces-feel-better` usage, updated `App.tsx` description, corrected import policy, and expanded test location list.
+- **`AGENTS.md` rewritten** - Replaced stale metallurgy-only content with a comprehensive three-feature guide covering: feature boundary pattern, import policy table, URL contracts table for all features, domain-specific gotchas (constants invariants, pottery clay rules, storage vessel fuel exception, bear override behavior, asset builder rules, routing/locale mechanics), UI skills section (`/shadcn` and `/make-interfaces-feel-better`), and full test location index by feature.
 
 ### Tests
 - **Pottery calculation coverage added** - Added direct pottery logic and URL-state routing tests alongside app, route, head, and SEO coverage for the new pottery pages.

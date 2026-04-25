@@ -1,67 +1,88 @@
 # UI Plan Status
 
-Tracks the current state of the shipped UI and architecture after the metallurgy feature-boundary migration, the leatherwork feature launch, and the Tier 1 refactor (2026-04-19).
+Tracks shipped UI and architecture state. Update after each significant feature or refactor lands.
+
+Last updated: 2026-04-25 (pottery feature + sitemap generation branch).
 
 ## Shipped Structure
 
 - App shell is stable: collapsible desktop rail, mobile bottom navigation, compact mobile header, footer, theme toggle, locale switcher, share action.
-- Two features live under `src/features/`:
+- Three features live under `src/features/`:
   - `metallurgy/` — calculator, planner, reference, about.
-  - `leatherwork/` — hide/leather/pelt calculator.
-- `src/App.tsx` is a thin wrapper that mounts `I18nProvider`, `AppShellLayout`, `MetallurgyApp`, and `LeatherApp`.
+  - `pottery/` — pottery calculator, pottery planner.
+  - `leatherwork/` — hide/leather/pelt calculator (lazy-loaded).
+- `src/App.tsx` mounts `I18nProvider`, `AppShellLayout`, `MetallurgyApp`, `PotteryApp`, and lazy `LeatherApp`.
 - Each feature owns its own Zustand store + URL sync layer.
+- `SharedReferencePage` is a tabbed surface covering metallurgy, pottery, leather — tab driven by `#<domain>` hash.
 
 ## User-Facing Surfaces
 
-- Metallurgy calculator: dedicated control surface, crucible workspace, result rail, composition card.
-- Metallurgy planner: inventory-driven planning, craftability ranking, scarcity mode selection.
-- Metallurgy reference: searchable, filterable, card-based browser.
-- Metallurgy about: route-backed SEO/supporting content.
-- Leatherwork calculator: hide/leather/pelt workflow switcher, hide picker, pipeline view, shopping list, reference panel.
+- **Metallurgy calculator**: dedicated control surface, crucible workspace, result rail, composition card.
+- **Metallurgy planner**: inventory-driven planning, craftability ranking, scarcity mode selection.
+- **Metallurgy reference**: searchable, filterable, card-based browser (tab in `SharedReferencePage`).
+- **Metallurgy about**: route-backed SEO/supporting content.
+- **Pottery calculator**: recipe picker, quantity input, clay cost + firing info display.
+- **Pottery planner**: multi-item plan, clay inventory (any + fire clay), pit kiln plan, beehive kiln plan, fuel selector, feasibility summary.
+- **Leatherwork calculator**: hide/leather/pelt workflow switcher, hide picker, pipeline view, shopping list, reference panel.
 
-## Pinned Navigation Decision
+## Navigation Model
 
 - Desktop sidebar separates domain switching from supporting pages.
-- `Metallurgy` and `Leatherwork` own the domain-navigation area and expose their tool dropdowns from the sidebar.
-- `Reference` and `About` stay pinned as standalone rail buttons rather than being folded into a domain dropdown.
-- Intentional separation: domain dropdowns are for active tools, `Reference` and `About` remain globally discoverable support surfaces.
+- `Metallurgy`, `Pottery`, and `Leatherwork` own the domain-navigation area.
+- `Reference` and `Overview` stay pinned as standalone rail buttons.
+- Three domains (`metallurgy`, `pottery`, `leather`) map to `AppDomain` in `src/types/app.ts`.
 
 ## Routing And SEO Status
 
-- Routing remains manual and pathname/query based for both features.
-- Locale-prefixed routes (e.g. `/fr/planner/`, `/fr/leather/`) are supported.
-- Runtime navigation, route-aware SEO metadata, and sitemap generation share the top-level route manifest (`src/routing/routes.ts`) plus the per-feature manifests.
-- Browser back/forward restores feature view state and locale state.
+- Routing is manual and pathname/query based for all features.
+- Locale-prefixed routes (e.g. `/fr/pottery/`, `/fr/pottery/planner/`) are supported.
+- Runtime navigation, route-aware SEO metadata, and sitemap generation all share the top-level route manifest (`src/routing/routes.ts`) plus per-feature manifests.
+- Browser back/forward restores feature view state and locale state via `popstate` handlers in each feature's URL sync module.
+- Sitemap generation lives in `src/i18n/sitemap.ts`.
+
+## Pottery Feature Landing (2026-04-25)
+
+Branch: `codex/sitemap-generation`
+
+Landed:
+- `src/features/pottery/` — full feature boundary: types, data, logic, store, routing, components.
+- Pottery routes: `/pottery/` (calculator) and `/pottery/planner/`.
+- `POTTERY_APP_ROUTES` added to `APP_STATIC_ROUTES` in `src/routing/routes.ts`.
+- `AppDomain` and `AppNavTarget` in `src/types/app.ts` extended for pottery.
+- `SharedReferencePage` now has pottery tab (`#pottery`).
+- Pit kiln and beehive kiln planning with fuel selection.
+- Clay feasibility check across any-clay and fire-clay inventory.
+
+Pending (still in modified files, may not be fully committed):
+- `PotteryPlanner.test.tsx` — component tests (untracked).
+- Images in `public/pottery/items/` (untracked) — game asset copies.
+- i18n keys in all locale files for pottery strings.
 
 ## Refactor Status (Tier 1 — 2026-04-19)
 
 Shipped on `refactor/tier-1-dedup-and-dead-code`:
 
-- Shared crucible allocation utilities extracted to `src/features/metallurgy/lib/shared/crucibleAllocation.ts`. Maximization, economical, and planner strategies consume instead of duplicating.
-- `MetalAmount` canonicalized as `MetalNuggetAmount` + `MetalAmount` in `src/features/metallurgy/types/alloys.ts`. Local copies removed.
-- Tolerance + unit constants consolidated in `src/features/metallurgy/lib/constants.ts` (`PERCENTAGE_TOLERANCE`, `CONTAMINATION_THRESHOLD`, `NUGGETS_PER_INGOT`, `UNITS_PER_INGOT`, `UNITS_PER_NUGGET`, `MAX_NUGGETS_PER_SLOT`, `MAX_CRUCIBLE_SLOTS`).
-- Dead metallurgy exports removed (`isWithinRange`, `calculateMaxIngots`, `calculateMaxIngotsForPreset`) and tests pruned.
+- Shared crucible allocation utilities in `src/features/metallurgy/lib/shared/crucibleAllocation.ts`.
+- `MetalNuggetAmount` + `MetalAmount` canonicalized in `src/features/metallurgy/types/alloys.ts`.
+- Constants consolidated in `src/features/metallurgy/lib/constants.ts`.
+- Dead metallurgy exports removed.
 - `shadcn` devDep removed.
-- Leather asset-path builders (`getHideAssetPath`, `getMaterialAssetPath`) centralized in `src/features/leatherwork/lib/leather.ts`; `LeatherReferencePanel` and `HidePicker` now consume.
-- Pelt fat formula data-driven via `PELT_FAT_PER_HIDE: Record<HideSize, number>`.
+- Leather asset-path builders centralized in `src/features/leatherwork/lib/leather.ts`.
+- Pelt fat formula data-driven via `PELT_FAT_PER_HIDE`.
 
 Remaining tiers (plan at `~/.claude/plans/could-you-search-for-stateful-kernighan.md`):
-- Tier 2 — component splits in both features, recipe-asset consolidation, `hideOptions` extraction, memoization, `useShallow` selector hooks.
-- Tier 3 — discriminated `OptimizerResult`, generic backtracking solver, `leather.ts` split into calc + builder modules, mode-discriminated `LeatherCalculation`, component tests, vitest coverage config.
+- Tier 2 — component splits, recipe-asset consolidation, `hideOptions` extraction, memoization, `useShallow` selector hooks.
+- Tier 3 — discriminated `OptimizerResult`, generic backtracking solver, `leather.ts` split, mode-discriminated `LeatherCalculation`, component tests, vitest coverage config.
 
-## Validation Status
+## Last Known Validation State
 
-- `pnpm lint`
-- `pnpm type-check`
-- `pnpm test` (203/203)
-- `pnpm run build:prod`
-
-All pass on `refactor/tier-1-dedup-and-dead-code` HEAD.
+Run `pnpm lint && pnpm type-check && pnpm test && pnpm run build:prod` to verify. Last clean pass was on `refactor/tier-1-dedup-and-dead-code` HEAD.
 
 ## Current Watch Items
 
-- Preserve existing metallurgy + leatherwork URL contracts when adding future features.
-- Keep the route manifests (`src/routing/routes.ts`, per-feature `routing/routes.ts`) as the only route sources of truth for runtime + SEO + sitemap.
-- New solver code must import from `lib/shared/crucibleAllocation.ts` and `lib/constants.ts`. Do not re-introduce local duplicates.
-- New leather components must import asset-path builders from `@/features/leatherwork/lib/leather`. Do not hardcode `/leather/...` strings.
-- Adding a new domain feature: mirror the current feature-boundary shape (own store, own routing, own components) rather than widening shared app state.
+- Preserve all three feature URL contracts when making routing changes. See `docs/agent/url-contracts.md`.
+- Keep `src/routing/routes.ts` + per-feature `routing/routes.ts` as the only route sources of truth.
+- Solver code must import from `lib/shared/crucibleAllocation.ts` and `lib/constants.ts`.
+- Leather components must import asset-path builders from `@/features/leatherwork/lib/leather`.
+- Pottery components must not hardcode `/pottery/items/...` paths — use the `imageSrc` field on `PotteryRecipe`.
+- Adding a new domain: mirror the feature-boundary shape (own store, own routing, own components); update `AppDomain` and `AppNavTarget` in `src/types/app.ts`; add routes to `APP_STATIC_ROUTES`. See `docs/agent/adding-a-feature.md`.

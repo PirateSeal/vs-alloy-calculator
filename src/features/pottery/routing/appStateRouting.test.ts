@@ -31,6 +31,8 @@ describe("pottery app state routing", () => {
       ],
       invAny: 20,
       invFire: 69,
+      kilnMode: "pit",
+      fuelType: "firewood",
     });
 
     expect(buildPotteryPlannerSearch({
@@ -40,6 +42,28 @@ describe("pottery app state routing", () => {
       ],
       invAny: 20,
       invFire: 69,
+      kilnMode: "pit",
+      fuelType: "firewood",
     })).toBe("plan=crock%3A5%2Cclay-oven%3A1&inv-any=20&inv-fire=69");
+  });
+
+  it("parses and builds kiln planner mode and fuel state", () => {
+    expect(parsePotteryPlannerStateFromSearch("?kiln=beehive&fuel=charcoal")).toMatchObject({
+      kilnMode: "beehive",
+      fuelType: "charcoal",
+    });
+
+    expect(parsePotteryPlannerStateFromSearch("?kiln=bad&fuel=bad")).toMatchObject({
+      kilnMode: "pit",
+      fuelType: "firewood",
+    });
+
+    expect(buildPotteryPlannerSearch({
+      plan: [],
+      invAny: 0,
+      invFire: 0,
+      kilnMode: "beehive",
+      fuelType: "black-coal",
+    })).toBe("kiln=beehive&fuel=black-coal");
   });
 });

@@ -1,9 +1,11 @@
 import { POTTERY_RECIPE_BY_ID, POTTERY_RECIPES } from "@/features/pottery/data/recipes";
 import { POTTERY_VIEW_PATHS } from "@/features/pottery/routing/routes";
-import type { PotteryCalculatorState, PotteryPlanItem, PotteryPlannerState, PotteryView } from "@/features/pottery/types/pottery";
+import { DEFAULT_KILN_FUEL_TYPE, KILN_FUEL_OPTIONS } from "@/features/pottery/lib/potteryLogic";
+import type { KilnFuelType, KilnMode, PotteryCalculatorState, PotteryPlanItem, PotteryPlannerState, PotteryView } from "@/features/pottery/types/pottery";
 import { getLocaleFromPath, stripLocalePrefix } from "@/i18n";
 
 const VALID_RECIPE_IDS = new Set(POTTERY_RECIPES.map((recipe) => recipe.id));
+const VALID_FUEL_TYPES = new Set<KilnFuelType>(KILN_FUEL_OPTIONS.map((fuel) => fuel.type));
 const MAX_QUANTITY = 9999;
 
 export function createDefaultPotteryCalculatorState(): PotteryCalculatorState {
@@ -18,6 +20,8 @@ export function createDefaultPotteryPlannerState(): PotteryPlannerState {
     plan: [],
     invAny: 0,
     invFire: 0,
+    kilnMode: "pit",
+    fuelType: DEFAULT_KILN_FUEL_TYPE,
   };
 }
 
@@ -31,6 +35,14 @@ function parsePositiveInt(value: string | null, fallback: number): number {
   const parsed = Number.parseInt(value ?? "", 10);
   if (Number.isNaN(parsed) || parsed < 1) return fallback;
   return Math.min(parsed, MAX_QUANTITY);
+}
+
+function parseKilnMode(value: string | null): KilnMode {
+  return value === "beehive" ? "beehive" : "pit";
+}
+
+function parseFuelType(value: string | null): KilnFuelType {
+  return value && VALID_FUEL_TYPES.has(value as KilnFuelType) ? (value as KilnFuelType) : DEFAULT_KILN_FUEL_TYPE;
 }
 
 function normalizePath(pathname: string): string {
@@ -90,6 +102,8 @@ export function parsePotteryPlannerStateFromSearch(search: string): PotteryPlann
     plan: parsePlan(params.get("plan")),
     invAny: parseNonNegativeInt(params.get("inv-any"), defaults.invAny),
     invFire: parseNonNegativeInt(params.get("inv-fire"), defaults.invFire),
+    kilnMode: parseKilnMode(params.get("kiln")),
+    fuelType: parseFuelType(params.get("fuel")),
   };
 }
 
@@ -119,6 +133,12 @@ export function buildPotteryPlannerSearch(state: PotteryPlannerState): string {
   }
   if (state.invFire > 0) {
     params.set("inv-fire", String(state.invFire));
+  }
+  if (state.kilnMode !== "pit") {
+    params.set("kiln", state.kilnMode);
+  }
+  if (state.fuelType !== DEFAULT_KILN_FUEL_TYPE && VALID_FUEL_TYPES.has(state.fuelType)) {
+    params.set("fuel", state.fuelType);
   }
 
   return params.toString();

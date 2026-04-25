@@ -32,8 +32,6 @@ tmp/
 .terraform/
 terraform.tfvars
 backend.tfvars
-CLAUDE.md
-AGENTS.md
 .claude/
 .agents/
 skills-lock.json

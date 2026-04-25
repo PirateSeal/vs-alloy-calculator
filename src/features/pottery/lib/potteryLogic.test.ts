@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { POTTERY_RECIPE_BY_ID } from "@/features/pottery/data/recipes";
-import { calcClayCost, calcCraftedOutput, calcFeasibility, calcMaxCraftable } from "@/features/pottery/lib/potteryLogic";
+import {
+  KILN_FUEL_OPTIONS,
+  calcBeehiveKilnPlan,
+  calcClayCost,
+  calcCraftedOutput,
+  calcFeasibility,
+  calcMaxCraftable,
+  calcPitKilnPlan,
+} from "@/features/pottery/lib/potteryLogic";
 
 function recipe(id: string) {
   const found = POTTERY_RECIPE_BY_ID.get(id);
@@ -59,5 +67,66 @@ describe("pottery logic", () => {
   it("calculates max craftable with fire clay substitution for general recipes", () => {
     expect(calcMaxCraftable({ any: 3, fire: 3 }, recipe("crock"))).toBe(3);
     expect(calcMaxCraftable({ any: 200, fire: 68 }, recipe("clay-oven"))).toBe(0);
+  });
+
+  it("calculates pit kiln cycles and materials for mixed pottery plans", () => {
+    const plan = [
+      { recipe: recipe("bowl"), quantity: 8 },
+      { recipe: recipe("crock"), quantity: 5 },
+      { recipe: recipe("storage-vessel"), quantity: 2 },
+      { recipe: recipe("mold-ingot"), quantity: 3 },
+      { recipe: recipe("shingles"), quantity: 49 },
+      { recipe: recipe("clay-oven"), quantity: 1 },
+    ];
+
+    expect(calcPitKilnPlan(plan, "firewood")).toMatchObject({
+      fireableItems: 78,
+      cycles: 10,
+      dryGrass: 100,
+      sticks: 80,
+      fuel: 48,
+      durationHours: 200,
+    });
+  });
+
+  it("uses the selected fuel type for pit kiln duration and beehive fuel totals", () => {
+    const plan = [{ recipe: recipe("bowl"), quantity: 4 }];
+
+    for (const fuel of KILN_FUEL_OPTIONS) {
+      expect(calcPitKilnPlan(plan, fuel.type)).toMatchObject({
+        fuel: 4,
+        durationHours: fuel.pitDurationHours,
+      });
+      expect(calcBeehiveKilnPlan(plan, fuel.type)).toMatchObject({
+        fuel: fuel.beehiveFuelPerFiring,
+        durationHours: 10.9,
+      });
+    }
+  });
+
+  it("uses broad beehive classes and max class firings for mixed plans", () => {
+    const plan = [
+      { recipe: recipe("bowl"), quantity: 73 },
+      { recipe: recipe("mold-axe"), quantity: 19 },
+      { recipe: recipe("storage-vessel"), quantity: 28 },
+      { recipe: recipe("shingles"), quantity: 5185 },
+      { recipe: recipe("clay-oven"), quantity: 1 },
+    ];
+    const result = calcBeehiveKilnPlan(plan, "firewood");
+
+    expect(result).toMatchObject({
+      fireableItems: 5316,
+      firings: 2,
+      fuel: 504,
+      durationHours: 21.8,
+    });
+    expect(result.classes).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ beehiveClass: "small", quantity: 73, capacity: 72, firings: 2 }),
+        expect.objectContaining({ beehiveClass: "full-block", quantity: 19, capacity: 18, firings: 2 }),
+        expect.objectContaining({ beehiveClass: "storage-vessel", quantity: 28, capacity: 27, firings: 2 }),
+        expect.objectContaining({ beehiveClass: "shingles", quantity: 5196, capacity: 5184, firings: 2 }),
+      ]),
+    );
   });
 });
