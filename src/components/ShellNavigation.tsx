@@ -7,6 +7,7 @@ import {
   Compass,
   ExternalLink,
   Globe,
+  Amphora,
   Calculator,
   Hammer,
   Info,
@@ -101,6 +102,25 @@ function DomainNavigationMenu({
           label: t("header.domain.leather"),
           description: t("header.nav.leather_desc"),
           icon: Hammer,
+        },
+      ],
+    },
+    {
+      domain: "pottery",
+      label: t("header.domain.pottery"),
+      icon: Amphora,
+      tools: [
+        {
+          tab: "pottery-calculator",
+          label: t("header.nav.pottery_calculator"),
+          description: t("header.nav.pottery_calculator_desc"),
+          icon: Amphora,
+        },
+        {
+          tab: "pottery-planner",
+          label: t("header.nav.pottery_planner"),
+          description: t("header.nav.pottery_planner_desc"),
+          icon: Compass,
         },
       ],
     },
@@ -696,9 +716,11 @@ export function ShellMobileNav({
   const primaryItems: Array<{ tab: AppNavTarget; label: string; icon: LucideIcon }> = [
     { tab: "calculator", label: t("header.nav.calculator"), icon: Calculator },
     { tab: "planner", label: t("header.nav.planner"), icon: Compass },
+    { tab: "pottery-calculator", label: t("header.nav.pottery_short"), icon: Amphora },
     { tab: "leather", label: t("header.nav.leather"), icon: Hammer },
   ];
   const moreItems: Array<{ tab: AppNavTarget; label: string; icon: LucideIcon }> = [
+    { tab: "pottery-planner", label: t("header.nav.pottery_planner"), icon: Amphora },
     { tab: "reference", label: t("header.nav.reference"), icon: BookOpen },
     { tab: "overview", label: t("header.nav.overview"), icon: Info },
   ];
@@ -712,7 +734,7 @@ export function ShellMobileNav({
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 lg:hidden" aria-label={t("header.title")}>
       <div className="border-t border-border/20 bg-background/92 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-1.5 backdrop-blur-xl">
-        <div className="mx-auto grid w-full max-w-3xl grid-cols-4 gap-1">
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-5 gap-1">
           {primaryItems.map((item) => (
             <MobileTabButton
               key={item.tab}

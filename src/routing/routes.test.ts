@@ -14,6 +14,8 @@ describe("shared app routes", () => {
     expect(getAppNavTargetFromPath("/fr/reference/")).toBe("reference");
     expect(getAppNavTargetFromPath("/metallurgy/")).toBe("calculator");
     expect(getAppNavTargetFromPath("/metallurgy/planner/")).toBe("planner");
+    expect(getAppNavTargetFromPath("/pottery/")).toBe("pottery-calculator");
+    expect(getAppNavTargetFromPath("/pottery/planner/")).toBe("pottery-planner");
     expect(getAppNavTargetFromPath("/leather/")).toBe("leather");
     expect(getAppNavTargetFromPath("/about/")).toBe("overview");
     expect(getAppNavTargetFromPath("/metallurgy/reference/")).toBe("reference");
@@ -33,7 +35,9 @@ describe("shared app routes", () => {
   it("uses the shared reference hash to restore the active domain", () => {
     expect(getReferenceTabFromHash("#metallurgy")).toBe("metallurgy");
     expect(getReferenceTabFromHash("#leather")).toBe("leather");
+    expect(getReferenceTabFromHash("#pottery")).toBe("pottery");
     expect(getAppDomainFromPath("/reference/", "#leather")).toBe("leather");
     expect(getAppDomainFromPath("/reference/", "#metallurgy")).toBe("metallurgy");
+    expect(getAppDomainFromPath("/reference/", "#pottery")).toBe("pottery");
   });
 });

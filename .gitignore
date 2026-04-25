@@ -11,6 +11,7 @@ node_modules
 dist
 coverage
 dist-ssr
+tmp/
 *.local
 
 # Editor directories and files
@@ -31,8 +32,6 @@ dist-ssr
 .terraform/
 terraform.tfvars
 backend.tfvars
-CLAUDE.md
-AGENTS.md
 .claude/
 .agents/
 skills-lock.json

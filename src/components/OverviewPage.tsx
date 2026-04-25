@@ -1,4 +1,4 @@
-import { BookOpen, Calculator, Hammer, Package } from "lucide-react";
+import { Amphora, BookOpen, Calculator, Hammer, Package } from "lucide-react";
 import { useTranslation } from "@/i18n";
 import type { AppNavTarget } from "@/types/app";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +48,12 @@ export function OverviewPage({ onNavigate }: OverviewPageProps) {
               >
                 {t("header.domain.leather")}
               </Badge>
+              <Badge
+                variant="secondary"
+                className="rounded-full border border-border/45 bg-background/70 px-3 py-1.5 text-xs font-semibold text-foreground"
+              >
+                {t("header.domain.pottery")}
+              </Badge>
             </div>
             <div className="flex flex-wrap gap-3">
               <Button type="button" onClick={() => onNavigate("calculator")} className="gap-2 rounded-full">
@@ -57,6 +63,10 @@ export function OverviewPage({ onNavigate }: OverviewPageProps) {
               <Button type="button" variant="outline" onClick={() => onNavigate("leather")} className="gap-2 rounded-full">
                 <Hammer data-icon="inline-start" />
                 {t("overview.actions.leather")}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => onNavigate("pottery-calculator")} className="gap-2 rounded-full">
+                <Amphora data-icon="inline-start" />
+                {t("header.domain.pottery")}
               </Button>
               <Button type="button" variant="ghost" onClick={() => onNavigate("reference")} className="gap-2 rounded-full">
                 <BookOpen data-icon="inline-start" />

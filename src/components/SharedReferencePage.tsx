@@ -1,9 +1,10 @@
-import { BookOpen, Hammer } from "lucide-react";
+import { Amphora, BookOpen, Hammer } from "lucide-react";
 import type { AlloyRecipe } from "@/features/metallurgy/types/alloys";
 import { useTranslation } from "@/i18n";
 import type { ReferenceTab } from "@/types/app";
 import { LeatherReferencePanel } from "@/components/LeatherReferencePanel";
 import { AlloyReferenceTable } from "@/features/metallurgy/components/AlloyReferenceTable";
+import { PotteryReference } from "@/features/pottery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trackReferenceTabChange } from "@/lib/analytics";
@@ -59,12 +60,22 @@ export function SharedReferencePage({
                 <Hammer data-icon="inline-start" />
                 {t("header.domain.leather")}
               </TabsTrigger>
+              <TabsTrigger
+                value="pottery"
+                className="gap-2 rounded-xl px-4 py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary"
+              >
+                <Amphora data-icon="inline-start" />
+                {t("header.domain.pottery")}
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="metallurgy" className="mt-0">
               <AlloyReferenceTable recipes={recipes} />
             </TabsContent>
             <TabsContent value="leather" className="mt-0">
               <LeatherReferencePanel />
+            </TabsContent>
+            <TabsContent value="pottery" className="mt-0">
+              <PotteryReference />
             </TabsContent>
           </Tabs>
         </CardContent>

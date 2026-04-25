@@ -1,11 +1,15 @@
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import { I18nProvider } from "./i18n";
 import { MetallurgyApp } from "./features/metallurgy";
+import { PotteryApp } from "./features/pottery";
 import { ALLOY_RECIPES } from "@/features/metallurgy/data/alloys";
 import { buildCalculatorSearchFromState, buildPlannerSearch, METALLURGY_VIEW_PATHS } from "@/features/metallurgy/routing/appStateRouting";
 import { useMetallurgyStore } from "@/features/metallurgy/store/useMetallurgyStore";
 import { buildLeatherSearch } from "@/features/leatherwork/routing/appStateRouting";
 import { useLeatherStore } from "@/features/leatherwork/store/useLeatherStore";
+import { buildPotteryCalculatorSearch, buildPotteryPlannerSearch } from "@/features/pottery/routing/appStateRouting";
+import { POTTERY_VIEW_PATHS } from "@/features/pottery/routing/routes";
+import { usePotteryStore } from "@/features/pottery/store/usePotteryStore";
 import { AppShellLayout } from "@/components/AppShellLayout";
 import { OverviewPage } from "@/components/OverviewPage";
 import { SharedReferencePage } from "@/components/SharedReferencePage";
@@ -18,6 +22,7 @@ import {
   getLocalizedLeatherPath,
   getLocalizedMetallurgyPath,
   getLocalizedOverviewPath,
+  getLocalizedPotteryPath,
   getLocalizedReferencePath,
   getReferenceTabFromHash,
 } from "@/routing/routes";
@@ -85,7 +90,7 @@ function App() {
 
   const navigateToReference = useCallback((domain: AppDomain) => {
     const pathname = getLocalizedReferencePath(window.location.pathname);
-    const hash = domain === "leather" ? "#leather" : "#metallurgy";
+    const hash = domain === "leather" ? "#leather" : domain === "pottery" ? "#pottery" : "#metallurgy";
     const nextUrl = buildUrl(pathname, "", hash);
     const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     const didChange = nextUrl !== currentUrl || activeTarget !== "reference" || activeDomain !== domain;
@@ -157,6 +162,34 @@ function App() {
     }
   }, [activeDomain, activeTarget]);
 
+  const navigateToPottery = useCallback((view: "pottery-calculator" | "pottery-planner") => {
+    const potteryState = usePotteryStore.getState();
+    const pathname = getLocalizedPotteryPath(window.location.pathname, POTTERY_VIEW_PATHS[view]);
+    const search =
+      view === "pottery-calculator"
+        ? buildPotteryCalculatorSearch(potteryState.calculatorState)
+        : buildPotteryPlannerSearch(potteryState.plannerState);
+    const nextUrl = buildUrl(pathname, search, "");
+    const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const didChange = nextUrl !== currentUrl || activeTarget !== view || activeDomain !== "pottery";
+
+    if (nextUrl !== currentUrl) {
+      history.pushState(null, "", nextUrl);
+    }
+
+    potteryState.hydrateFromLocation(pathname, search ? `?${search}` : "");
+    setActiveTarget(view);
+    setActiveDomain("pottery");
+    applySeoToDocument(getLocaleFromPath(pathname) ?? DEFAULT_LOCALE);
+    if (didChange) {
+      trackAppNavigation(view, {
+        previous_target: activeTarget,
+        previous_domain: activeDomain,
+        next_domain: "pottery",
+      });
+    }
+  }, [activeDomain, activeTarget]);
+
   const handleSharedNavigation = useCallback(
     (target: AppNavTarget) => {
       if (target === "overview") {
@@ -174,9 +207,14 @@ function App() {
         return;
       }
 
+      if (target === "pottery-calculator" || target === "pottery-planner") {
+        navigateToPottery(target);
+        return;
+      }
+
       navigateToMetallurgy(target);
     },
-    [activeDomain, navigateToLeather, navigateToMetallurgy, navigateToOverview, navigateToReference],
+    [activeDomain, navigateToLeather, navigateToMetallurgy, navigateToOverview, navigateToPottery, navigateToReference],
   );
 
   const activeReferenceTab = getReferenceTabFromHash(
@@ -186,6 +224,8 @@ function App() {
   const shellDomain: AppDomain =
     activeTarget === "leather"
       ? "leather"
+      : activeTarget === "pottery-calculator" || activeTarget === "pottery-planner"
+        ? "pottery"
       : activeTarget === "calculator" || activeTarget === "planner"
         ? "metallurgy"
         : activeDomain;
@@ -219,6 +259,8 @@ function App() {
             />
           ) : activeTarget === "leather" ? (
             <LeatherApp />
+          ) : activeTarget === "pottery-calculator" || activeTarget === "pottery-planner" ? (
+            <PotteryApp />
           ) : (
             <MetallurgyApp />
           )}

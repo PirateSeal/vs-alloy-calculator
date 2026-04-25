@@ -79,4 +79,22 @@ describe('applySeoToDocument', () => {
     const canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     expect(canonical?.getAttribute('href')).toBe('https://vs-calculator.tcousin.com/');
   });
+
+  it('applies pottery planner metadata from the current pathname', () => {
+    history.replaceState(null, '', '/pottery/planner/');
+    applySeoToDocument('en');
+
+    const canonical = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const schema = JSON.parse(
+      document.head.querySelector<HTMLScriptElement>(
+        'script[type="application/ld+json"][data-seo-schema="true"]',
+      )!.textContent!,
+    ) as Array<Record<string, unknown>>;
+
+    expect(document.title).toContain('Pottery Planner');
+    expect(metaContent('description')).toContain('shortfalls and leftovers');
+    expect(metaContent('keywords')).toContain('clay inventory planner');
+    expect(canonical?.getAttribute('href')).toBe('https://vs-calculator.tcousin.com/pottery/planner/');
+    expect(schema[1]['@type']).toBe('FAQPage');
+  });
 });

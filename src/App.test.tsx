@@ -7,6 +7,8 @@ import { createDefaultPlannerState } from "./features/metallurgy/routing/appStat
 import { useMetallurgyStore } from "./features/metallurgy/store/useMetallurgyStore";
 import { createDefaultLeatherState } from "./features/leatherwork/routing/appStateRouting";
 import { useLeatherStore } from "./features/leatherwork/store/useLeatherStore";
+import { createDefaultPotteryCalculatorState, createDefaultPotteryPlannerState } from "./features/pottery/routing/appStateRouting";
+import { usePotteryStore } from "./features/pottery/store/usePotteryStore";
 
 function resetMetallurgyStore() {
   useMetallurgyStore.setState({
@@ -21,12 +23,21 @@ function resetLeatherStore() {
   useLeatherStore.setState(createDefaultLeatherState());
 }
 
+function resetPotteryStore() {
+  usePotteryStore.setState({
+    activeView: "pottery-calculator",
+    calculatorState: createDefaultPotteryCalculatorState(),
+    plannerState: createDefaultPotteryPlannerState(),
+  });
+}
+
 describe("App integration", () => {
   beforeEach(() => {
     localStorage.clear();
     history.replaceState(null, "", "/");
     resetMetallurgyStore();
     resetLeatherStore();
+    resetPotteryStore();
   });
 
   it("loads planner deep links and preserves locale-prefixed navigation", async () => {
@@ -84,11 +95,28 @@ describe("App integration", () => {
     expect(screen.getAllByRole("button", { name: /Calculateur/i })[0]).toHaveAttribute("aria-current", "page");
   });
 
+  it("loads pottery deep links and opens the pottery reference tab", async () => {
+    history.replaceState(null, "", "/pottery/?item=clay-oven&qty=2");
+    usePotteryStore.getState().hydrateFromLocation(window.location.pathname, window.location.search);
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: /Clay Calculator/i })).toBeInTheDocument();
+    expect(screen.getByText(/clay for 2 x Clay Oven/i)).toBeInTheDocument();
+
+    await user.click(screen.getAllByRole("button", { name: "Reference" })[0]);
+
+    expect(window.location.pathname).toBe("/reference/");
+    expect(window.location.hash).toBe("#pottery");
+    expect(await screen.findByRole("heading", { name: /Pottery Reference/i })).toBeInTheDocument();
+  });
+
   it("renders the about landing page at the root url", () => {
     render(<App />);
 
     expect(
-      screen.getByRole("heading", { level: 1, name: /Metallurgy, leatherwork, and reference in one place/i }),
+      screen.getByRole("heading", { level: 1, name: /Metallurgy, pottery, leatherwork, and reference in one place/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Crucible Inputs/i)).not.toBeInTheDocument();
   });
