@@ -1,7 +1,7 @@
 {
   "name": "vs-alloy-calculator",
   "private": true,
-  "version": "1.13.1",
+  "version": "1.13.2",
   "type": "module",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
@@ -63,6 +63,7 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.57.2",
     "vite": "^8.0.8",
+    "vite-plugin-sitemap": "^0.8.2",
     "vitest": "^4.1.2"
   },
   "pnpm": {

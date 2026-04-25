@@ -14,6 +14,8 @@ describe("sitemap generation", () => {
     expect(locs).toContain("https://vs-calculator.tcousin.com/");
     expect(locs).toContain(localizedRoute);
     expect(sitemap).not.toContain("<lastmod>");
+    expect(sitemap).not.toContain("<changefreq>");
+    expect(sitemap).not.toContain("<priority>");
   });
 
   it("uses the SEO canonical and alternate link helpers", () => {

@@ -1,15 +1,20 @@
 import { defineConfig } from 'vite'
+import type { ResolvedConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import Sitemap from 'vite-plugin-sitemap'
 import path from 'path'
 import { mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
-import { SUPPORTED_LOCALES } from './src/i18n/routing'
-import { localizeHtmlDocument } from './src/i18n/seo'
+import { getLocalePath, SUPPORTED_LOCALES } from './src/i18n/routing'
+import { localizeHtmlDocument, SITE_URL } from './src/i18n/seo'
 import { generateSitemapXml } from './src/i18n/sitemap'
 import { APP_STATIC_ROUTES } from './src/routing/routes'
 
 const { version } = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
+const sitemapRoutes = APP_STATIC_ROUTES.flatMap((route) =>
+  SUPPORTED_LOCALES.map((locale) => getLocalePath(locale, route)),
+)
 
 function localizedHtmlPlugin() {
   return {
@@ -35,7 +40,20 @@ function localizedHtmlPlugin() {
           writeFileSync(targetPath, localizedHtml)
         }
       }
+    },
+  }
+}
 
+function routeManifestSitemapPlugin() {
+  let outDir = 'dist'
+
+  return {
+    name: 'route-manifest-sitemap-plugin',
+    configResolved(config: ResolvedConfig) {
+      outDir = config.build.outDir
+    },
+    async closeBundle() {
+      await new Promise((resolve) => setImmediate(resolve))
       writeFileSync(join(outDir, 'sitemap.xml'), generateSitemapXml())
     },
   }
@@ -50,6 +68,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
     localizedHtmlPlugin(),
+    Sitemap({
+      hostname: SITE_URL,
+      dynamicRoutes: sitemapRoutes,
+      extensions: [],
+      generateRobotsTxt: true,
+      robots: [{ userAgent: '*', allow: '/' }],
+    }),
+    routeManifestSitemapPlugin(),
   ],
   resolve: {
     alias: {

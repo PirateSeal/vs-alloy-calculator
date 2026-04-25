@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.2] - 2026-04-25
+
+### Changed
+- **Sitemap strips ignored fields** — Removed `<changefreq>` and `<priority>` from all sitemap entries; Google explicitly ignores both, so their presence added noise without benefit.
+- **`robots.txt` generated at build time** — Added `vite-plugin-sitemap` to emit `robots.txt` during `vite build`, replacing the static file in `public/`. The custom `routeManifestSitemapPlugin` runs after and overwrites the default sitemap with the hreflang-aware version so all 80+ locale-route URLs carry correct `xhtml:link` alternates.
+
 ## [1.13.1] - 2026-04-25
 
 ### Changed

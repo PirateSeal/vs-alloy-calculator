@@ -1,7 +1,6 @@
 import { APP_STATIC_ROUTES } from "../routing/routes";
-import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "./routing";
+import { SUPPORTED_LOCALES } from "./routing";
 import { getAlternateLinks, getCanonicalUrlForPath } from "./seo";
-import type { Locale } from "./types";
 
 interface SitemapOptions {
   lastmod?: string;
@@ -14,22 +13,6 @@ function escapeXml(value: string): string {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
-}
-
-function getRoutePriority(route: string, locale: Locale): string {
-  if (route === "/") {
-    return locale === DEFAULT_LOCALE ? "1.0" : "0.9";
-  }
-
-  if (route === "/metallurgy/" || route === "/leather/" || route === "/pottery/") {
-    return locale === DEFAULT_LOCALE ? "0.95" : "0.85";
-  }
-
-  if (route.endsWith("/planner/")) {
-    return locale === DEFAULT_LOCALE ? "0.9" : "0.8";
-  }
-
-  return locale === DEFAULT_LOCALE ? "0.8" : "0.7";
 }
 
 export function generateSitemapXml(options: SitemapOptions = {}): string {
@@ -48,8 +31,6 @@ export function generateSitemapXml(options: SitemapOptions = {}): string {
         "  <url>",
         `    <loc>${escapeXml(loc)}</loc>`,
         ...lastmodMarkup,
-        "    <changefreq>weekly</changefreq>",
-        `    <priority>${getRoutePriority(route, locale)}</priority>`,
         alternateMarkup,
         "  </url>",
       ].join("\n");
