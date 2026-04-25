@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.3] - 2026-04-25
+
+### Fixed
+- **Title length** — Shortened five over-limit page titles (EN calculator 77→54, ES 69→55, PL 69→49, PT 70→54 chars; EN planner was 98 chars due to the full calculator title being prepended — now uses a standalone planner title at 49 chars).
+- **Meta description length** — Shortened eight over-limit descriptions to ≤160 chars: EN calculator (166→141), EN planner structural fix (concatenated base+suffix at 278→suffix-only at 111), FR (200→147), DE (160→141), ES (180→151), RU (173→137), PL (175→146), PT (184→147), and the shared Reference page description (182→141).
+
 ## [1.13.2] - 2026-04-25
 
 ### Changed

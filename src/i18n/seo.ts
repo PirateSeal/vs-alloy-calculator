@@ -145,7 +145,7 @@ const OVERVIEW_FAQ_ITEMS: SeoFaqItem[] = [
 ];
 const REFERENCE_ROUTE_TITLE = "Vintage Story Reference";
 const REFERENCE_ROUTE_DESCRIPTION =
-  "Browse shared metallurgy, pottery, and leatherwork reference data for Vintage Story, including alloy ranges, clay recipes, hide workflow rules, solvents, tannin, and bear-hide notes.";
+  "Vintage Story reference data for metallurgy, pottery, and leatherwork: alloy ranges, clay recipes, hide workflow rules, solvents, and tannin.";
 const REFERENCE_FEATURE_LIST = [
   "Alloy recipe and smelting reference",
   "Pottery clay forming recipe reference",
@@ -219,9 +219,9 @@ const PLANNER_ROUTE_DESCRIPTION_SUFFIXES: Record<Locale, string> = {
 
 const SEO_CONTENT: Record<Locale, SeoContent> = {
   en: {
-    title: "Vintage Story Alloy Calculator | Bronze, Bismuth Bronze & Black Bronze Ratios",
+    title: "Vintage Story Alloy Calculator | Bronze & Alloy Ratios",
     description:
-      "Plan crucible mixes for Vintage Story with exact nugget counts, ingot yield, and valid alloy ratios for bronze, bismuth bronze, black bronze, brass, solder, and more.",
+      "Plan Vintage Story crucible mixes with exact nugget counts, ingot yield, and alloy ratios for bronze, bismuth bronze, black bronze, and more.",
     keywords:
       "Vintage Story alloy calculator, bronze ratio calculator, bismuth bronze calculator, black bronze calculator, Vintage Story ingot calculator, nugget calculator, crucible planner",
     localeCode: "en_US",
@@ -264,7 +264,7 @@ const SEO_CONTENT: Record<Locale, SeoContent> = {
   fr: {
     title: "Calculateur d'alliages Vintage Story | ratios bronze et lingots",
     description:
-      "Planifiez vos mélanges de creuset pour Vintage Story avec le nombre exact de pépites, le rendement en lingots et les ratios valides pour le bronze, le bronze au bismuth, le bronze noir et plus encore.",
+      "Planifiez vos alliages Vintage Story : pépites exactes, rendement en lingots et ratios valides pour le bronze, bismuth bronze, bronze noir et plus.",
     keywords:
       "calculateur alliage Vintage Story, calculateur bronze, bronze au bismuth, bronze noir, calculateur lingots, calculateur pépites, planificateur creuset",
     localeCode: "fr_FR",
@@ -307,7 +307,7 @@ const SEO_CONTENT: Record<Locale, SeoContent> = {
   de: {
     title: "Vintage Story Legierungsrechner | Bronze- und Barrenverhältnisse",
     description:
-      "Plane Tiegelmischungen für Vintage Story mit exakten Nugget-Mengen, Barren-Ausbeute und gültigen Verhältnissen für Bronze, Wismutbronze, Schwarzbronze und mehr.",
+      "Plane Vintage Story Tiegelmischungen mit exakten Nugget-Mengen, Barren-Ausbeute und gültigen Verhältnissen für Bronze, Wismutbronze und mehr.",
     keywords:
       "Vintage Story Legierungsrechner, Bronze Rechner, Wismutbronze, Schwarzbronze, Barren Rechner, Nugget Rechner, Tiegel Planung",
     localeCode: "de_DE",
@@ -348,9 +348,9 @@ const SEO_CONTENT: Record<Locale, SeoContent> = {
     ],
   },
   es: {
-    title: "Calculadora de aleaciones Vintage Story | ratios de bronce y lingotes",
+    title: "Calculadora de aleaciones Vintage Story | ratios bronce",
     description:
-      "Planifica mezclas de crisol para Vintage Story con cantidades exactas de pepitas, rendimiento de lingotes y proporciones válidas para bronce, bronce de bismuto, bronce negro y más.",
+      "Planifica mezclas de crisol Vintage Story con pepitas exactas, rendimiento de lingotes y proporciones válidas para bronce, bismuto, bronce negro y más.",
     keywords:
       "calculadora aleaciones Vintage Story, calculadora bronce, bronce de bismuto, bronce negro, calculadora lingotes, calculadora pepitas, planificador de crisol",
     localeCode: "es_ES",
@@ -393,7 +393,7 @@ const SEO_CONTENT: Record<Locale, SeoContent> = {
   ru: {
     title: "Калькулятор сплавов Vintage Story | бронза, пропорции и слитки",
     description:
-      "Планируйте смеси для тигля в Vintage Story: точное количество самородков, выход слитков и правильные пропорции для бронзы, висмутовой бронзы, чёрной бронзы и других сплавов.",
+      "Планируйте смеси тигля Vintage Story: самородки, выход слитков и пропорции для бронзы, висмутовой бронзы, чёрной бронзы и других сплавов.",
     keywords:
       "калькулятор сплавов Vintage Story, бронза, висмутовая бронза, чёрная бронза, калькулятор слитков, самородки, тигель",
     localeCode: "ru_RU",
@@ -563,9 +563,9 @@ const SEO_CONTENT: Record<Locale, SeoContent> = {
     ],
   },
   pl: {
-    title: "Kalkulator stopów Vintage Story | proporcje brązu i wydajność sztabek",
+    title: "Kalkulator stopów Vintage Story | proporcje brązu",
     description:
-      "Planuj mieszanki tygla w Vintage Story z dokładną liczbą samorodków, wydajnością sztabek i poprawnymi proporcjami dla brązu, brązu bizmutowego, czarnego brązu i innych stopów.",
+      "Planuj mieszanki tygla Vintage Story z dokładną liczbą samorodków, wydajnością sztabek i proporcjami dla brązu, brązu bizmutowego i innych stopów.",
     keywords:
       "kalkulator stopów Vintage Story, brąz, brąz bizmutowy, czarny brąz, kalkulator sztabek, samorodki, tygiel",
     localeCode: "pl_PL",
@@ -606,9 +606,9 @@ const SEO_CONTENT: Record<Locale, SeoContent> = {
     ],
   },
   pt: {
-    title: "Calculadora de ligas Vintage Story | proporções de bronze e rendimento",
+    title: "Calculadora de ligas Vintage Story | proporções bronze",
     description:
-      "Planeje misturas de cadinho para Vintage Story com quantidade exata de pepitas, rendimento de lingotes e proporções válidas para bronze, bronze de bismuto, bronze negro e outras ligas.",
+      "Planeje misturas de cadinho Vintage Story com quantidade exata de pepitas, rendimento de lingotes e proporções válidas para bronze, bismuto e mais.",
     keywords:
       "calculadora de ligas Vintage Story, bronze, bronze de bismuto, bronze negro, calculadora de lingotes, pepitas, cadinho",
     localeCode: "pt_BR",
@@ -702,7 +702,10 @@ function getPageTitle(locale: Locale, title: string, pathname: string): string {
   }
 
   if (pathname === METALLURGY_VIEW_PATHS.planner) {
-    return `${title} | ${PLANNER_ROUTE_TITLES[locale]}`;
+    if (locale === "en") {
+      return "Vintage Story Metallurgy Planner | Alloy Planning";
+    }
+    return `Vintage Story ${PLANNER_ROUTE_TITLES[locale]}`;
   }
 
   return title;
@@ -736,7 +739,7 @@ function getPageDescription(locale: Locale, content: SeoContent, pathname: strin
   }
 
   if (pathname === METALLURGY_VIEW_PATHS.planner) {
-    return `${content.description} ${PLANNER_ROUTE_DESCRIPTION_SUFFIXES[locale]}`;
+    return PLANNER_ROUTE_DESCRIPTION_SUFFIXES[locale];
   }
 
   return content.description;

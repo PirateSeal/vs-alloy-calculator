@@ -5,7 +5,7 @@ describe('SEO route variants', () => {
   it('uses shared reference metadata for legacy metallurgy reference aliases', () => {
     const seo = getSeoContent('en', '/metallurgy/reference/');
     expect(seo.title).toContain('Vintage Story Reference');
-    expect(seo.description).toContain('shared metallurgy, pottery, and leatherwork reference');
+    expect(seo.description).toContain('metallurgy, pottery, and leatherwork');
   });
 
   it('normalizes pathname missing trailing slash to the shared reference route', () => {
