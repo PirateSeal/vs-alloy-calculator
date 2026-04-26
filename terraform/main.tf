@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.10"
 
   required_providers {
     aws = {
@@ -190,6 +190,7 @@ resource "aws_acm_certificate" "main" {
   domain_name               = "${var.subdomain}.${var.domain_name}"
   subject_alternative_names = ["www.${var.subdomain}.${var.domain_name}"]
   validation_method         = "DNS"
+  key_algorithm             = "EC_prime256v1"
 
   tags = local.common_tags
 

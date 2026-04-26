@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.4] - 2026-04-27
+
+### Added
+- **IndexNow deploy notification** - Added a deploy-time IndexNow submission step that reads `dist/sitemap.xml`, diffs the current release tag against the previous tag, and submits only URLs affected by user-facing source changes. A committed public key file is shipped with the Vite build so IndexNow can validate `vs-calculator.tcousin.com`.
+
+### Changed
+- **Terraform baseline and ACM certificate algorithm** - Raised the Terraform minimum version to `>= 1.10` for both root and bootstrap configs, and requested an ECDSA P-256 ACM certificate for the CloudFront domain.
+
 ## [1.13.3] - 2026-04-25
 
 ### Fixed

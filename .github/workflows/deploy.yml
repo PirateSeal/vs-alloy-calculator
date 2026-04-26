@@ -67,6 +67,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -145,6 +148,17 @@ jobs:
             --id $INVALIDATION_ID
 
           echo "Invalidation completed successfully!"
+
+      - name: Notify IndexNow of changed URLs
+        continue-on-error: true
+        env:
+          CURRENT_TAG: ${{ github.ref_name }}
+          SITE_HOST: vs-calculator.tcousin.com
+          INDEXNOW_KEY: 9a08b561-2653-4193-8c5e-1ff8e28810ce
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 "${CURRENT_TAG}^" 2>/dev/null || echo "")
+          echo "PREV_TAG=$PREV_TAG CURRENT_TAG=$CURRENT_TAG"
+          PREV_TAG="$PREV_TAG" node scripts/indexnow-submit.mjs
 
       - name: Create build archive
         run: |
